@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <!-- Primary Meta Tags -->
-  <!-- TODO: Replace with your paper title and author names -->
-  <meta name="title" content="PAPER_TITLE - AUTHOR_NAMES">
-  <!-- TODO: Write a compelling 150-160 character description of your research -->
-  <meta name="description" content="BRIEF_DESCRIPTION_OF_YOUR_RESEARCH_CONTRIBUTION_AND_FINDINGS">
-  <!-- TODO: Add 5-10 relevant keywords for your research area -->
+<meta name="title" content="Unsafe2Safe - Minh Dinh Trong, SouYoung Jin">
+<meta name="description" content="A privacy-preserving variant of Stable Diffusion that mitigates memorization and protects sensitive training data.">
+<title>Unsafe2Safe | Minh Dinh Trong, SouYoung Jin</title>
+
+<!-- TODO: Add 5-10 relevant keywords for your research area -->
   <meta name="keywords" content="KEYWORD1, KEYWORD2, KEYWORD3, machine learning, computer vision, AI">
   <!-- TODO: List all authors -->
   <meta name="author" content="FIRST_AUTHOR_NAME, SECOND_AUTHOR_NAME">
@@ -241,23 +241,21 @@
         <div class="columns is-centered">
           <div class="column has-text-centered">
             <!-- TODO: Replace with your paper title -->
-            <h1 class="title is-1 publication-title">Academic Project Page</h1>
+            <h1 class="title is-1 publication-title">Unsafe2Safe: Controllable Image Anonymization for Downstream Utility</h1>
             <div class="is-size-5 publication-authors">
               <!-- TODO: Replace with your paper authors and their personal links -->
               <span class="author-block">
-                <a href="FIRST AUTHOR PERSONAL LINK" target="_blank">First Author</a><sup>*</sup>,</span>
+                  <a href="https://trminh0711.github.io" target="_blank">Minh Dinh Trong</a>,
+                </span>
                 <span class="author-block">
-                  <a href="SECOND AUTHOR PERSONAL LINK" target="_blank">Second Author</a><sup>*</sup>,</span>
-                  <span class="author-block">
-                    <a href="THIRD AUTHOR PERSONAL LINK" target="_blank">Third Author</a>
-                  </span>
+                  <a href="https://souyoungjin.github.io" target="_blank">SouYoung Jin</a>
+                </span>
                   </div>
 
                   <div class="is-size-5 publication-authors">
                     <!-- TODO: Replace with your institution and conference/journal info -->
-                    <span class="author-block">Institution Name<br>Conference name and year</span>
-                    <!-- TODO: Remove this line if no equal contribution -->
-                    <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
+                    <span class="author-block">Dartmouth College<br>CVPR 2026</span>
+                  
                   </div>
 
                   <div class="column has-text-centered">
@@ -286,7 +284,7 @@
 
                   <!-- TODO: Replace with your GitHub repository URL -->
                   <span class="link-block">
-                    <a href="https://github.com/YOUR REPO HERE" target="_blank"
+                    <a href="https://github.com/trminh0711/unsafe2safe" target="_blank"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                       <i class="fab fa-github"></i>
@@ -319,13 +317,16 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <!-- TODO: Replace with your teaser video -->
-      <video poster="" id="tree" autoplay controls muted loop height="100%" preload="metadata">
+      <video id="tree" autoplay controls muted loop height="100%" preload="metadata" style="display:none;">
         <!-- TODO: Add your video file path here -->
         <source src="static/videos/banner_video.mp4" type="video/mp4">
       </video>
+      <div style="height:300px; display:flex; align-items:center; justify-content:center; color:#888;">
+        Media coming soon
+      </div>
       <!-- TODO: Replace with your video description -->
       <h2 class="subtitle has-text-centered">
-        Aliquam vitae elit ullamcorper tellus egestas pellentesque. Ut lacus tellus, maximus vel lectus at, placerat pretium mi. Maecenas dignissim tincidunt vestibulum. Sed consequat hendrerit nisl ut maximus. 
+        Our method enables safe and high-quality image generation by preventing memorization of sensitive data in diffusion models.
       </h2>
     </div>
   </div>
@@ -341,8 +342,11 @@
         <div class="content has-text-justified">
           <!-- TODO: Replace with your paper abstract -->
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ullamcorper tellus sed ante aliquam tempus. Etiam porttitor urna feugiat nibh elementum, et tempor dolor mattis. Donec accumsan enim augue, a vulputate nisi sodales sit amet. Proin bibendum ex eget mauris cursus euismod nec et nibh. Maecenas ac gravida ante, nec cursus dui. Vivamus purus nibh, placerat ac purus eget, sagittis vestibulum metus. Sed vestibulum bibendum lectus gravida commodo. Pellentesque auctor leo vitae sagittis suscipit.
-          </p>
+            Large-scale image datasets frequently contain identifiable or sensitive content, raising privacy risks when training models that may memorize and leak such information. We present <b>Unsafe2Safe</b>, a fully automated pipeline that detects privacy-prone images and rewrites only their sensitive regions using multimodally guided diffusion editing. Unsafe2Safe operates in two stages. <b>Stage 1</b> uses a vision-language model to (i) inspect images for privacy risks, (ii) generate paired private and public captions that respectively include and omit sensitive attributes, and (iii) prompt a large language model to produce structured, identity-neutral edit instructions conditioned on the public caption. <b>Stage 2</b> employs instruction-driven diffusion editors to apply these dual textual prompts, producing privacy-safe images that preserve global structure and task-relevant semantics while neutralizing private content. </p>
+
+            <p>To measure anonymization quality, we introduce a unified evaluation suite covering Quality, Cheating, Privacy, and Utility dimensions. Across MS-COCO, Caltech101, and MIT Indoor67, Unsafe2Safe reduces face similarity, text similarity, and demographic predictability by large margins, while maintaining downstream model accuracy comparable to training on raw data. Fine-tuning diffusion editors on our automatically generated triplets (private caption, public caption, edit instruction) further improves both privacy protection and semantic fidelity. Unsafe2Safe provides a scalable, principled solution for constructing large, privacy-safe datasets without sacrificing visual consistency or downstream utility.</p>
+
+          
         </div>
       </div>
     </div>
@@ -358,7 +362,7 @@
       <div id="results-carousel" class="carousel results-carousel">
        <div class="item">
         <!-- TODO: Replace with your research result images -->
-        <img src="static/images/carousel1.jpg" alt="First research result visualization" loading="lazy"/>
+        <img src="static/images/carousel1.jpg" alt="First research result visualization" loading="lazy" style="display:none;"/>
         <!-- TODO: Replace with description of this result -->
         <h2 class="subtitle has-text-centered">
           First image description.
@@ -366,21 +370,21 @@
       </div>
       <div class="item">
         <!-- Your image here -->
-        <img src="static/images/carousel2.jpg" alt="Second research result visualization" loading="lazy"/>
+        <img src="static/images/carousel2.jpg" alt="Second research result visualization" loading="lazy" style="display:none;"/>
         <h2 class="subtitle has-text-centered">
           Second image description.
         </h2>
       </div>
       <div class="item">
         <!-- Your image here -->
-        <img src="static/images/carousel3.jpg" alt="Third research result visualization" loading="lazy"/>
+        <img src="static/images/carousel3.jpg" alt="Third research result visualization" loading="lazy" style="display:none;"/>
         <h2 class="subtitle has-text-centered">
          Third image description.
        </h2>
      </div>
      <div class="item">
       <!-- Your image here -->
-      <img src="static/images/carousel4.jpg" alt="Fourth research result visualization" loading="lazy"/>
+      <img src="static/images/carousel4.jpg" alt="Fourth research result visualization" loading="lazy" style="display:none;"/>
       <h2 class="subtitle has-text-centered">
         Fourth image description.
       </h2>
@@ -395,7 +399,7 @@
 
 
 <!-- Youtube video -->
-<section class="hero is-small is-light">
+<section class="hero is-small is-light" style="display:none;">
   <div class="hero-body">
     <div class="container">
       <!-- Paper video. -->
@@ -416,28 +420,28 @@
 
 
 <!-- Video carousel -->
-<section class="hero is-small">
+<section class="hero is-small" style="display:none;">
   <div class="hero-body">
     <div class="container">
       <h2 class="title is-3">Another Carousel</h2>
       <div id="results-carousel" class="carousel results-carousel">
         <div class="item item-video1">
           <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video1" controls muted loop height="100%" preload="metadata">
+          <video poster="" id="video1" controls muted loop height="100%" preload="metadata" style="display:none;">
             <!-- Your video file here -->
             <source src="static/videos/carousel1.mp4" type="video/mp4">
           </video>
         </div>
         <div class="item item-video2">
           <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video2" controls muted loop height="100%" preload="metadata">
+          <video poster="" id="video2" controls muted loop height="100%" preload="metadata" style="display:none;">
             <!-- Your video file here -->
             <source src="static/videos/carousel2.mp4" type="video/mp4">
           </video>
         </div>
         <div class="item item-video3">
           <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video3" controls muted loop height="100%" preload="metadata">
+          <video poster="" id="video3" controls muted loop height="100%" preload="metadata" style="display:none;">
             <!-- Your video file here -->
             <source src="static/videos/carousel3.mp4" type="video/mp4">
           </video>
@@ -454,7 +458,7 @@
 
 
 <!-- Paper poster -->
-<section class="hero is-small is-light">
+<section class="hero is-small is-light" style="display:none;">
   <div class="hero-body">
     <div class="container">
       <h2 class="title">Poster</h2>
@@ -481,11 +485,12 @@
         </button>
       </div>
       <pre id="bibtex-code"><code>@article{YourPaperKey2024,
-  title={Your Paper Title Here},
-  author={First Author and Second Author and Third Author},
-  journal={Conference/Journal Name},
-  year={2024},
-  url={https://your-domain.com/your-project-page}
+  @article{minh2026unsafe2safe,
+  title={Unsafe2Safe: Controllable Image Anonymization for Downstream Utility},
+  author={Minh Dinh Trong and SouYoung Jin},
+  journal={CVPR},
+  year={2026}
+}
 }</code></pre>
     </div>
 </section>
