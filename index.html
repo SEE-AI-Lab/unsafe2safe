@@ -73,6 +73,57 @@
   <!-- Critical CSS - Load synchronously -->
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="static/css/index.css">
+  <style>
+  .custom-title-inline {
+    font-size: 4.5rem;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .custom-title-inline .unsafe {
+    background: #f8caca;
+    color: #1f2a44;
+    padding: 10px 0px;
+  }
+
+  .custom-title-inline .safe {
+    background: #cfeedd;
+    color: #1f2a44;
+    padding: 10px 0px;
+  }
+
+  .custom-title-inline .two {
+    color: #1f2a44;
+    padding: 0 0px;
+  }
+
+  .custom-title-inline .subtitle-text {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-left: 12px;
+    color: #1f2a44;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .custom-title-inline {
+      font-size: 2.5rem;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .custom-title-inline .subtitle-text {
+      font-size: 1.2rem;
+      margin-left: 0;
+      white-space: normal;
+      text-align: center;
+    }
+  }
+  </style>
   
   <!-- Non-critical CSS - Load asynchronously -->
   <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -231,7 +282,12 @@
         <div class="columns is-centered">
           <div class="column has-text-centered">
             <!-- TODO: Replace with your paper title -->
-            <h1 class="title is-1 publication-title">Unsafe2Safe: Controllable Image Anonymization for Downstream Utility</h1>
+          <h1 class="title is-1 publication-title custom-title-inline">
+          <span class="unsafe">Unsafe</span>
+          <span class="two">2</span>
+          <span class="safe">Safe</span>
+          <span class="subtitle-text">Controllable Image Anonymization for Downstream Utility</span>
+        </h1>
             <div class="is-size-5 publication-authors">
               <!-- TODO: Replace with your paper authors and their personal links -->
               <span class="author-block">
