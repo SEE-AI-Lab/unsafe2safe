@@ -121,6 +121,22 @@
       text-align: center;
     }
   }
+
+  /* Ensure example images have consistent height */
+ .section .box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section .box img {
+  border-radius: 6px;
+  height: 180px;        /* fixed height */
+  width: auto;          /* allow width to vary */
+  max-width: 100%;      /* prevent overflow */
+  object-fit: contain;  /* keep full image */
+}
+  
   </style>
   
   <!-- Non-critical CSS - Load asynchronously -->
@@ -365,27 +381,54 @@
   </div>
 </section>
 
-
-<!-- Teaser video-->
-<section class="hero teaser">
+<section class="section">
   <div class="container is-max-desktop">
-    <div class="hero-body">
-      <!-- TODO: Replace with your teaser video -->
-      <video id="tree" autoplay controls muted loop height="100%" preload="metadata" style="display:none;">
-        <!-- TODO: Add your video file path here -->
-        <source src="static/videos/banner_video.mp4" type="video/mp4">
-      </video>
-      <div style="height:300px; display:flex; align-items:center; justify-content:center; color:#888;">
-        Media coming soon
+
+    <div class="columns">
+
+      <!-- Column 1 -->
+      <div class="column">
+        <div class="box" style="border:2px dashed #bcd3e6; border-radius:12px;">
+          <h3 class="title is-5">
+            <span style="color:green;">✔</span> Structurally Consistent Identity Privacy
+          </h3>
+          <img src="static/images/unsafe1.png" alt="" style="margin-bottom:4px;"/>
+          <img src="static/images/safe1.png" alt="" />
+        </div>
       </div>
-      <!-- TODO: Replace with your video description -->
-      <h2 class="subtitle has-text-centered">
-        Our method enables safe and high-quality image generation by preventing memorization of sensitive data in diffusion models.
-      </h2>
+
+      <!-- Column 2 -->
+      <div class="column">
+        <div class="box" style="border:2px dashed #bcd3e6; border-radius:12px;">
+          <h3 class="title is-5">
+            <span style="color:green;">✔</span> Demographic Neutralization
+          </h3>
+          <img src="static/images/unsafe2.png" alt="" style="margin-bottom:4px;"/>
+          <img src="static/images/safe2.png" alt="" />
+        </div>
+      </div>
+
+      <!-- Column 3 -->
+      <div class="column">
+        <div class="box" style="border:2px dashed #bcd3e6; border-radius:12px;">
+          <h3 class="title is-5">
+            <span style="color:green;">✔</span> Non Human-centric Anonymization
+          </h3>
+          <img src="static/images/unsafe3.png" alt="" style="margin-bottom:4px;"/>
+          <img src="static/images/safe3.png" alt="" />
+        </div>
+      </div>
+
     </div>
+
+    <!-- Caption -->
+    <p style="margin-top:20px; text-align:justify;">
+      <b>Examples from Unsafe2Safe (U2S).</b>  For each case, the
+model converts an unsafe image into a privacy-preserving safe version. Examples demonstrate key capabilities that may appear simultaneously: (1) structure-preserving full body anonymization, (2) demographic neutralization (race entropy ↑), and (3) obfuscation of non-human confidential details.
+    </p>
+
   </div>
 </section>
-<!-- End teaser video -->
 
 <!-- Paper abstract -->
 <section class="section hero is-light">
@@ -409,44 +452,9 @@
 <!-- End paper abstract -->
 
 
+
 <!-- Image carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-       <div class="item">
-        <!-- TODO: Replace with your research result images -->
-        <img src="static/images/carousel1.jpg" alt="First research result visualization" loading="lazy" style="display:none;"/>
-        <!-- TODO: Replace with description of this result -->
-        <h2 class="subtitle has-text-centered">
-          First image description.
-        </h2>
-      </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel2.jpg" alt="Second research result visualization" loading="lazy" style="display:none;"/>
-        <h2 class="subtitle has-text-centered">
-          Second image description.
-        </h2>
-      </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel3.jpg" alt="Third research result visualization" loading="lazy" style="display:none;"/>
-        <h2 class="subtitle has-text-centered">
-         Third image description.
-       </h2>
-     </div>
-     <div class="item">
-      <!-- Your image here -->
-      <img src="static/images/carousel4.jpg" alt="Fourth research result visualization" loading="lazy" style="display:none;"/>
-      <h2 class="subtitle has-text-centered">
-        Fourth image description.
-      </h2>
-    </div>
-  </div>
-</div>
-</div>
-</section>
+
 <!-- End image carousel -->
 
 
