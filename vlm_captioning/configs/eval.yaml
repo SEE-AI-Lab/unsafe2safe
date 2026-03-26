@@ -1,0 +1,39 @@
+active_purpose: generate_captions
+active_dataset: mscoco
+
+defaults:
+  run:
+    batch_size: 16
+    max_new_tokens: 1024
+    image_size: 448
+    device: cuda
+    cache_dir: /gpudata3/minh
+  output:
+    output_dir: /gpudata3/minh/data/{dataset}/{purpose}
+    filename_suffix: _caption.json
+
+datasets:
+  mscoco:
+    root_dir: /jumbo/jinlab/datasets/coco
+  vispr:
+    root_dir: /jumbo/jinlab/datasets/VISPR/images_resize250
+  caltech:
+    root_dir: /scratch/minh/code/caltech-101/101_ObjectCategories
+  indoor:
+    root_dir: /jumbo/jinlab/minh/data/MIT_Indoor_67/Images
+
+purposes:
+  compare_anonymization:
+    run:
+      backend: internvl_pair
+      model_id: OpenGVLab/InternVL3_5-8B
+      system_prompt: You are a vision-language evaluator for privacy-preserving image anonymization.
+      prompt_path: prompts/intern_image_flagging-compare.txt
+      max_new_tokens: 512
+    source:
+      type: paired_csv
+      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
+      left_image_col: file
+      right_image_col: file
+      rel_col: file
+      right_root_dir: /gpudata3/minh/MSCOCO_FlowEdit

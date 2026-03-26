@@ -1,0 +1,89 @@
+active_purpose: generate_captions
+active_dataset: mscoco
+
+defaults:
+  run:
+    batch_size: 16
+    max_new_tokens: 1024
+    image_size: 448
+    device: cuda
+    cache_dir: /gpudata3/minh
+  output:
+    output_dir: /gpudata3/minh/data/{dataset}/{purpose}
+    filename_suffix: _caption.json
+
+datasets:
+  mscoco:
+    root_dir: ....
+  vispr:
+    root_dir: ...
+  caltech:
+    root_dir: ...
+  indoor:
+    root_dir: ...
+
+purposes:
+  generate_captions:
+    run:
+      backend: internvl
+      model_id: OpenGVLab/InternVL2_5-8B
+      system_prompt: You are a vision-language assistant that generates privacy-aware, structured descriptions of real-world images.
+      prompt_path: prompts/intern_image_captioning.txt
+      format_with_class: true
+    source:
+      type: csv
+      image_col: file
+      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
+    dataset_overrides:
+      vispr:
+        source:
+          type: glob
+          pattern: "**/*"
+      caltech:
+        source:
+          type: glob
+          pattern: "**/*"
+      indoor:
+        source:
+          type: glob
+          pattern: "**/*"
+
+  generate_flags:
+    run:
+      backend: internvl
+      model_id: OpenGVLab/InternVL2_5-8B
+      system_prompt: You are a vision-language assistant for structured, privacy-aware image analysis.
+      prompt_path: prompts/intern_image_flagging.txt
+      format_with_class: true
+      max_new_tokens: 128
+    source:
+      type: glob
+      pattern: "**/*"
+
+  generate_edit_instructions:
+    run:
+      backend: qwen_text
+      model_id: Qwen/Qwen3-4B-Instruct-2507
+      hf_home: /gpudata3/minh/
+      system_prompt: You generate short change descriptions for real-world image captions.
+      prompt_path: prompts/qwen_image_captioning-private-expand.txt
+      max_new_tokens: 512
+      batch_size: 64
+    source:
+      type: csv
+      image_col: file
+      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
+
+  combine_caption_and_edit:
+    run:
+      backend: qwen_text
+      model_id: Qwen/Qwen3-4B-Instruct-2507
+      hf_home: /gpudata3/minh/
+      system_prompt: You are a caption rewriting assistant that write coherent yet concise image caption.
+      prompt_path: prompts/qwen_caption_combine.txt
+      max_new_tokens: 512
+      batch_size: 64
+    source:
+      type: csv
+      image_col: file
+      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
