@@ -9,7 +9,7 @@ Official repository for **Unsafe2Safe: Controllable Image Anonymization for Down
 ![Model Weights](https://img.shields.io/badge/Model%20Weights-coming%20soon-lightgrey.svg)
 
 > [!IMPORTANT]
-> Unsafe2Safe was accepted at CVPR 2026.
+> Unsafe2Safe was accepted at CVPR 2026 (Highlight).
 >
 > Public resources currently available: the [arXiv paper](https://arxiv.org/abs/2603.28605), the [project page](https://see-ai-lab.github.io/unsafe2safe/), the [Hugging Face dataset](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe), and the initial Stage 1 captioning code in this repository.
 
