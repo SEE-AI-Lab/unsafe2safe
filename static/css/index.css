@@ -82,6 +82,16 @@ body {
     margin: 8px 4px;
 }
 
+.link-block .button {
+    margin: 8px 4px;
+}
+
+.is-disabled-resource {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
 .dnerf {
   font-variant: small-caps;
 }
@@ -748,6 +758,5 @@ a:focus {
     box-shadow: none !important;
   }
 }
-
 
 
