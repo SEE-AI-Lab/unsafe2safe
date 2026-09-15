@@ -109,16 +109,9 @@ def run_job(effective_cfg, purpose, dataset_name):
     samples = build_samples(dataset_cfg, source_cfg)
     # The paper uses InternVL for structured image responses and Qwen for text-only rewrites.
     if backend == "qwen_text":
-        generator = build_text_generator(
-            run_cfg["model_id"],
-            cache_dir=run_cfg["cache_dir"],
-        )
+        generator = build_text_generator(run_cfg["model_id"])
     elif backend == "internvl":
-        model, tokenizer = load_internvl_model_and_tokenizer(
-            run_cfg["model_id"],
-            cache_dir=run_cfg["cache_dir"],
-            device=run_cfg["device"],
-        )
+        model, tokenizer = load_internvl_model_and_tokenizer(run_cfg["model_id"], device=run_cfg["device"])
     else:
         raise ValueError(f"Unsupported backend: {backend}")
 

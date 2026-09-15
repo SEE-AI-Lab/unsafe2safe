@@ -5,7 +5,6 @@ defaults:
     max_new_tokens: 1024
     image_size: 448
     device: cuda
-    cache_dir: .cache/huggingface
 datasets:
   # COCO uses metadata.csv; the other datasets are read from image folders.
   mscoco:
