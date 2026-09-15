@@ -10,12 +10,12 @@ CONFIG=$(cd -- "$(dirname -- "$2")" && pwd)/$(basename -- "$2")
 LOG_DIR=$(mkdir -p "$3" && cd -- "$3" && pwd)
 GPU_IDS="$4"
 
-# The external checkout stays vanilla. The project package is imported via
-# PYTHONPATH and patches the UNet in memory before model construction.
-cd -- "$DIFFUSION_ROOT"
+# The external checkout stays vanilla. Run its trainer from the project root
+# so relative data, metadata, checkpoint, and log paths are predictable.
+cd -- "$REPO_ROOT"
 INSTRUCT_PIX2PIX_ROOT="$DIFFUSION_ROOT" \
 PYTHONPATH="$REPO_ROOT:$DIFFUSION_ROOT/stable_diffusion:${PYTHONPATH:-}" \
-CUDA_VISIBLE_DEVICES="$GPU_IDS" python main.py \
+CUDA_VISIBLE_DEVICES="$GPU_IDS" python "$DIFFUSION_ROOT/main.py" \
   --name pix2pixSAFE \
   --base "$CONFIG" \
   --train \
