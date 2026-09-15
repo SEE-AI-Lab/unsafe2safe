@@ -17,7 +17,7 @@ def _image_tensor(image: Image.Image) -> torch.Tensor:
 class EditDataset(Dataset):
     """Load aligned unsafe/public image pairs and their two text conditions."""
 
-    def __init__(self, path: str, target_path: str, csv_path: str, split: str = "train", splits: tuple[float, float, float] = (0.9, 0.05, 0.05), crop_res: int = 256, flip_prob: float = 0.0, file_column: str = "file", public_caption_column: str = "caption_public", edit_caption_column: str = "caption_edit"):
+    def __init__(self, path: str, target_path: str, csv_path: str, split: str = "train", train_fraction: float = 0.95, crop_res: int = 256, flip_prob: float = 0.0, file_column: str = "file", public_caption_column: str = "caption_public", edit_caption_column: str = "caption_edit"):
         self.file_column = file_column
         self.public_caption_column = public_caption_column
         self.edit_caption_column = edit_caption_column
@@ -30,7 +30,6 @@ class EditDataset(Dataset):
         ].reset_index(drop=True)
         # Shuffle once so train/validation membership is reproducible.
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
-        train_fraction = splits[0] / (splits[0] + splits[1])
         train_cutoff = int(train_fraction * len(train_df))
 
         selected_df = {"train": train_df[:train_cutoff], "val": train_df[train_cutoff:]}[split]
