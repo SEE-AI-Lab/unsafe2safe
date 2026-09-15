@@ -71,6 +71,8 @@ The `pipeline/` directory includes dataset creation, edit dataset loaders, batch
 
 The diffusion code expects a compatible Stable Diffusion or InstructPix2Pix checkout at `stable_diffusion/`, plus the research configuration files and checkpoints. The unchanged base diffusion repository is not vendored here.
 
+Run batch inference with `./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT`.
+
 ## Dataset and links
 
 The public dataset is available on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe). Project links: [project page](https://see-ai-lab.github.io/unsafe2safe/) and [paper](https://arxiv.org/abs/2603.28605).
