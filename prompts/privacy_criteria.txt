@@ -1,0 +1,9 @@
+People, faces (full or partial), visible skin in private contexts, tattoos, or emotional expressions
+Appearance cues such as clothing, accessories, or features revealing gender, culture, religion, status, or roles
+Health indicators such as casts, wheelchairs, bandages, medications, disabilities, or visible illness or injury
+Texts or symbols such as signs, receipts, documents, screens, handwriting, license plates, usernames, or phone numbers
+Locations or timestamps such as homes, offices, bedrooms, addresses, classrooms, GPS data, clocks, or date/time stamps
+Personal interactions such as small groups, families, friends, teams, protests, celebrations, or close relationships
+Professional or school settings such as uniforms, tools, name tags, diplomas, workspaces, or formal events
+Cultural, political, or religious identifiers such as flags, slogans, attire, ceremonies, or posters
+Private belongings or behaviors such as hobbies, photos, mail, social media, travel documents, or receipts

@@ -1,0 +1,15 @@
+SECTION: PRIVACY_FLAG
+
+Determine whether the image contains any instance of {criteria}. Respond with only one line:
+PRIVACY_FLAG: TRUE
+or
+PRIVACY_FLAG: FALSE
+
+Do not include explanations or additional text.
+
+Set PRIVACY_FLAG: TRUE if the image clearly, partially, or contextually depicts {criteria}. If the presence of {criteria} is uncertain, ambiguous, low-resolution, or partially occluded, default to TRUE.
+
+Set PRIVACY_FLAG: FALSE if the image does not contain {criteria}, or if any privacy concern is unrelated to {criteria}.
+
+Criterion description:
+{criteria_description}

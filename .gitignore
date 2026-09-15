@@ -14,3 +14,7 @@ prompts/*
 !prompts/intern_image_flagging-compare.txt
 !prompts/qwen_caption_combine.txt
 !prompts/qwen_image_captioning-private-expand.txt
+!prompts/privacy_criteria.txt
+!prompts/intern_image_flagging-custom.txt
+!prompts/intern_text_extraction.txt
+!prompts/intern_demographic_analysis.txt

@@ -46,7 +46,7 @@ vlm_captioning/
 
 The current public code release focuses on the Stage 1 pipeline for privacy-aware caption generation, privacy flagging, edit-instruction generation, and pairwise anonymization evaluation.
 
-The prompt templates used by the released configs are included in `prompts/`. Experimental notebooks, training scripts, and application prototypes remain outside this staged release and are not required by the Stage 1 runner.
+The prompt templates used by the released configs are included in `prompts/`. This includes the Stage 1 generation prompts and the paper-aligned evaluation templates for custom privacy flagging, text extraction, demographic analysis, and pairwise anonymization scoring. Experimental notebooks, training scripts, and application prototypes remain outside this staged release and are not required by the Stage 1 runner.
 
 ## Evaluation Protocol
 We report four metric groups in the paper:
