@@ -125,27 +125,6 @@ def resolve_runtime_paths(effective_cfg, config_dir):
     return cfg
 
 
-def apply_filters(df, filters):
-    if not filters:
-        return df
-    out = df
-    for f in filters:
-        col = f["column"]
-        mode = f.get("mode", "contains")
-        value = f["value"]
-        series = out[col]
-        # Text matching modes cast to string; equality keeps original dtype behavior.
-        if mode == "contains":
-            out = out[series.astype("string").str.contains(value, na=False)]
-        elif mode == "not_contains":
-            out = out[~series.astype("string").str.contains(value, na=False)]
-        elif mode == "equals":
-            out = out[series == value]
-        else:
-            raise ValueError(f"Unsupported filter mode: {mode}")
-    return out
-
-
 def _require_columns(df, columns, source_name):
     missing = sorted(set(columns) - set(df.columns))
     if missing:
@@ -179,10 +158,6 @@ def build_samples(dataset_cfg, source_cfg):
         image_col = source_cfg.get("image_col", "file")
         df = pd.read_csv(csv_path)
         _require_columns(df, [image_col, *source_cfg.get("prompt_columns", {}).values()], csv_path)
-        df = apply_filters(df, source_cfg.get("filters"))
-        max_rows = source_cfg.get("max_rows")
-        if max_rows:
-            df = df.head(max_rows)
 
         samples: list[Sample] = []
         for _, row in df.iterrows():
@@ -199,9 +174,6 @@ def build_samples(dataset_cfg, source_cfg):
         pattern = source_cfg.get("pattern", "**/*")
         exts = tuple(source_cfg.get("exts", [".jpg", ".jpeg", ".png"]))
         files = [p for p in Path(root_dir).glob(pattern) if p.is_file() and p.suffix.lower() in exts]
-        max_rows = source_cfg.get("max_rows")
-        if max_rows:
-            files = files[:max_rows]
 
         samples = []
         for p in files:
@@ -220,10 +192,6 @@ def build_samples(dataset_cfg, source_cfg):
 
         df = pd.read_csv(csv_path)
         _require_columns(df, [left_col, right_col, rel_col, *source_cfg.get("prompt_columns", {}).values()], csv_path)
-        df = apply_filters(df, source_cfg.get("filters"))
-        max_rows = source_cfg.get("max_rows")
-        if max_rows:
-            df = df.head(max_rows)
 
         samples: list[Sample] = []
         for _, row in df.iterrows():
