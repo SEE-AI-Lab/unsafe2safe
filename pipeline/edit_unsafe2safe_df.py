@@ -7,7 +7,6 @@ the legacy ``stable_diffusion/`` layout described in the README.
 
 from __future__ import annotations
 
-import math
 import random
 import sys
 from argparse import ArgumentParser
@@ -137,9 +136,12 @@ if __name__ == "__main__":
     parser.add_argument("--config", default="configs/train.yaml", type=str)
     parser.add_argument("--ckpt", default="checkpoints/instruct-pix2pix-00-22000.ckpt", type=str)
     parser.add_argument("--vae-ckpt", default=None, type=str)
-    parser.add_argument("--input", required=True, type=str, help="CSV with path, edit_caption")
+    parser.add_argument("--input", required=True, type=str, help="CSV containing image and text columns")
     parser.add_argument("--image-root", required=True, type=str, help="Directory containing source images")
     parser.add_argument("--output", required=True, type=str, help="Directory to save edited images")
+    parser.add_argument("--file-column", default="file")
+    parser.add_argument("--public-caption-column", default="caption_public")
+    parser.add_argument("--edit-caption-column", default="caption_edit")
     parser.add_argument("--cfg-text", default=7.5, type=float)
     parser.add_argument("--cfg-image", default=1.5, type=float)
     parser.add_argument("--batch-size", default=16, type=int)
@@ -171,21 +173,33 @@ if __name__ == "__main__":
     os.makedirs(dest_dir, exist_ok=True)
 
     df = pd.read_csv(args.input)
-    df = df[df["file"].str.contains("val2014", na=False)].reset_index(drop=True)
+    required_columns = {
+        args.file_column,
+        args.public_caption_column,
+        args.edit_caption_column,
+    }
+    missing_columns = sorted(required_columns - set(df.columns))
+    if missing_columns:
+        raise ValueError(f"CSV is missing columns: {missing_columns}")
+    df = df[
+        df[args.file_column].astype(str).str.contains("val2014", na=False)
+    ].reset_index(drop=True)
     device = model.device
 
     # Iterate in batches
     for i in tqdm(range(0, len(df), args.batch_size), desc="Editing images"):
         batch_df = df.iloc[i:i + args.batch_size]
 
-        images, tensors, captions_priv, captions_edit = [], [], [], []
+        images, tensors, captions_public, captions_edit = [], [], [], []
         for _, row in batch_df.iterrows():
-            img_path, private_caption, edit_caption = row["file"], row["c1"], row["caption"]
+            img_path = row[args.file_column]
+            public_caption = row[args.public_caption_column]
+            edit_caption = row[args.edit_caption_column]
             img, tensor = preprocess_image(os.path.join(args.image_root, img_path), args.resolution, device)
             #print(tensor.shape)
             images.append((img, img_path))
             tensors.append(tensor)
-            captions_priv.append(private_caption)
+            captions_public.append(public_caption)
             captions_edit.append(edit_caption)
 
         tensors = torch.cat(tensors, dim=0)
@@ -193,8 +207,8 @@ if __name__ == "__main__":
         # 1. Encode image into latent space
         z_priv = model.encode_first_stage(tensors).mode().detach()
 
-        # 2. Encode private captions (cross-attention conditioning)
-        c_priv_embed = model.get_learned_conditioning(captions_priv).detach()
+        # 2. Encode public captions (cross-attention conditioning)
+        c_public_embed = model.get_learned_conditioning(captions_public).detach()
 
         # 3. Encode edit captions (text edit instructions)
         c_edit_embed = model.cond_stage_model.encode_text_pooled(captions_edit).detach()
@@ -202,14 +216,14 @@ if __name__ == "__main__":
         # --- Combine conditioning for editing ---
         cond = {
             "c_concat": [z_priv],                # image latent
-            "c_crossattn": [c_priv_embed],       # private text
+            "c_crossattn": [c_public_embed],     # public text
         }
         cond["c_crossattn"].extend([c_edit_embed])
 
         # --- Null / unconditional conditioning (for guidance) ---
         uncond = {
             "c_concat": [torch.zeros_like(z_priv)],
-            "c_crossattn": [null_token.repeat(len(captions_priv), 1, 1)],
+            "c_crossattn": [null_token.repeat(len(captions_public), 1, 1)],
         }
 
         sigmas = model_wrap.get_sigmas(args.steps)
@@ -239,7 +253,3 @@ if __name__ == "__main__":
             out_path = os.path.join(dest_dir, fname)
             os.makedirs(os.path.dirname(out_path), exist_ok=True)
             Image.fromarray(arr).save(out_path)
-
-
-if __name__ == "__main__":
-    main()
