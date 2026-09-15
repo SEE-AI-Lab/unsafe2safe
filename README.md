@@ -61,8 +61,22 @@ Detailed metric definitions and results are available in the [paper](https://arx
 This initial release is not yet a fully packaged end-to-end training repository. The published code currently centers on the Stage 1 runner in `vlm_captioning/`.
 
 Before running:
-- Set up a Python environment with the dependencies required for InternVL or Qwen inference together with `pandas`, `PyYAML`, and `tqdm`.
-- Update the dataset, cache, and output paths in `vlm_captioning/configs/stage1.yaml` and `vlm_captioning/configs/eval.yaml` to match your local environment.
+- Set up a Python environment and install the Stage 1 dependencies:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- Install a PyTorch build appropriate for your CPU or CUDA platform if the default pip resolution is not suitable.
+- Place dataset images under `data/` and provide metadata under `metadata/`. The default COCO captioning profile expects `metadata/mscoco.csv` with a `file` column whose values are relative to `data/mscoco`.
+
+Expected layout for the default captioning run:
+```text
+data/mscoco/<images...>
+metadata/mscoco.csv
+prompts/intern_image_captioning.txt
+outputs/mscoco/generate_captions/<generated JSON files>
+```
+
+The configs use relative paths and can be adapted for other datasets by changing the dataset profile or passing `--dataset`.
 
 Example Stage 1 run:
 ```bash
