@@ -11,18 +11,11 @@ from qwen_vl_utils import process_vision_info
 from tqdm import tqdm
 from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
 
-
-SYSTEM_MESSAGE = (
-    "You are a Vision Language Model answering questions about images. "
-    "Use the image to identify relevant entities and visual cues, and use "
-    "general world knowledge to answer the question. Provide a concise, "
-    "factual answer without speculation."
+from pipeline.adapters.vqa.common import (
+    SYSTEM_MESSAGE,
+    coco_image_path,
+    load_json,
 )
-
-
-def load_json(path: Path):
-    with path.open(encoding="utf-8") as handle:
-        return json.load(handle)
 
 
 def format_example(question_id: int, image_path: Path, question: str) -> dict:
@@ -41,15 +34,11 @@ def format_example(question_id: int, image_path: Path, question: str) -> dict:
     }
 
 
-def coco_image_path(image_id: int) -> str:
-    return f"val2014/COCO_val2014_{int(image_id):012d}.jpg"
-
-
 def build_examples(questions: list[dict], image_root: Path) -> list[dict]:
     return [
         format_example(
             question["question_id"],
-            image_root / coco_image_path(question["image_id"]),
+            image_root / coco_image_path(question["image_id"], "val"),
             question["question"],
         )
         for question in questions

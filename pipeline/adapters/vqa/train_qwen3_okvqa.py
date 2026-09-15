@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import random
 from collections import Counter
 from pathlib import Path
@@ -13,18 +12,11 @@ import torch
 from tqdm import tqdm
 from transformers import AutoProcessor, BitsAndBytesConfig, Qwen3VLForConditionalGeneration
 
-
-SYSTEM_MESSAGE = (
-    "You are a Vision Language Model answering questions about images. "
-    "Use the image to identify relevant entities and visual cues, and use "
-    "general world knowledge to answer the question. Provide a concise, "
-    "factual answer without speculation."
+from pipeline.adapters.vqa.common import (
+    SYSTEM_MESSAGE,
+    coco_image_path,
+    load_json,
 )
-
-
-def load_json(path: Path):
-    with path.open(encoding="utf-8") as handle:
-        return json.load(handle)
 
 
 def read_manifest(path: Path | None) -> set[str]:
@@ -34,10 +26,6 @@ def read_manifest(path: Path | None) -> set[str]:
     if "file" not in frame.columns:
         raise ValueError(f"{path} must contain a 'file' column")
     return set(frame["file"].dropna().astype(str))
-
-
-def coco_image_path(image_id: int, split: str = "train") -> str:
-    return f"{split}2014/COCO_{split}2014_{int(image_id):012d}.jpg"
 
 
 def format_example(question_id: int, image_path: Path, question: str, answer: str):
@@ -73,7 +61,7 @@ def build_examples(
         if annotation is None:
             continue
 
-        filename = coco_image_path(question["image_id"])
+        filename = coco_image_path(question["image_id"], "train")
         if filename in private_files:
             if filename not in safe_files or safe_root is None:
                 continue
