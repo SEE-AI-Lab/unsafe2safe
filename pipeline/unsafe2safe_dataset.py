@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -20,7 +20,7 @@ class EditDataset(Dataset):
         path: str,
         target_path: str,
         csv_path: str,
-        clip_score_path,
+        clip_score_path=None,
         split: str = "train",
         splits: tuple[float, float, float] = (0.9, 0.05, 0.05),
         min_resize_res: int = 256,
@@ -34,8 +34,8 @@ class EditDataset(Dataset):
         df = pd.read_csv(csv_path)
         if clip_score_path is not None:
             df_clip_score = pd.read_csv(clip_score_path)
-            df = df_clip_score.merge(df, left_on="filename", right_on=df["file"], how="left")
-            df = df[(df.clip_edit/df.clip_orig)>0.7]
+            df = df_clip_score.merge(df, left_on="filename", right_on="file", how="inner")
+            df = df[(df["clip_edit"] / df["clip_orig"]) > 0.7]
 
         # Filter by filename.
         train_df = df[df["file"].str.contains("train2014", na=False)].reset_index(drop=True)
@@ -43,7 +43,8 @@ class EditDataset(Dataset):
 
         # Deterministic shuffle for train/val split
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
-        val_cutoff = int(0.25 * len(train_df))
+        train_fraction = splits[0] / (splits[0] + splits[1])
+        val_cutoff = int(train_fraction * len(train_df))
 
         if split == "train":
             selected_df = train_df[val_cutoff:]
@@ -63,11 +64,29 @@ class EditDataset(Dataset):
     def __len__(self):
         return len(self.seeds)
 
-    def __getitem__(self, i: int) -> dict[str, Any]:
+    @staticmethod
+    def _first_caption(entry: Dict[str, Any], keys, label: str) -> str:
+        for key in keys:
+            value = entry.get(key)
+            if value is not None and not pd.isna(value):
+                return str(value)
+        raise KeyError(f"metadata is missing a {label} caption")
+
+    def __getitem__(self, i: int) -> Dict[str, Any]:
         entry = self.seeds[i]
         image_path = self.root_dir / entry["file"]
-        caption_c1 = entry["c1"]
-        caption_edit = entry["caption"]
+        # Historical metadata labels c1 as priv_caption in some exports, but
+        # Caption_Gather.py establishes that c1 is the public caption.
+        caption_public = self._first_caption(
+            entry,
+            ("caption_public", "public_caption", "pub_caption", "c1", "priv_caption"),
+            "public",
+        )
+        caption_edit = self._first_caption(
+            entry,
+            ("caption_edit", "edit_caption", "c_edit", "caption"),
+            "edit",
+        )
         target_image_path = self.target_dir / entry["file"]
 
         image_0 = Image.open(image_path).convert("RGB")
@@ -83,7 +102,12 @@ class EditDataset(Dataset):
         flip = torchvision.transforms.RandomHorizontalFlip(float(self.flip_prob))
         image_0, image_1 = flip(crop(torch.cat((image_0, image_1)))).chunk(2)
 
-        return dict(image_private=image_0, caption_private=caption_c1, caption_edit=caption_edit, image_public=image_1)
+        return dict(
+            image_private=image_0,
+            image_public=image_1,
+            caption_public=caption_public,
+            caption_edit=caption_edit,
+        )
 
 
 class EditDatasetEval(Dataset):

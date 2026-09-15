@@ -1,5 +1,6 @@
 # Install a PyTorch build matching the target CPU/CUDA platform first when needed.
 accelerate>=0.26
+einops>=0.3
 evaluate>=0.4
 pandas>=2.0
 Pillow>=10.0

@@ -2,6 +2,8 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+runs/
+outputs/
 
 # Experimental research files are intentionally kept out of this release.
 temppp_donttouch/

@@ -3,12 +3,19 @@
 set -euo pipefail
 
 # Usage: ./pipeline/scripts/train_unsafe2safe.sh DIFFUSION_ROOT CONFIG LOG_DIR GPU_IDS
-DIFFUSION_ROOT="$1"
-CONFIG="$2"
-LOG_DIR="$3"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd -- "$SCRIPT_DIR/../.." && pwd)
+DIFFUSION_ROOT=$(cd -- "$1" && pwd)
+CONFIG=$(cd -- "$(dirname -- "$2")" && pwd)/$(basename -- "$2")
+LOG_DIR=$(mkdir -p "$3" && cd -- "$3" && pwd)
 GPU_IDS="$4"
 
-CUDA_VISIBLE_DEVICES="$GPU_IDS" python "$DIFFUSION_ROOT/main.py" \
+# The external checkout stays vanilla. The project package is imported via
+# PYTHONPATH and patches the UNet in memory before model construction.
+cd -- "$DIFFUSION_ROOT"
+INSTRUCT_PIX2PIX_ROOT="$DIFFUSION_ROOT" \
+PYTHONPATH="$REPO_ROOT:$DIFFUSION_ROOT/stable_diffusion:${PYTHONPATH:-}" \
+CUDA_VISIBLE_DEVICES="$GPU_IDS" python main.py \
   --name pix2pixSAFE \
   --base "$CONFIG" \
   --train \
