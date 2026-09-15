@@ -13,10 +13,8 @@ def load_image(path, size=(512, 512)):
 
 
 def get_embedding(app, image):
-    faces = app.get(image)
-    if len(faces) == 0:
-        return None
-    return faces[0].embedding
+    embeddings = get_embeddings(app, image)
+    return embeddings[0] if embeddings else None
 
 
 def get_embeddings(app, image):
@@ -24,10 +22,15 @@ def get_embeddings(app, image):
     return [face.embedding for face in app.get(image)]
 
 
-def nearest_face_similarity(image_root, synthetic_root, items):
-    """Compute the paper's FaceSim using each original face's nearest match."""
+def _load_app():
     app = FaceAnalysis(name="antelopev2/antelopev2", root="models/insightface", providers=["CPUExecutionProvider"])
     app.prepare(ctx_id=0, det_size=(512, 512))
+    return app
+
+
+def nearest_face_similarity(image_root, synthetic_root, items):
+    """Compute the paper's FaceSim using each original face's nearest match."""
+    app = _load_app()
 
     similarities = []
     for item in items:
@@ -41,8 +44,7 @@ def nearest_face_similarity(image_root, synthetic_root, items):
 
 def compare_id_consistency(image_root, synthetic_root, items):
     """Compare face-embedding similarity between original and synthetic images."""
-    app = FaceAnalysis(name="antelopev2/antelopev2", root="models/insightface", providers=["CPUExecutionProvider"])
-    app.prepare(ctx_id=0, det_size=(512, 512))
+    app = _load_app()
 
     original_embeddings = []
     synthetic_embeddings = []
