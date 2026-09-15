@@ -86,7 +86,7 @@ def _sample(sampler, pipe, scheduler, latent, source_prompt: str, target_prompt:
         latent,
         source_prompt,
         target_prompt,
-        str(config.get("negative_prompt", "")),
+        config["negative_prompt"],
         int(config["steps"]),
         int(config["n_avg"]),
         float(config["src_guidance_scale"]),
@@ -111,10 +111,6 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--image-root", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--source-column", required=True)
-    parser.add_argument("--device")
-    parser.add_argument("--model-id")
-    parser.add_argument("--file-column")
-    parser.add_argument("--exclude-file-prefix")
     parser.add_argument("--condition", required=True, metavar="COLUMN")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--overwrite", action="store_true")
@@ -124,40 +120,32 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     args = _parse_args()
     config = _load_config(Path(args.config).expanduser())
-    if args.device:
-        config["device"] = args.device
-    if args.model_id:
-        config["model_id"] = args.model_id
-    if args.file_column:
-        config["file_column"] = args.file_column
-    if args.exclude_file_prefix:
-        config["exclude_file_prefix"] = args.exclude_file_prefix
 
-    device = torch.device(str(config.get("device", "cuda")))
-    model_type = str(config.get("model_type", "SD3")).upper()
+    device = torch.device(config["device"])
+    model_type = config["model_type"].upper()
     flowedit_sd3, flowedit_flux = _configure_external(args.flowedit_root)
     pipe = _load_pipeline(
         model_type,
-        str(config["model_id"]),
-        _dtype(str(config.get("dtype", "float16"))),
+        config["model_id"],
+        _dtype(config["dtype"]),
     ).to(device)
     scheduler = pipe.scheduler
     sampler = flowedit_sd3 if model_type == "SD3" else flowedit_flux
 
     frame = pd.read_csv(args.input_csv)
-    file_column = str(config.get("file_column", "file"))
-    source_column = str(args.source_column)
-    condition_column = str(args.condition)
-    prefix = str(config.get("exclude_file_prefix", "val"))
+    file_column = config["file_column"]
+    source_column = args.source_column
+    condition_column = args.condition
+    prefix = config["exclude_file_prefix"]
     frame = frame[~frame[file_column].astype(str).str.startswith(prefix)]
-    frame = frame.sample(frac=1.0, random_state=int(config.get("seed", 42))).reset_index(drop=True)
+    frame = frame.sample(frac=1.0, random_state=config["seed"]).reset_index(drop=True)
     if args.limit is not None:
         frame = frame.head(args.limit)
 
     image_root = Path(args.image_root).expanduser()
     output_dir = Path(args.output_dir).expanduser()
     output_dir.mkdir(parents=True, exist_ok=True)
-    _set_seed(int(config.get("seed", 42)))
+    _set_seed(config["seed"])
     generated = 0
     skipped = 0
     for row in frame.to_dict(orient="records"):
@@ -169,7 +157,7 @@ def main() -> None:
             skipped += 1
             continue
         with Image.open(input_path) as source_image:
-            image = _prepare_image(source_image, int(config.get("max_resolution", 1536)))
+            image = _prepare_image(source_image, config["max_resolution"])
         latent = _encode_source(pipe, image, device)
         edited = _sample(sampler, pipe, scheduler, latent, str(row[source_column]), str(row[condition_column]), config)
         _decode(pipe, edited).save(output_path)
