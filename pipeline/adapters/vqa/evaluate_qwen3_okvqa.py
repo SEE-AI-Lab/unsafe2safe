@@ -12,6 +12,7 @@ from tqdm import tqdm
 from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
 
 from pipeline.adapters.vqa.common import (
+    DEFAULT_MODEL_ID,
     SYSTEM_MESSAGE,
     coco_image_path,
     load_json,
@@ -76,7 +77,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--image-root", type=Path, required=True)
     parser.add_argument("--adapter", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--model-id", default="Qwen/Qwen3-VL-2B-Instruct")
+    parser.add_argument("--model-id", default=DEFAULT_MODEL_ID)
     parser.add_argument("--cache-dir", type=Path)
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--max-new-tokens", type=int, default=64)

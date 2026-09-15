@@ -13,6 +13,7 @@ from tqdm import tqdm
 from transformers import AutoProcessor, BitsAndBytesConfig, Qwen3VLForConditionalGeneration
 
 from pipeline.adapters.vqa.common import (
+    DEFAULT_MODEL_ID,
     SYSTEM_MESSAGE,
     coco_image_path,
     load_json,
@@ -84,7 +85,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--safe-manifest", type=Path)
     parser.add_argument("--private-manifest", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--model-id", default="Qwen/Qwen3-VL-2B-Instruct")
+    parser.add_argument("--model-id", default=DEFAULT_MODEL_ID)
     parser.add_argument("--cache-dir", type=Path)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--validation-fraction", type=float, default=0.25)

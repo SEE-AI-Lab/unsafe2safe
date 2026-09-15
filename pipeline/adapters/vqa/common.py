@@ -10,6 +10,7 @@ SYSTEM_MESSAGE = (
     "general world knowledge to answer the question. Provide a concise, "
     "factual answer without speculation."
 )
+DEFAULT_MODEL_ID = "Qwen/Qwen3-VL-2B-Instruct"
 
 
 def load_json(path: Path):
