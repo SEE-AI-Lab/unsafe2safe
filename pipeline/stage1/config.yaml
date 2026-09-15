@@ -92,18 +92,3 @@ purposes:
       prompt_columns:
         public_caption: PUBLIC_CAPTION
         edit_caption: EDIT_INSTRUCTION
-
-  compare_anonymization:
-    run:
-      backend: internvl_pair
-      model_id: OpenGVLab/InternVL3_5-8B
-      system_prompt: You are a vision-language evaluator for privacy-preserving image anonymization.
-      prompt_path: prompts/intern_image_flagging-compare.txt
-      max_new_tokens: 512
-    source:
-      type: paired_csv
-      csv_path: metadata/{dataset}_pairs.csv
-      left_image_col: file
-      right_image_col: file
-      rel_col: file
-      right_root_dir: data/{dataset}_anonymized

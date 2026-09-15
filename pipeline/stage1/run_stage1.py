@@ -19,16 +19,14 @@ from pipeline.stage1.qwen_common import (
 from pipeline.stage1.internvl_common import (
     load_internvl_model_and_tokenizer,
     run_internvl_batch,
-    run_internvl_pair_batch,
 )
 
 
 @dataclass
 class Sample:
-    rel_path: Any
-    image_path: Any
+    rel_path: Path
+    image_path: Path
     vars: dict[str, Any]
-    right_image_path: Any = None
 
 
 def load_yaml(path):
@@ -166,29 +164,6 @@ def build_samples(dataset_cfg, source_cfg):
             samples.append(Sample(rel_path=rel, image_path=p, vars=vars_dict))
         return samples
 
-    if source_type == "paired_csv":
-        # Pair source: left/right image paths for comparison/evaluation purposes.
-        csv_path = source_cfg["csv_path"]
-        left_col = source_cfg["left_image_col"]
-        right_col = source_cfg["right_image_col"]
-        rel_col = source_cfg.get("rel_col", left_col)
-        right_root = source_cfg.get("right_root_dir", root_dir)
-
-        df = pd.read_csv(csv_path)
-
-        samples: list[Sample] = []
-        for _, row in df.iterrows():
-            rel = Path(str(row[rel_col]))
-            left_rel = Path(str(row[left_col]))
-            right_rel = Path(str(row[right_col]))
-            left_path = Path(root_dir) / left_rel
-            right_path = Path(right_root) / right_rel
-            vars_dict = _row_variables(row, source_cfg)
-            vars_dict["image_class"] = Path(rel).parent.name
-            vars_dict["class_name"] = Path(rel).parent.name
-            samples.append(Sample(rel_path=rel, image_path=left_path, right_image_path=right_path, vars=vars_dict))
-        return samples
-
     raise ValueError(f"Unsupported source type: {source_type}")
 
 
@@ -240,7 +215,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
             device_map=run_cfg.get("device_map", "cuda"),
             torch_dtype=run_cfg.get("torch_dtype", "auto"),
         )
-    elif backend in {"internvl", "internvl_pair"}:
+    elif backend == "internvl":
         model, tokenizer = load_internvl_model_and_tokenizer(
             run_cfg["model_id"],
             cache_dir=run_cfg.get("cache_dir", ".cache/huggingface"),
@@ -274,23 +249,6 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
                 format_with_class=run_cfg.get("format_with_class", True),
                 device=run_cfg.get("device", "cuda"),
             )
-        else:  # internvl_pair
-            left_paths = [s.image_path for s in batch]
-            right_paths = [s.right_image_path for s in batch]
-            outputs = run_internvl_pair_batch(
-                model,
-                tokenizer,
-                left_paths,
-                right_paths,
-                prompt_text,
-                system_prompt=system_prompt,
-                image_size=image_size,
-                max_new_tokens=max_new_tokens,
-                do_sample=run_cfg.get("do_sample", False),
-                pad_token_id=tokenizer.eos_token_id,
-                device=run_cfg.get("device", "cuda"),
-            )
-
         for out_text, out_path in zip(outputs, save_paths):
             ensure_parent(out_path)
             write_caption_json(out_path, out_text)
