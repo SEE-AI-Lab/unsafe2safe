@@ -7,6 +7,7 @@ standard external MAE classifier.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import csv
 from pathlib import Path
 
@@ -73,6 +74,8 @@ class ImageMAEDataset(Dataset):
         class_column: str = "class",
         file_column: str = "file",
         privacy_column: str = "PRIVACY_FLAG",
+        class_to_idx: Mapping[str, int] | None = None,
+        is_train: bool = False,
     ):
         self.rows = rows
         self.image_root = Path(image_root)
@@ -81,8 +84,22 @@ class ImageMAEDataset(Dataset):
         self.class_column = class_column
         self.file_column = file_column
         self.privacy_column = privacy_column
-        labels = sorted({row[class_column] for row in rows})
-        self.class_to_idx = {label: index for index, label in enumerate(labels)}
+        required = {class_column, file_column}
+        missing = sorted(
+            column for column in required if any(column not in row for row in rows)
+        )
+        if missing:
+            raise ValueError(f"rows are missing columns: {missing}")
+        labels = {row[class_column] for row in rows}
+        if class_to_idx is None:
+            labels = sorted(labels)
+            self.class_to_idx = {label: index for index, label in enumerate(labels)}
+        else:
+            self.class_to_idx = dict(class_to_idx)
+            missing_labels = sorted(labels - set(self.class_to_idx))
+            if missing_labels:
+                raise ValueError(f"class_to_idx is missing labels: {missing_labels}")
+        self.transform = transform or build_transform(is_train=is_train)
 
     def __len__(self):
         return len(self.rows)
@@ -90,6 +107,8 @@ class ImageMAEDataset(Dataset):
     def __getitem__(self, index):
         row = self.rows[index]
         relative_path = Path(row[self.file_column])
+        if relative_path.is_absolute() or ".." in relative_path.parts:
+            raise ValueError(f"manifest path must stay relative to the image root: {relative_path}")
         if _is_private(row.get(self.privacy_column, "false")):
             if self.edited_root is None:
                 raise ValueError("edited_root is required for private/unsafe rows")
@@ -99,6 +118,5 @@ class ImageMAEDataset(Dataset):
 
         with Image.open(image_path) as image:
             image = image.convert("RGB")
-            if self.transform is not None:
-                image = self.transform(image)
+            image = self.transform(image)
         return image, self.class_to_idx[row[self.class_column]]

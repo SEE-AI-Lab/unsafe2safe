@@ -14,6 +14,20 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 
+def _image_path(root: Path, relative_path: str | Path) -> Path:
+    """Resolve a manifest path without allowing it to escape its image root."""
+    relative = Path(relative_path)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError(f"manifest path must stay relative to the image root: {relative}")
+    root = root.resolve()
+    resolved = (root / relative).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(f"manifest path must stay relative to the image root: {relative}") from exc
+    return resolved
+
+
 class EditDataset(Dataset):
     """Load aligned unsafe/public image pairs and their two text conditions."""
 
@@ -35,8 +49,10 @@ class EditDataset(Dataset):
     ):
         if split not in ("train", "val", "test"):
             raise ValueError("split must be one of: train, val, test")
-        if not math.isclose(sum(splits), 1.0):
+        if any(value < 0 for value in splits) or not math.isclose(sum(splits), 1.0):
             raise ValueError("splits must sum to 1")
+        if splits[0] + splits[1] == 0:
+            raise ValueError("train and validation split fractions cannot both be zero")
 
         self.file_column = file_column
         self.public_caption_column = public_caption_column
@@ -88,10 +104,10 @@ class EditDataset(Dataset):
     def __getitem__(self, i: int) -> Dict[str, Any]:
         entry = self.seeds[i]
         relative_path = entry[self.file_column]
-        image_path = self.root_dir / relative_path
+        image_path = _image_path(self.root_dir, relative_path)
         caption_public = str(entry[self.public_caption_column])
         caption_edit = str(entry[self.edit_caption_column])
-        target_image_path = self.target_dir / relative_path
+        target_image_path = _image_path(self.target_dir, relative_path)
 
         image_0 = Image.open(image_path).convert("RGB")
         image_1 = Image.open(target_image_path).convert("RGB")
@@ -124,8 +140,10 @@ class EditDatasetEval(Dataset):
         splits: tuple[float, float, float] = (0.9, 0.05, 0.05),
         res: int = 256,
     ):
-        assert split in ("train", "val", "test")
-        assert sum(splits) == 1
+        if split not in ("train", "val", "test"):
+            raise ValueError("split must be one of: train, val, test")
+        if any(value < 0 for value in splits) or not math.isclose(sum(splits), 1.0):
+            raise ValueError("splits must sum to 1")
         self.path = path
         self.res = res
 
