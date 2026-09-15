@@ -13,12 +13,6 @@ from pathlib import Path
 from typing import Any
 
 
-def _load_annotations(path: Path) -> list[dict[str, Any]]:
-    """Read one LAVIS unified annotation list."""
-    with path.open() as handle:
-        return json.load(handle)
-
-
 def _load_files(path: Path | None) -> set[str]:
     """Read source-relative image names from a manifest's ``file`` column."""
     if path is None:
@@ -28,19 +22,15 @@ def _load_files(path: Path | None) -> set[str]:
         return {row["file"].strip() for row in rows}
 
 
-def _image_path(root: Path, name: str) -> str:
-    path = Path(name).expanduser()
-    return str((path if path.is_absolute() else root / path).resolve())
-
-
-def prepare_annotations(annotation_path: Path, output_path: Path, *, original_root: Path, safe_root: Path | None = None, safe_manifest: Path | None = None, private_manifest: Path | None = None, check_files: bool = False) -> tuple[int, int]:
+def prepare_annotations(annotation_path: Path, output_path: Path, *, original_root: Path, safe_root: Path | None = None, safe_manifest: Path | None = None, private_manifest: Path | None = None) -> tuple[int, int]:
     """Write one routed LAVIS annotation file and return (written, dropped).
 
     A safe manifest lists the same relative image names as the annotations.
     A private manifest marks names that must be dropped when they are absent
     from the safe manifest; without it, unmatched images use ``original_root``.
     """
-    annotations = _load_annotations(annotation_path)
+    with annotation_path.open() as handle:
+        annotations = json.load(handle)
     safe_files = _load_files(safe_manifest)
     private_files = _load_files(private_manifest)
 
@@ -50,15 +40,12 @@ def prepare_annotations(annotation_path: Path, output_path: Path, *, original_ro
         name = annotation["image"]
         if name in safe_files:
             # Absolute paths let vanilla LAVIS read both image roots in one run.
-            image = _image_path(safe_root, name)
+            image = str((safe_root / name).resolve())
         elif name in private_files:
             dropped += 1
             continue
         else:
-            image = _image_path(original_root, name)
-
-        if check_files and not Path(image).is_file():
-            raise FileNotFoundError(image)
+            image = str((original_root / name).resolve())
         item = dict(annotation)
         item["image"] = image
         routed.append(item)
@@ -79,9 +66,6 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--safe-manifest", type=Path)
     parser.add_argument("--private-manifest", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument(
-        "--check-files", action="store_true", help="fail on a missing image"
-    )
     return parser.parse_args()
 
 
@@ -95,7 +79,6 @@ def main() -> None:
             safe_root=args.safe_root,
             safe_manifest=args.safe_manifest,
             private_manifest=args.private_manifest,
-            check_files=args.check_files,
         )
         print(f"{split}: wrote {count} annotations; dropped {dropped} private items")
 

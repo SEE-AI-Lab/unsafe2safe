@@ -150,8 +150,7 @@ python -m pipeline.adapters.lavis.blip2_captioning \
   --safe-root /path/to/unsafe2safe-coco \
   --safe-manifest /path/to/safe_images.csv \
   --private-manifest /path/to/private_images.csv \
-  --output-dir /tmp/unsafe2safe-blip2-annotations \
-  --check-files
+  --output-dir /tmp/unsafe2safe-blip2-annotations
 ```
 
 The adapter selects a safe image when listed in the safe manifest, retains an
