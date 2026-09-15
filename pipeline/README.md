@@ -66,13 +66,13 @@ It reads `file`, `class`, `split`, and optional `PRIVACY_FLAG` columns, selects
 the original or edited image root, applies ImageNet preprocessing, and returns
 `(image, class_id)` samples. The ImageMAE model and trainer remain in the
 separately installed upstream checkout. See
-[`configs/image_mae_example.yaml`](configs/image_mae_example.yaml).
+[`adapters/image_mae/config.example.yaml`](adapters/image_mae/config.example.yaml).
 When creating separate train and validation datasets, pass the same
 `class_to_idx` mapping to both instances so class IDs remain stable.
 
 ## OminiControl adapter
 
-`adapters/ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`adapters/ominicontrol/README.md`](adapters/ominicontrol/README.md). The upstream OminiControl and FLUX source remain external.
+`adapters/ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`adapters/ominicontrol/README.md`](adapters/ominicontrol/README.md). The upstream OminiControl and FLUX source remain external. The paper recipe is in [`adapters/ominicontrol/config.example.yaml`](adapters/ominicontrol/config.example.yaml).
 
 ## FlowEdit adapter
 
@@ -81,6 +81,10 @@ inference wrapper for an external FlowEdit checkout. It follows the paper's
 SD3 configuration and imports the upstream sampler at runtime. See
 [`adapters/flowedit/README.md`](adapters/flowedit/README.md) for the pinned revision, data
 schema, and reproduction command.
+
+The external FreePrompt and DeepPrivacy2 baseline handoffs are recorded in
+[`adapters/baselines.example.yaml`](adapters/baselines.example.yaml) and
+[`adapters/freeprompt/config.example.yaml`](adapters/freeprompt/config.example.yaml).
 
 ## Evaluation helpers
 
@@ -159,3 +163,6 @@ The example config uses LAVIS's BLIP-2 captioning recipe; it controls the
 model, optimizer, resolution, and checkpoint output.  The paper evaluates
 generated captions with BLEU-4 and CIDEr; the reusable helper is
 `pipeline/evaluation/caption_scores.py`.
+
+The LAVIS launcher handoff is recorded in
+[`adapters/lavis/config.example.yaml`](adapters/lavis/config.example.yaml).

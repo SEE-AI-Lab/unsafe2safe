@@ -1,4 +1,4 @@
-# Minimal example for the separate downstream ImageMAE dataset.
+# Example ImageMAE downstream classification recipe from the paper.
 # The ImageMAE repository and trainer remain external.
 
 image_mae_root: /absolute/path/to/mae
@@ -7,11 +7,20 @@ image_root: data/original
 edited_root: outputs/edited
 
 model: vit_base_patch16
+pretrained: imagenet
+classifier: linear
 image_size: 224
 batch_size: 64
-epochs: 50
-learning_rate: 0.001
+gradient_accumulation_steps: 4
+epochs: 100
+learning_rate: 5.0e-04
 output_dir: runs/image_mae
+
+augmentation:
+  name: randaugment
+  num_ops: 2
+  magnitude: 9
+  magnitude_std: 0.5
 
 # Manifest columns: file, class, split, and PRIVACY_FLAG.
 train_split: train

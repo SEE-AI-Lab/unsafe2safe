@@ -1,0 +1,14 @@
+# Example BLIP-2 captioning handoff from the paper.
+# LAVIS and its model/trainer remain external; these values fill the launcher
+# arguments and the standard LAVIS caption_coco_ft.yaml recipe.
+
+lavis_root: /absolute/path/to/LAVIS
+lavis_config: /absolute/path/to/LAVIS/lavis/projects/blip2/train/caption_coco_ft.yaml
+train_annotations: /absolute/path/to/annotations/train.json
+validation_annotations: /absolute/path/to/annotations/val.json
+test_annotations: /absolute/path/to/annotations/test.json
+image_root: /absolute/path/to/coco
+nproc_per_node: 4
+
+# The annotations should come from filtered MS-COCO human captions. Use
+# pipeline.adapters.lavis.blip2_captioning to route safe/private image roots.

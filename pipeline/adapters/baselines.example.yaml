@@ -1,0 +1,16 @@
+# External baselines reported in the paper. Their source and checkpoints stay
+# outside this repository.
+
+freeprompt:
+  config: adapters/freeprompt/config.example.yaml
+
+deep_privacy2:
+  repository: /absolute/path/to/DeepPrivacy2
+  settings: authors_defaults
+  output_root: outputs/deepprivacy2
+
+flowedit:
+  config: adapters/flowedit/config.example.yaml
+
+ominicontrol:
+  config: adapters/ominicontrol/config.example.yaml

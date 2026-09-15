@@ -1,0 +1,19 @@
+# Example evaluation inputs matching the paper's downstream protocol.
+# The modules in pipeline/evaluation are small functions/CLI tools; this file
+# is a shared checklist of their inputs rather than an upstream config format.
+
+split: test
+metadata: metadata/mscoco_test.csv
+original_root: /absolute/path/to/coco
+edited_root: /absolute/path/to/unsafe2safe-images
+
+metrics:
+  image_similarity: [ssim, lpips]
+  privacy: [face_similarity, text_similarity, race_entropy, vlm_score]
+  utility: [clip_similarity, directional_clip, caption_scores, classification_accuracy]
+
+vlm_model_id: OpenGVLab/InternVL2_5-8B
+vlm_judge_model_id: OpenGVLab/InternVL3_5-8B
+face_model: /absolute/path/to/antevelop-v2
+caption_predictions: outputs/captions.json
+vqa_predictions: outputs/okvqa_predictions.json

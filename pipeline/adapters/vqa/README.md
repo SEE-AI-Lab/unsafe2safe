@@ -4,6 +4,10 @@ These scripts fine-tune and evaluate the Qwen3-VL-2B model on the OK-VQA
 experiment used by the paper. The model, datasets, checkpoints, and generated
 predictions stay outside this repository.
 
+Fill in [`config.example.yaml`](config.example.yaml) before a run. The scripts
+still accept explicit command-line paths so the config can remain a readable
+experiment record without introducing another config parser.
+
 Install the Qwen3-VL training extras in a separate environment:
 
 ```bash

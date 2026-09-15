@@ -70,8 +70,8 @@ repository.
   license.  BLIP-2, OPT, FLAN-T5, and their checkpoints retain their own
   upstream terms and model-card restrictions.
 
-The historical LAVIS copy in `temppp_donttouch/LAVIS/` is not part of this
-release.  Its project-specific COCO image routing was extracted into
+The historical LAVIS copy is not part of this release. Its project-specific
+COCO image routing was extracted into
 `pipeline/adapters/lavis/blip2_captioning.py`; its hard-coded dataset paths, GPU/cache
 settings, and patched LAVIS internals were replaced by explicit arguments and
 the pinned external dependency.

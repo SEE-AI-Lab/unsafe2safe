@@ -51,6 +51,15 @@ pipeline/scripts/              Training and adapter launchers.
 
 The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
 
+Paper-aligned handoff configs are kept beside the code they configure:
+
+- `stage1/configs/`: InternVL/Qwen captioning, flagging, and comparison jobs.
+- `stage2/configs/`: SafeAttention/InstructPix2Pix training.
+- `adapters/*/config.example.yaml`: FreePrompt, FlowEdit, OminiControl,
+  ImageMAE, BLIP-2, and Qwen3-VL recipes.
+- `adapters/baselines.example.yaml` and `evaluation/config.example.yaml`:
+  external baselines and the evaluation checklist.
+
 ## Stage 1: captioning and privacy instructions
 
 The default configuration uses an InternVL backend for image captioning and privacy flags, and a Qwen text backend for edit instructions and caption combination.

@@ -29,7 +29,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Train OminiControl on Unsafe2Safe pairs")
     parser.add_argument(
         "--config",
-        default=os.environ.get("OMINI_CONFIG", "pipeline/adapters/ominicontrol/config.yaml"),
+        default=os.environ.get("OMINI_CONFIG", "pipeline/adapters/ominicontrol/config.example.yaml"),
     )
     args = parser.parse_args()
 

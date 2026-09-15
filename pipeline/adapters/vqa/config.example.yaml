@@ -1,0 +1,22 @@
+# Example Qwen3-VL OK-VQA handoff from the paper.
+# The model, dataset, and trainer remain external.
+
+model_id: Qwen/Qwen3-VL-2B-Instruct
+questions: /absolute/path/to/OpenEnded_mscoco_train2014_questions.json
+annotations: /absolute/path/to/mscoco_train2014_annotations.json
+image_root: /absolute/path/to/coco
+safe_root: /absolute/path/to/unsafe2safe-images
+safe_manifest: /absolute/path/to/safe_images.csv
+private_manifest: /absolute/path/to/private_images.csv
+output_dir: /absolute/path/to/qwen3-okvqa-adapter
+cache_dir: /absolute/path/to/huggingface-cache
+seed: 42
+validation_fraction: 0.25
+
+# The paper specifies the Qwen3-VL-2B task and accuracy evaluation, but does
+# not prescribe these optimizer values; they are the adapter defaults.
+num_train_epochs: 3
+per_device_train_batch_size: 16
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 8
+learning_rate: 2.0e-04

@@ -7,6 +7,6 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export PYTHONPATH="${ROOT_DIR}:${OMINICONTROL_ROOT}:${PYTHONPATH:-}"
 export TOKENIZERS_PARALLELISM="false"
 
-CONFIG_PATH="${OMINI_CONFIG:-${ROOT_DIR}/pipeline/adapters/ominicontrol/config.yaml}"
+CONFIG_PATH="${OMINI_CONFIG:-${ROOT_DIR}/pipeline/adapters/ominicontrol/config.example.yaml}"
 cd -- "${ROOT_DIR}"
 exec accelerate launch -m pipeline.adapters.ominicontrol.train_unsafe2safe --config "${CONFIG_PATH}"
