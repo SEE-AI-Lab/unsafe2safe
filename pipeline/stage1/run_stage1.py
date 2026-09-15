@@ -28,10 +28,6 @@ class Sample:
     vars: dict[str, Any]
 
 
-def load_yaml(path):
-    return yaml.safe_load(Path(path).read_text(encoding="utf-8"))
-
-
 def render_templates(value, context):
     # Expand placeholders like {dataset}/{purpose} through nested config objects.
     if isinstance(value, str):
@@ -49,10 +45,6 @@ def build_effective_config(cfg, purpose, dataset):
     # Keep the paper's configuration shallow: shared run values, then local overrides.
     merged = {"run": {**cfg["defaults"]["run"], **profile["run"], **override.get("run", {})}, "source": {**profile["source"], **override.get("source", {})}, "dataset": cfg["datasets"][dataset], "output_dir": f"outputs/{dataset}/{purpose}"}
     return render_templates(merged, {"dataset": dataset, "purpose": purpose, **merged["dataset"]})
-
-
-def read_prompt(path):
-    return Path(path).read_text(encoding="utf-8").strip()
 
 
 def _row_variables(row, source_cfg):
@@ -96,12 +88,6 @@ def build_samples(dataset_cfg, source_cfg):
     raise ValueError(f"Unsupported source type: {source_type}")
 
 
-def output_path_for(sample, output_dir, suffix="_caption.json"):
-    # Preserve relative folder hierarchy in outputs.
-    stem = Path(sample.rel_path).with_suffix("")
-    return Path(output_dir) / f"{stem}{suffix}"
-
-
 def build_text_messages(system_prompt, prompt_template, batch):
     # Qwen receives one text-only chat conversation for each metadata row.
     messages = []
@@ -125,7 +111,7 @@ def run_job(effective_cfg, purpose, dataset_name):
     batch_size = run_cfg["batch_size"]
     max_new_tokens = run_cfg["max_new_tokens"]
     image_size = run_cfg["image_size"]
-    prompt_text = read_prompt(run_cfg["prompt_path"])
+    prompt_text = Path(run_cfg["prompt_path"]).read_text(encoding="utf-8").strip()
     system_prompt = run_cfg["system_prompt"]
 
     output_dir = effective_cfg["output_dir"]
@@ -150,7 +136,7 @@ def run_job(effective_cfg, purpose, dataset_name):
     for i in tqdm(range(0, len(samples), batch_size), desc=desc):
         # Full-batch inference keeps throughput high and avoids fragmented GPU work.
         batch = samples[i : i + batch_size]
-        save_paths = [output_path_for(s, output_dir) for s in batch]
+        save_paths = [Path(output_dir) / f"{s.rel_path.with_suffix('')}_caption.json" for s in batch]
 
         if backend == "qwen_text":
             msgs = build_text_messages(system_prompt, prompt_text, batch)
@@ -186,7 +172,7 @@ def main():
     args = parser.parse_args()
 
     config_path = Path(args.config).expanduser().resolve()
-    cfg = load_yaml(config_path)
+    cfg = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     purpose = args.purpose
     dataset_name = args.dataset
     effective_cfg = build_effective_config(cfg, purpose, dataset_name)
