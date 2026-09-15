@@ -31,6 +31,23 @@ adapters. They leave the external checkout unchanged.
 `pipeline/ominicontrol/` contains only the Unsafe2Safe dataset mapping and
 launch/generation wrappers.
 
+## BLIP-2 and LAVIS
+
+- Repository: [salesforce/LAVIS](https://github.com/salesforce/LAVIS)
+- Reproduction revision: `baad2d7c8df599d8d9b081ba2e946626eaa2dc34` (tag
+  `v1.0.2`)
+- Install: clone that revision separately and install it in the dedicated
+  BLIP-2 environment described in [`pipeline/README.md`](pipeline/README.md).
+- License: LAVIS source is distributed under the upstream BSD-3-Clause
+  license.  BLIP-2, OPT, FLAN-T5, and their checkpoints retain their own
+  upstream terms and model-card restrictions.
+
+The historical LAVIS copy in `temppp_donttouch/LAVIS/` is not part of this
+release.  Its project-specific COCO image routing was extracted into
+`pipeline/blip2_captioning.py`; its hard-coded dataset paths, GPU/cache
+settings, and patched LAVIS internals were replaced by explicit arguments and
+the pinned external dependency.
+
 ## ImageMAE experiments
 
 The former local ImageMAE copy and classifier experiments are not part of the

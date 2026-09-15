@@ -75,6 +75,65 @@ For example, collect VLM scores from generated caption JSON files:
 python pipeline/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
 ```
 
+## BLIP-2 captioning evaluation
+
+The historical BLIP-2 experiment used Salesforce LAVIS for COCO captioning.
+LAVIS remains an external dependency; this repository contains only the
+Unsafe2Safe image-selection adapter.  Install the pinned LAVIS checkout and
+its dependencies in a separate environment because LAVIS pins an older
+Transformers release than the Stage 1 environment:
+
+```bash
+git clone https://github.com/salesforce/LAVIS.git /path/to/LAVIS
+git -C /path/to/LAVIS checkout baad2d7c8df599d8d9b081ba2e946626eaa2dc34
+pip install -e /path/to/LAVIS
+```
+
+Start from LAVIS's
+`lavis/projects/blip2/train/caption_coco_ft.yaml`.  The input annotations
+must be LAVIS unified JSON lists with at least `image`, `caption`, and
+`image_id` fields.  A safe manifest contains a `file` column naming source
+relative paths; it may also contain a separate replacement column selected by
+`--manifest-target-column`.  A private manifest uses the same source column
+and marks images that must not silently fall back to their original pixels.
+
+Prepare annotations for a local run:
+
+```bash
+python -m pipeline.blip2_captioning \
+  --train-annotations /path/to/coco_train.json \
+  --val-annotations /path/to/coco_val.json \
+  --test-annotations /path/to/coco_test.json \
+  --original-root /path/to/coco \
+  --safe-root /path/to/unsafe2safe-coco \
+  --safe-manifest /path/to/safe_images.csv \
+  --private-manifest /path/to/private_images.csv \
+  --output-dir /tmp/unsafe2safe-blip2-annotations \
+  --check-files
+```
+
+The adapter selects a safe image when listed in the safe manifest, retains an
+original image otherwise, and drops private images with no safe counterpart.
+Use `--keep-missing-private` only for an explicitly defined baseline.  It
+writes absolute paths into the generated local annotations so vanilla LAVIS
+can read mixed original and safe roots without a patched dataset class.
+
+Train through the portable wrapper (the historical run used four processes):
+
+```bash
+NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
+  /path/to/LAVIS \
+  /path/to/LAVIS/lavis/projects/blip2/train/caption_coco_ft.yaml \
+  /tmp/unsafe2safe-blip2-annotations/train.json \
+  /tmp/unsafe2safe-blip2-annotations/val.json \
+  /tmp/unsafe2safe-blip2-annotations/test.json \
+  /path/to/coco
+```
+
+The LAVIS config controls the BLIP-2 model, optimizer, resolution, and
+checkpoint output.  The paper evaluates generated captions with BLEU-4 and
+CIDEr; the reusable helper is `pipeline/metrics/caption_scores.py`.
+
 The prompt demo is optional and requires its own `datasets`, `gradio`, and `openai` installation:
 
 ```bash
