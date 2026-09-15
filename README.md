@@ -91,6 +91,18 @@ python -m vlm_captioning.collect_captions \
   --parse-structured
 ```
 
+The `generate_edit_instructions` profile reads the collected CSV and maps its
+`PUBLIC_CAPTION` field to the `{public_caption}` prompt argument. Collect its
+outputs into a second manifest for the `combine_caption_and_edit` profile:
+
+```bash
+python -m vlm_captioning.collect_captions \
+  --captions-dir outputs/mscoco/generate_edit_instructions \
+  --metadata metadata/mscoco_with_captions.csv \
+  --output metadata/mscoco_with_edit_instructions.csv \
+  --output-column EDIT_INSTRUCTION
+```
+
 Evaluate privacy flags against VISPR annotations:
 
 ```bash

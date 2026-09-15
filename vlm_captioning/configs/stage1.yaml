@@ -72,7 +72,9 @@ purposes:
     source:
       type: csv
       image_col: file
-      csv_path: metadata/{dataset}.csv
+      csv_path: metadata/{dataset}_with_captions.csv
+      prompt_columns:
+        public_caption: PUBLIC_CAPTION
 
   combine_caption_and_edit:
     run:
@@ -86,4 +88,7 @@ purposes:
     source:
       type: csv
       image_col: file
-      csv_path: metadata/{dataset}.csv
+      csv_path: metadata/{dataset}_with_edit_instructions.csv
+      prompt_columns:
+        public_caption: PUBLIC_CAPTION
+        edit_caption: EDIT_INSTRUCTION
