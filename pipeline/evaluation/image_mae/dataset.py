@@ -1,4 +1,4 @@
-"""Dataset definition for the separate downstream ImageMAE experiment.
+"""Dataset definition for ImageMAE downstream evaluation.
 
 This module does not import ImageMAE or the diffusion pipeline. It only maps
 the project manifest to the ``(image, class_id)`` samples expected by a
