@@ -28,16 +28,12 @@ class EditDataset(Dataset):
         train_df = df[
             df[file_column].astype(str).str.contains("train2014", na=False)
         ].reset_index(drop=True)
-        test_df = df[
-            df[file_column].astype(str).str.contains("val2014", na=False)
-        ].reset_index(drop=True)
-
         # Shuffle once so train/validation membership is reproducible.
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
         train_fraction = splits[0] / (splits[0] + splits[1])
         train_cutoff = int(train_fraction * len(train_df))
 
-        selected_df = {"train": train_df[:train_cutoff], "val": train_df[train_cutoff:], "test": test_df}[split]
+        selected_df = {"train": train_df[:train_cutoff], "val": train_df[train_cutoff:]}[split]
 
         self.rows = selected_df.to_dict(orient="records")
         self.root_dir = Path(path)
