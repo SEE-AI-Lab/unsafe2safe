@@ -24,8 +24,6 @@ def read_manifest(path: Path | None) -> set[str]:
     if path is None:
         return set()
     frame = pd.read_csv(path)
-    if "file" not in frame.columns:
-        raise ValueError(f"{path} must contain a 'file' column")
     return set(frame["file"].dropna().astype(str))
 
 
@@ -58,13 +56,11 @@ def build_examples(
     examples = []
     for question in tqdm(questions, desc="Building VQA examples"):
         question_id = question["question_id"]
-        annotation = answers_by_id.get(question_id)
-        if annotation is None:
-            continue
+        annotation = answers_by_id[question_id]
 
         filename = coco_image_path(question["image_id"], "train")
         if filename in private_files:
-            if filename not in safe_files or safe_root is None:
+            if filename not in safe_files:
                 continue
             image_path = safe_root / filename
         else:
@@ -94,9 +90,6 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    if not 0 < args.validation_fraction < 1:
-        raise ValueError("--validation-fraction must be between 0 and 1")
-
     questions = load_json(args.questions)["questions"]
     annotations = load_json(args.annotations)["annotations"]
     answers_by_id = {item["question_id"]: item for item in annotations}
