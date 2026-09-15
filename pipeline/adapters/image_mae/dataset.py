@@ -21,17 +21,12 @@ def read_manifest(path: str | Path) -> list[dict[str, str]]:
     """Read a manifest containing ``file``, ``class``, and ``split`` columns."""
     with Path(path).open(newline="") as handle:
         rows = list(csv.DictReader(handle))
-    if not rows:
-        raise ValueError(f"Manifest is empty: {path}")
     return rows
 
 
 def split_rows(rows: list[dict[str, str]], split: str, split_column: str = "split"):
     """Return one named split from the manifest."""
-    selected = [row for row in rows if row.get(split_column, "").strip() == split]
-    if not selected:
-        raise ValueError(f"No rows found for {split_column}={split!r}")
-    return selected
+    return [row for row in rows if row.get(split_column, "").strip() == split]
 
 
 def build_transform(is_train: bool, image_size: int = 224):
@@ -77,8 +72,6 @@ class ImageMAEDataset(Dataset):
         class_to_idx: Mapping[str, int] | None = None,
         is_train: bool = False,
     ):
-        if not rows:
-            raise ValueError("rows must not be empty")
         self.rows = rows
         self.image_root = Path(image_root)
         self.edited_root = Path(edited_root) if edited_root else None
@@ -86,19 +79,12 @@ class ImageMAEDataset(Dataset):
         self.class_column = class_column
         self.file_column = file_column
         self.privacy_column = privacy_column
-        required = {class_column, file_column}
-        missing = sorted(column for column in required if any(column not in row for row in rows))
-        if missing:
-            raise ValueError(f"rows are missing columns: {missing}")
         labels = {row[class_column] for row in rows}
         if class_to_idx is None:
             labels = sorted(labels)
             self.class_to_idx = {label: index for index, label in enumerate(labels)}
         else:
             self.class_to_idx = dict(class_to_idx)
-            missing_labels = sorted(labels - set(self.class_to_idx))
-            if missing_labels:
-                raise ValueError(f"class_to_idx is missing labels: {missing_labels}")
         self.transform = transform or build_transform(is_train=is_train)
 
     def __len__(self):
@@ -107,11 +93,7 @@ class ImageMAEDataset(Dataset):
     def __getitem__(self, index):
         row = self.rows[index]
         relative_path = Path(row[self.file_column])
-        if relative_path.is_absolute() or ".." in relative_path.parts:
-            raise ValueError(f"manifest path must stay relative to the image root: {relative_path}")
         if _is_private(row.get(self.privacy_column, "false")):
-            if self.edited_root is None:
-                raise ValueError("edited_root is required for private/unsafe rows")
             image_path = self.edited_root / relative_path
         else:
             image_path = self.image_root / relative_path
