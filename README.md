@@ -182,17 +182,52 @@ external FreePrompt and DeepPrivacy2 handoffs.
 
 ## Evaluation
 
-The reusable metric helpers in `pipeline/evaluation/` cover the project’s current public evaluation surface:
+Evaluation is split between the Stage 1 outputs, generated image pairs, and
+downstream task results. Use the same relative `file` names in the original
+and edited roots.
 
-- CLIP and directional CLIP similarity.
-- SSIM and LPIPS image similarity.
-- Nearest-counterpart FaceSim.
-- Token-set TextSim and normalized Race Entropy.
-- VLM anonymization score collection.
-- BLEU-4 and CIDEr captioning scores.
-- Downstream top-1 classification accuracy.
+There is no single evaluator command because each metric uses a different
+model or input format. The public helpers are:
 
-Keep downloaded datasets, checkpoints, generated images, and experiment outputs outside version control. The repository ignores common `outputs/` and `runs/` directories.
+| Result | Helper | Input |
+| --- | --- | --- |
+| CLIP similarity | `ClipSimilarity` | image and caption batches |
+| Directional CLIP | `compute_directional_clip_score` | original/edited images and captions |
+| SSIM and LPIPS | `compute_ssim`, `compute_lpips` | one original/edited path pair |
+| FaceSim | `nearest_face_similarity` | two image roots and file names |
+| TextSim and Race Entropy | `token_set_similarity`, `normalized_race_entropy` | text or predicted race labels |
+| Captioning | `compute_caption_scores` | predictions and references |
+| Classification | `top1_accuracy` | model and labeled dataloader |
+
+The VLM anonymization score has a command-line helper. First run the Stage 1
+`compare_anonymization` purpose, then collect its JSON scores:
+
+```bash
+python pipeline/evaluation/vlm_score.py \
+  outputs/mscoco/compare_anonymization \
+  outputs/mscoco/vlm_scores.json
+```
+
+The other metrics are small Python functions. For example, score one matching
+original/edited pair with SSIM and LPIPS:
+
+```python
+from pathlib import Path
+
+from pipeline.evaluation.image_similarity import compute_lpips, compute_ssim
+
+file = "val2014/COCO_val2014_000000000042.jpg"
+original = Path("/path/to/coco") / file
+edited = Path("/path/to/unsafe2safe-images") / file
+print({"ssim": compute_ssim(original, edited), "lpips": compute_lpips(original, edited)})
+```
+
+Apply the same calls to every `file` in your evaluation manifest to build a
+CSV or JSON table. The CLIP, directional CLIP, FaceSim, privacy, and caption
+helpers are used the same way; their function names are listed in
+`pipeline/evaluation/`. The [evaluation config](pipeline/evaluation/config.example.yaml)
+lists the expected roots and model inputs. The [pipeline README](pipeline/README.md)
+contains the full BLIP-2/LAVIS preparation and training commands.
 
 ## Downstream experiments
 
