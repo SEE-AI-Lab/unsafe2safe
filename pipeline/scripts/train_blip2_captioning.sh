@@ -15,11 +15,6 @@ TEST_JSON=$5
 IMAGE_ROOT=$6
 NPROC_PER_NODE=${NPROC_PER_NODE:-1}
 
-if [[ ! -f "$LAVIS_ROOT/train.py" ]]; then
-  echo "LAVIS_ROOT does not contain train.py: $LAVIS_ROOT" >&2
-  exit 1
-fi
-
 export PYTHONPATH="$LAVIS_ROOT${PYTHONPATH:+:$PYTHONPATH}"
 
 # Keep the project adapter outside LAVIS: these overrides point its standard
