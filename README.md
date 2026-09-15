@@ -14,6 +14,13 @@ Model weights and external trainers are installed separately.
 > The commands below use example paths. Replace them with the locations of your
 > local datasets, checkpoints, and external model repositories.
 
+> [!IMPORTANT]
+> **Update — September 15, 2026:** All project-specific code for the paper is
+> now live in this repository. The previous Stage 1 implementation was last
+> updated on March 25, 2026, nearly six months ago. This release brings the
+> current Stage 1, Stage 2, evaluation helpers, and example configurations
+> together in the public tree.
+
 ## Contents
 
 - [Installation](#installation)
@@ -292,6 +299,10 @@ the optional workflows. They are not included in this repository.
 - [Dataset on Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe)
 - [Project page](https://see-ai-lab.github.io/unsafe2safe/)
 - [Paper](https://arxiv.org/abs/2603.28605)
+
+Questions or issues? [Open an issue](https://github.com/SEE-AI-Lab/unsafe2safe/issues)
+or contact Minh at [minh.t.dinh.gr@dartmouth.edu](mailto:minh.t.dinh.gr@dartmouth.edu).
+If this repository is useful, please leave us a star.
 
 ## Citation
 
