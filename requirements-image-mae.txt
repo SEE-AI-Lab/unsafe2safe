@@ -1,4 +1,4 @@
-# Optional dependencies for pipeline/train_image_mae_classifier.py.
-# Clone the official ImageMAE repository separately; it is intentionally not vendored.
+# Dependencies for the official ImageMAE checkout and its classifier adapter.
+# Clone ImageMAE separately; its source is intentionally not vendored here.
 -r requirements.txt
-timm>=0.9.16
+timm==0.3.2
