@@ -46,7 +46,7 @@ path, `public_caption_column` identifies the privacy-safe caption, and
 `edit_caption_column` identifies the edit instruction. Use whatever column
 names your manifest already has.
 
-## Dataset filtering
+## CLIP filtering
 
 Filter edited pairs by normalized CLIP similarity:
 
