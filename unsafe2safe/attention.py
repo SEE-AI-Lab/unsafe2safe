@@ -1,4 +1,4 @@
-"""Safe Cross Attention adapters for the external InstructPix2Pix UNet.
+"""Reference Safe Cross Attention adapter for the external InstructPix2Pix UNet.
 
 The base checkout is imported at runtime. No files inside that checkout are
 modified: the Unsafe2Safe model replaces the UNet's transformer class in
@@ -47,8 +47,8 @@ class SafeCrossAttention(nn.Module):
             nn.GELU(),
             nn.Linear(16, 1),
         )
-        # Start from the upstream edit branch; the new public branch can then
-        # be learned without changing the initial checkpoint behavior.
+        # Start from the upstream edit branch; the public residual can then be
+        # learned without changing the initial checkpoint behavior.
         self.public_scale = nn.Parameter(torch.zeros(1))
 
     def _standard(self, x, context, mask=None):
@@ -95,9 +95,9 @@ class SafeCrossAttention(nn.Module):
 
         attn_edit = sim_edit.softmax(dim=-1)
         attn_public = sim_public.softmax(dim=-1)
-        # Let the two attention maps decide where the public caption is useful.
-        # ``amax`` keeps this a token-level map instead of collapsing the whole
-        # sequence to one pooled text feature.
+        # Use a compact per-query summary of both maps to gate public features.
+        # This is the lightweight reference approximation used by this release;
+        # it is not the full token-map fuser described in the paper appendix.
         map_features = torch.stack(
             (attn_edit.amax(dim=-1), attn_public.amax(dim=-1)), dim=-1
         )
