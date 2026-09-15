@@ -23,16 +23,16 @@ class Unsafe2SafeDataset(Dataset):
     ``target_root``.
     """
 
-    def __init__(self, csv_path: str | Path, image_root: str | Path, target_root: str | Path, *, split: str = "train", train_fraction: float = 0.75, image_column: str = "file", caption_column: str = "caption", image_size: tuple[int, int] = (512, 512), drop_text_prob: float = 0.1, drop_image_prob: float = 0.1, tokenizer_name: str = "openai/clip-vit-base-patch32", max_caption_tokens: int = 73) -> None:
+    def __init__(self, csv_path: str | Path, image_root: str | Path, target_root: str | Path, *, split: str = "train", train_fraction: float = 0.75, image_size: int = 512, drop_text_prob: float = 0.1, drop_image_prob: float = 0.1, tokenizer_name: str = "openai/clip-vit-base-patch32", max_caption_tokens: int = 73) -> None:
         frame = pd.read_csv(csv_path)
 
         # The paper's split is a deterministic 75/25 split of train2014;
         # val2014 is reserved for the test split.
         train_frame = frame[
-            frame[image_column].astype(str).str.contains("train2014", na=False)
+            frame["file"].astype(str).str.contains("train2014", na=False)
         ].reset_index(drop=True)
         test_frame = frame[
-            frame[image_column].astype(str).str.contains("val2014", na=False)
+            frame["file"].astype(str).str.contains("val2014", na=False)
         ].reset_index(drop=True)
 
         train_frame = train_frame.sample(frac=1.0, random_state=42).reset_index(drop=True)
@@ -42,9 +42,7 @@ class Unsafe2SafeDataset(Dataset):
         self.rows = selected.to_dict(orient="records")
         self.image_root = Path(image_root)
         self.target_root = Path(target_root)
-        self.image_column = image_column
-        self.caption_column = caption_column
-        self.image_size = tuple(image_size)
+        self.image_size = (image_size, image_size)
         self.drop_text_prob = drop_text_prob
         self.drop_image_prob = drop_image_prob
         self.to_tensor = T.ToTensor()
@@ -62,7 +60,7 @@ class Unsafe2SafeDataset(Dataset):
 
     def __getitem__(self, index):
         row = self.rows[index]
-        relative_path = Path(str(row[self.image_column]))
+        relative_path = Path(str(row["file"]))
         with Image.open(self.image_root / relative_path) as image:
             condition = image.convert("RGB")
         with Image.open(self.target_root / relative_path) as image:
@@ -80,5 +78,5 @@ class Unsafe2SafeDataset(Dataset):
             "condition_0": self.to_tensor(condition),
             "condition_type_0": "subject",
             "position_delta_0": np.array([0, 0], dtype=np.int32),
-            "description": self._caption(row[self.caption_column]),
+            "description": self._caption(row["caption"]),
         }

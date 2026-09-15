@@ -23,7 +23,7 @@ train:
     target_root: "data/MSCOCO_private_editted_new"
     split: "train"
     train_fraction: 0.75
-    image_size: [512, 512]
+    image_size: 512
     drop_text_prob: 0.1
     drop_image_prob: 0.1
     tokenizer_name: "openai/clip-vit-base-patch32"
