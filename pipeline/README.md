@@ -100,10 +100,10 @@ pip install -e /path/to/LAVIS
 Start from LAVIS's
 `lavis/projects/blip2/train/caption_coco_ft.yaml`.  The input annotations
 must be LAVIS unified JSON lists with at least `image`, `caption`, and
-`image_id` fields.  A safe manifest contains a `file` column naming source
-relative paths; it may also contain a separate replacement column selected by
-`--manifest-target-column`.  A private manifest uses the same source column
-and marks images that must not silently fall back to their original pixels.
+`image_id` fields.  A safe manifest contains a `file` column naming the
+source-relative paths that have anonymized copies.  A private manifest uses
+the same column and marks images that must not silently fall back to their
+original pixels.
 
 Prepare annotations for a local run:
 
@@ -122,9 +122,9 @@ python -m pipeline.blip2_captioning \
 
 The adapter selects a safe image when listed in the safe manifest, retains an
 original image otherwise, and drops private images with no safe counterpart.
-Use `--keep-missing-private` only for an explicitly defined baseline.  It
-writes absolute paths into the generated local annotations so vanilla LAVIS
-can read mixed original and safe roots without a patched dataset class.
+Omit both manifests for an original-image baseline.  It writes absolute paths
+into the generated local annotations so vanilla LAVIS can read mixed original
+and safe roots without a patched dataset class.
 
 Train through the portable wrapper (the historical run used four processes):
 
@@ -138,9 +138,10 @@ NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
   /path/to/coco
 ```
 
-The LAVIS config controls the BLIP-2 model, optimizer, resolution, and
-checkpoint output.  The paper evaluates generated captions with BLEU-4 and
-CIDEr; the reusable helper is `pipeline/metrics/caption_scores.py`.
+The example config uses LAVIS's BLIP-2 captioning recipe; it controls the
+model, optimizer, resolution, and checkpoint output.  The paper evaluates
+generated captions with BLEU-4 and CIDEr; the reusable helper is
+`pipeline/metrics/caption_scores.py`.
 
 The prompt demo is optional and requires its own `datasets`, `gradio`, and `openai` installation:
 
