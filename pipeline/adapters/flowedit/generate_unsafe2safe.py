@@ -11,7 +11,7 @@ import os
 import random
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -22,39 +22,24 @@ from PIL import Image
 
 def _load_config(path: Path) -> Dict[str, Any]:
     with path.open(encoding="utf-8") as handle:
-        config = yaml.safe_load(handle) or {}
-    if not isinstance(config, dict):
-        raise ValueError(f"Expected a mapping in config file: {path}")
-    return config
+        return yaml.safe_load(handle)
 
 
-def _configure_external(root: Optional[str]):
+def _configure_external(root):
     """Import samplers from a clean FlowEdit checkout without modifying it."""
 
-    configured = root or os.environ.get("FLOWEDIT_ROOT")
-    if not configured:
-        raise ImportError(
-            "Set FLOWEDIT_ROOT to a clean FlowEdit checkout; upstream source "
-            "is intentionally not vendored in Unsafe2Safe."
-        )
-
-    checkout = Path(configured).expanduser().resolve()
-    if not (checkout / "FlowEdit_utils.py").is_file():
-        raise ImportError(
-            f"FLOWEDIT_ROOT does not contain FlowEdit_utils.py: {checkout}"
-        )
+    checkout = Path(root or os.environ["FLOWEDIT_ROOT"]).expanduser().resolve()
     sys.path.insert(0, str(checkout))
     from FlowEdit_utils import FlowEditFLUX, FlowEditSD3  # type: ignore
 
-    return checkout, FlowEditSD3, FlowEditFLUX
+    return FlowEditSD3, FlowEditFLUX
 
 
 def _set_seed(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
 def _dtype(name: str) -> torch.dtype:
@@ -63,26 +48,14 @@ def _dtype(name: str) -> torch.dtype:
         "half": torch.float16,
         "bfloat16": torch.bfloat16,
     }
-    try:
-        return values[name.lower()]
-    except KeyError as exc:
-        raise ValueError(f"Unsupported dtype {name!r}; use float16 or bfloat16") from exc
+    return values[name.lower()]
 
 
-def _load_pipeline(model_type: str, model_id: str, dtype: torch.dtype, cache_dir: Optional[str]):
+def _load_pipeline(model_type: str, model_id: str, dtype: torch.dtype):
     from diffusers import FluxPipeline, StableDiffusion3Pipeline
 
-    pipeline_class = {
-        "SD3": StableDiffusion3Pipeline,
-        "FLUX": FluxPipeline,
-    }.get(model_type.upper())
-    if pipeline_class is None:
-        raise ValueError(f"Unsupported model type {model_type!r}; use SD3 or FLUX")
-
-    kwargs = {"torch_dtype": dtype}
-    if cache_dir:
-        kwargs["cache_dir"] = str(Path(cache_dir).expanduser())
-    return pipeline_class.from_pretrained(model_id, **kwargs)
+    pipeline_class = {"SD3": StableDiffusion3Pipeline, "FLUX": FluxPipeline}[model_type.upper()]
+    return pipeline_class.from_pretrained(model_id, torch_dtype=dtype)
 
 
 def _prepare_image(image: Image.Image, max_resolution: int) -> Image.Image:
@@ -138,66 +111,35 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--image-root", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--source-column", required=True)
-    parser.add_argument("--cache-dir")
     parser.add_argument("--device")
     parser.add_argument("--model-id")
     parser.add_argument("--file-column")
     parser.add_argument("--exclude-file-prefix")
-    parser.add_argument(
-        "--condition",
-        nargs="+",
-        metavar="COLUMN",
-        help="Target text column(s) to run; pass one or more column names",
-    )
-    parser.add_argument(
-        "--all-conditions",
-        action="store_true",
-        help="Run every condition defined in the config",
-    )
+    parser.add_argument("--condition", required=True, metavar="COLUMN")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--overwrite", action="store_true")
     return parser.parse_args()
 
 
-def _condition_columns(
-    args: argparse.Namespace,
-    frame: pd.DataFrame,
-    file_column: str,
-) -> List[str]:
-    if args.all_conditions and args.condition:
-        raise ValueError("Use either --condition or --all-conditions, not both")
-    if args.condition:
-        return [str(column) for column in args.condition]
-    if args.all_conditions:
-        excluded = {file_column, args.source_column}
-        # Auto-discovery is deliberately limited to columns whose non-null
-        # values are all strings; explicit --condition is safer for mixed CSVs.
-        return [
-            str(column)
-            for column in frame.columns
-            if column not in excluded
-            and not frame[column].dropna().empty
-            and frame[column].dropna().map(lambda value: isinstance(value, str)).all()
-        ]
-    raise ValueError("Provide --condition COLUMN ... or --all-conditions")
-
-
 def main() -> None:
     args = _parse_args()
     config = _load_config(Path(args.config).expanduser())
-    for key in ("device", "model_id", "file_column", "exclude_file_prefix"):
-        value = getattr(args, key)
-        if value is not None:
-            config[key] = value
+    if args.device:
+        config["device"] = args.device
+    if args.model_id:
+        config["model_id"] = args.model_id
+    if args.file_column:
+        config["file_column"] = args.file_column
+    if args.exclude_file_prefix:
+        config["exclude_file_prefix"] = args.exclude_file_prefix
 
     device = torch.device(str(config.get("device", "cuda")))
     model_type = str(config.get("model_type", "SD3")).upper()
-    _, flowedit_sd3, flowedit_flux = _configure_external(args.flowedit_root)
+    flowedit_sd3, flowedit_flux = _configure_external(args.flowedit_root)
     pipe = _load_pipeline(
         model_type,
         str(config["model_id"]),
         _dtype(str(config.get("dtype", "float16"))),
-        args.cache_dir,
     ).to(device)
     scheduler = pipe.scheduler
     sampler = flowedit_sd3 if model_type == "SD3" else flowedit_flux
@@ -205,17 +147,9 @@ def main() -> None:
     frame = pd.read_csv(args.input_csv)
     file_column = str(config.get("file_column", "file"))
     source_column = str(args.source_column)
-    condition_columns = _condition_columns(args, frame, file_column)
-    required = {file_column}
-    required.add(source_column)
-    required.update(condition_columns)
-    missing = sorted(required - set(frame.columns))
-    if missing:
-        raise ValueError(f"CSV is missing required columns: {', '.join(missing)}")
-
-    prefix = config.get("exclude_file_prefix")
-    if prefix:
-        frame = frame[~frame[file_column].astype(str).str.startswith(str(prefix))]
+    condition_column = str(args.condition)
+    prefix = str(config.get("exclude_file_prefix", "val"))
+    frame = frame[~frame[file_column].astype(str).str.startswith(prefix)]
     frame = frame.sample(frac=1.0, random_state=int(config.get("seed", 42))).reset_index(drop=True)
     if args.limit is not None:
         frame = frame.head(args.limit)
@@ -223,43 +157,24 @@ def main() -> None:
     image_root = Path(args.image_root).expanduser()
     output_dir = Path(args.output_dir).expanduser()
     output_dir.mkdir(parents=True, exist_ok=True)
-    totals = []
-
-    for condition_column in condition_columns:
-        # Keep one condition's random trajectory independent of the number or
-        # order of other conditions in a multi-condition run.
-        _set_seed(int(config.get("seed", 42)))
-        condition_dir = output_dir if len(condition_columns) == 1 else output_dir / condition_column
-        generated = 0
-        skipped = 0
-
-        for row in frame.to_dict(orient="records"):
-            relative = Path(str(row[file_column]))
-            input_path = image_root / relative
-            output_path = condition_dir / relative
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            if output_path.exists() and not args.overwrite:
-                skipped += 1
-                continue
-
-            with Image.open(input_path) as source_image:
-                image = _prepare_image(source_image, int(config.get("max_resolution", 1536)))
-            latent = _encode_source(pipe, image, device)
-            edited = _sample(
-                sampler,
-                pipe,
-                scheduler,
-                latent,
-                str(row[source_column]),
-                str(row[condition_column]),
-                config,
-            )
-            _decode(pipe, edited).save(output_path)
-            generated += 1
-
-        totals.append(f"{condition_column}: generated {generated}, skipped {skipped}")
-
-    print("; ".join(totals))
+    _set_seed(int(config.get("seed", 42)))
+    generated = 0
+    skipped = 0
+    for row in frame.to_dict(orient="records"):
+        relative = Path(str(row[file_column]))
+        input_path = image_root / relative
+        output_path = output_dir / relative
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        if output_path.exists() and not args.overwrite:
+            skipped += 1
+            continue
+        with Image.open(input_path) as source_image:
+            image = _prepare_image(source_image, int(config.get("max_resolution", 1536)))
+        latent = _encode_source(pipe, image, device)
+        edited = _sample(sampler, pipe, scheduler, latent, str(row[source_column]), str(row[condition_column]), config)
+        _decode(pipe, edited).save(output_path)
+        generated += 1
+    print(f"generated {generated}, skipped {skipped}")
 
 
 if __name__ == "__main__":
