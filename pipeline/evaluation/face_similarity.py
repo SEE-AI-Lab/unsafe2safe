@@ -12,11 +12,6 @@ def load_image(path, size=(512, 512)):
         return np.array(image.convert("RGB").resize(size))
 
 
-def get_embedding(app, image):
-    embeddings = get_embeddings(app, image)
-    return embeddings[0] if embeddings else None
-
-
 def get_embeddings(app, image):
     """Return all detected face embeddings in an image."""
     return [face.embedding for face in app.get(image)]
@@ -49,8 +44,10 @@ def compare_id_consistency(image_root, synthetic_root, items):
     original_embeddings = []
     synthetic_embeddings = []
     for item in items:
-        original = get_embedding(app, load_image(os.path.join(image_root, item)))
-        synthetic = get_embedding(app, load_image(os.path.join(synthetic_root, item)))
+        original_faces = get_embeddings(app, load_image(os.path.join(image_root, item)))
+        synthetic_faces = get_embeddings(app, load_image(os.path.join(synthetic_root, item)))
+        original = original_faces[0] if original_faces else None
+        synthetic = synthetic_faces[0] if synthetic_faces else None
         original_embeddings.append(original)
         synthetic_embeddings.append(synthetic)
 
