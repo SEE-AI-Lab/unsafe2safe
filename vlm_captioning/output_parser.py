@@ -7,8 +7,13 @@ from typing import Optional
 
 
 _SECTION_RE = re.compile(
-    r"^\s*(?:#{1,6}\s*)?(?:\*\*)?(?:SECTION:\s*)?"
-    r"([A-Z][A-Z0-9_]+)(?:\*\*)?\s*:?[ \t]*$",
+    r"^\s*(?:#{1,6}\s*)?(?:\*\*)?SECTION:\s*"
+    r"([A-Z][A-Z0-9_]*)(?:\*\*)?\s*:?[ \t]*$",
+    re.IGNORECASE,
+)
+_KNOWN_SECTION_RE = re.compile(
+    r"^\s*(?:#{1,6}\s*)?(?:\*\*)?"
+    r"([A-Z][A-Z0-9_]*)(?:\*\*)?\s*:?[ \t]*$",
     re.IGNORECASE,
 )
 _FLAG_RE = re.compile(
@@ -23,12 +28,33 @@ _SECTION_ALIASES = {
 }
 
 
+def _section_name(line: str) -> Optional[str]:
+    """Return a recognized section name without treating body text as one."""
+    normalized = line.replace("**", "").strip()
+    match = _SECTION_RE.match(normalized)
+    if match:
+        return match.group(1).upper()
+
+    match = _KNOWN_SECTION_RE.match(normalized)
+    if not match:
+        return None
+    name = match.group(1).upper()
+    known = {"PRIVACY_FLAG", "PRIVACY_REVIEW", *(_SECTION_ALIASES.keys())}
+    return name if name in known else None
+
+
 def extract_privacy_flag(text: str) -> Optional[bool]:
     """Return the first explicit privacy flag, or ``None`` if absent."""
+    awaiting_value = False
     for line in text.replace("<think>", "").replace("</think>", "").splitlines():
-        match = _FLAG_RE.match(line.replace("**", ""))
+        normalized = line.replace("**", "").strip()
+        match = _FLAG_RE.match(normalized)
         if match:
             return match.group(1).upper() == "TRUE"
+        if _section_name(normalized) == "PRIVACY_FLAG":
+            awaiting_value = True
+        elif awaiting_value and normalized.upper() in {"TRUE", "FALSE"}:
+            return normalized.upper() == "TRUE"
     return None
 
 
@@ -38,9 +64,9 @@ def split_sections(text: str) -> dict[str, str]:
     current: Optional[str] = None
 
     for line in text.replace("<think>", "").replace("</think>", "").splitlines():
-        heading = _SECTION_RE.match(line.replace("**", ""))
-        if heading and heading.group(1).upper() != "PRIVACY_FLAG":
-            current = heading.group(1).upper()
+        name = _section_name(line)
+        if name and name != "PRIVACY_FLAG":
+            current = name
             sections.setdefault(current, [])
             continue
         if current is not None:
