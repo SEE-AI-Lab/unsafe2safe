@@ -15,12 +15,11 @@ def write_caption_json(path, caption):
 def build_text_generator(
     model_id,
     *,
-    hf_home=None,
+    hf_home=".cache/huggingface",
     torch_dtype="auto",
     device_map="cuda",
 ):
-    if hf_home:
-        os.environ["HF_HOME"] = hf_home
+    os.environ["HF_HOME"] = hf_home
     return pipeline(
         "text-generation",
         model=model_id,
