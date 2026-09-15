@@ -38,12 +38,11 @@ bash pipeline/scripts/run_flowedit_unsafe2safe.sh \
 The example config is [`config.example.yaml`](config.example.yaml). It reproduces the
 paper-era FlowEdit SD3 route: 50 steps, `n_avg=1`, source guidance 3.5,
 target guidance 13.5, `n_min=0`, `n_max=33`, seed 42, and a maximum resolution
-of 1536 pixels. The source and target text columns are command-line inputs;
-the adapter does not assume names such as `c1`, `c2`, or `c3`. Pass multiple
-target columns to run them all:
+of 1536 pixels. The source and target text columns are command-line inputs.
+Pass multiple target columns to run them all:
 
 ```bash
-... --source-column SOURCE_COLUMN --condition TARGET_A TARGET_B TARGET_C
+... --source-column SOURCE_COLUMN --condition TARGET_A TARGET_B
 ```
 
 Or run every other string-valued CSV column as a target condition:

@@ -162,7 +162,7 @@ def _parse_args() -> argparse.Namespace:
         "--condition",
         nargs="+",
         metavar="COLUMN",
-        help="Target text column(s) to run, for example: --condition c1 c2 c3",
+        help="Target text column(s) to run; pass one or more column names",
     )
     parser.add_argument(
         "--all-conditions",
@@ -185,7 +185,6 @@ def _condition_columns(
         return [str(column) for column in args.condition]
     if args.all_conditions:
         excluded = {file_column, args.source_column}
-        # Metadata columns are not assumed to have names such as c1/c2/c3.
         # Auto-discovery is deliberately limited to columns whose non-null
         # values are all strings; explicit --condition is safer for mixed CSVs.
         return [
