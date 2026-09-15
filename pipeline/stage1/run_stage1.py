@@ -376,7 +376,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Unified Stage1 runner")
-    parser.add_argument("--config", type=str, default="src/pipeline/stage1/configs/stage1.yaml")
+    parser.add_argument("--config", type=str, default="pipeline/stage1/configs/stage1.yaml")
     parser.add_argument("--purpose", type=str, default=None, help="Override purpose profile")
     parser.add_argument("--dataset", type=str, default=None, help="Override dataset profile")
     args = parser.parse_args()

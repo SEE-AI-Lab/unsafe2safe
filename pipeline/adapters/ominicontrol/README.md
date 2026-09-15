@@ -57,7 +57,7 @@ From the Unsafe2Safe repository root:
 
 ```bash
 export OMINICONTROL_ROOT=/absolute/path/to/OminiControl
-bash src/pipeline/scripts/train_ominicontrol_unsafe2safe.sh
+bash pipeline/scripts/train_ominicontrol_unsafe2safe.sh
 ```
 
 The checked-in recipe uses FLUX.1-dev, subject conditioning, batch size 4, and

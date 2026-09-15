@@ -1,6 +1,6 @@
 # Unsafe2Safe implementation
 
-This directory contains the project-owned dataset, editing, training adapters, evaluation, and prompt-demo code. External model repositories and checkpoints are not copied into this repository.
+This directory contains the project-owned dataset, editing, training adapters, and evaluation helpers. External model repositories and checkpoints are not copied into this repository.
 
 ## InstructPix2Pix integration
 
@@ -30,9 +30,9 @@ Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and c
 Train with the example configuration:
 
 ```bash
-./src/pipeline/scripts/train_unsafe2safe.sh \
+./pipeline/scripts/train_unsafe2safe.sh \
   /path/to/instruct-pix2pix \
-  src/pipeline/stage2/configs/train_unsafe2safe.yaml \
+  pipeline/stage2/configs/train_unsafe2safe.yaml \
   /path/to/logs \
   0,1,2,3
 ```
@@ -47,21 +47,12 @@ path, `public_caption_column` identifies the privacy-safe caption, and
 `edit_caption_column` identifies the edit instruction. Use whatever column
 names your manifest already has.
 
-Run the legacy batch editor from the repository root:
-
-```bash
-./src/pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT \
-  FILE_COLUMN PUBLIC_CAPTION_COLUMN EDIT_CAPTION_COLUMN
-```
-
-That editor expects the external diffusion checkout at `stable_diffusion/`, a compatible config, and a checkpoint. Keep all three outside version control when possible.
-
 ## Dataset filtering
 
 Filter edited pairs by normalized CLIP similarity:
 
 ```bash
-python src/pipeline/data_prep/filter_dataset.py \
+python pipeline/data_prep/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -107,7 +98,7 @@ The reusable modules under `evaluation/` provide:
 For example, collect VLM scores from generated caption JSON files:
 
 ```bash
-python src/pipeline/evaluation/vlm_score.py outputs/scores outputs/vlm_scores.json
+python pipeline/evaluation/vlm_score.py outputs/scores outputs/vlm_scores.json
 ```
 
 ## BLIP-2 captioning evaluation
@@ -156,7 +147,7 @@ and safe roots without a patched dataset class.
 Train through the portable wrapper (the historical run used four processes):
 
 ```bash
-NPROC_PER_NODE=4 ./src/pipeline/scripts/train_blip2_captioning.sh \
+NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
   /path/to/LAVIS \
   /path/to/LAVIS/lavis/projects/blip2/train/caption_coco_ft.yaml \
   /tmp/unsafe2safe-blip2-annotations/train.json \
@@ -169,9 +160,3 @@ The example config uses LAVIS's BLIP-2 captioning recipe; it controls the
 model, optimizer, resolution, and checkpoint output.  The paper evaluates
 generated captions with BLEU-4 and CIDEr; the reusable helper is
 `pipeline/evaluation/caption_scores.py`.
-
-The prompt demo is optional and requires its own `datasets`, `gradio`, and `openai` installation:
-
-```bash
-python src/pipeline/legacy/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
-```

@@ -27,7 +27,7 @@ are never passed through this repository or stored in its files.
 Run from the Unsafe2Safe repository root:
 
 ```bash
-bash src/pipeline/scripts/run_flowedit_unsafe2safe.sh \
+bash pipeline/scripts/run_flowedit_unsafe2safe.sh \
   --input-csv /path/to/metadata.csv \
   --image-root /path/to/coco \
   --output-dir /path/to/outputs \
@@ -67,7 +67,7 @@ multiple conditions. Existing outputs are skipped unless
 the historical scripts are intentionally not copied into this repository.
 FlowEdit is MIT licensed; retain the upstream [`LICENSE`](https://github.com/fallenshock/FlowEdit/blob/main/LICENSE)
 when obtaining that dependency. The Unsafe2Safe project code has no top-level
-license decision yet; see [`THIRD_PARTY.md`](../../THIRD_PARTY.md).
+license decision yet; see [`THIRD_PARTY.md`](../../../THIRD_PARTY.md).
 
 Full GPU/model execution was not run in this workspace because it requires the
 external model dependencies, Hugging Face access, and a CUDA-capable runtime.

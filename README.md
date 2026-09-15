@@ -41,13 +41,12 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 
 ```text
 prompts/                  Captioning, privacy, and edit-instruction prompts.
-src/pipeline/stage1/            Stage 1 generation, parsing, and flag evaluation.
-src/pipeline/stage2/            Stage 2 editor, data loader, Safe Attention, and external boundary.
-src/pipeline/data_prep/         Metadata and image-pair preparation utilities.
-src/pipeline/evaluation/        CLIP, image, privacy, caption, and utility scores.
-src/pipeline/adapters/          Optional FlowEdit, OminiControl, LAVIS, and VQA adapters.
-src/pipeline/scripts/           Download, training, and batch-inference launchers.
-src/pipeline/legacy/            Historical editors and optional prompt demo; not the core method.
+pipeline/stage1/               Stage 1 generation, parsing, and flag evaluation.
+pipeline/stage2/               Stage 2 editor, data loader, Safe Attention, and external boundary.
+pipeline/data_prep/            Metadata and image-pair preparation utilities.
+pipeline/evaluation/           CLIP, image, privacy, caption, and utility scores.
+pipeline/adapters/             Optional FlowEdit, OminiControl, LAVIS, and VQA adapters.
+pipeline/scripts/              Download, training, and adapter launchers.
 ```
 
 The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
@@ -67,8 +66,8 @@ outputs/mscoco/               Generated JSON files.
 Generate privacy-aware captions:
 
 ```bash
-python src/pipeline/stage1/run_stage1.py \
-  --config src/pipeline/stage1/configs/stage1.yaml \
+python pipeline/stage1/run_stage1.py \
+  --config pipeline/stage1/configs/stage1.yaml \
   --purpose generate_captions \
   --dataset mscoco
 ```
@@ -76,8 +75,8 @@ python src/pipeline/stage1/run_stage1.py \
 Compare original and anonymized images:
 
 ```bash
-python src/pipeline/stage1/run_stage1.py \
-  --config src/pipeline/stage1/configs/eval.yaml \
+python pipeline/stage1/run_stage1.py \
+  --config pipeline/stage1/configs/eval.yaml \
   --purpose compare_anonymization \
   --dataset mscoco
 ```
@@ -120,10 +119,10 @@ parsed = parse_structured_output(model_response)
 
 ## Dataset preparation
 
-The dataset helpers in `src/pipeline/data_prep/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
+The dataset helpers in `pipeline/data_prep/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
 
 ```bash
-python src/pipeline/data_prep/filter_dataset.py \
+python pipeline/data_prep/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -137,26 +136,17 @@ The original diffusion implementation is not vendored. For the InstructPix2Pix p
 Train with the example configuration:
 
 ```bash
-./src/pipeline/scripts/train_unsafe2safe.sh \
+./pipeline/scripts/train_unsafe2safe.sh \
   /path/to/instruct-pix2pix \
-  src/pipeline/stage2/configs/train_unsafe2safe.yaml \
+  pipeline/stage2/configs/train_unsafe2safe.yaml \
   /path/to/logs \
   0,1,2,3
 ```
 
-Run batch editing from the repository root:
-
-```bash
-./src/pipeline/scripts/run_unsafe2safe.sh \
-  INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT
-```
-
-The batch editor expects the external diffusion checkout at `stable_diffusion/` for its legacy runtime path, together with a compatible config and checkpoint. See `src/pipeline/README.md` for the external checkout details and data columns used by the training loader.
-
-The project also contains an Unsafe2Safe-specific OminiControl adapter in [`src/pipeline/adapters/ominicontrol/`](src/pipeline/adapters/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
+The project also contains an Unsafe2Safe-specific OminiControl adapter in [`pipeline/adapters/ominicontrol/`](pipeline/adapters/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
 
 The project also contains a minimal FlowEdit adapter in
-[`src/pipeline/adapters/flowedit/`](src/pipeline/adapters/flowedit/README.md). FlowEdit remains an
+[`pipeline/adapters/flowedit/`](pipeline/adapters/flowedit/README.md). FlowEdit remains an
 external MIT-licensed dependency.
 
 See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
@@ -164,7 +154,7 @@ boundaries, attribution, and license status.
 
 ## Evaluation
 
-The reusable metric helpers in `src/pipeline/evaluation/` cover the project’s current public evaluation surface:
+The reusable metric helpers in `pipeline/evaluation/` cover the project’s current public evaluation surface:
 
 - CLIP and directional CLIP similarity.
 - SSIM and LPIPS image similarity.
@@ -178,7 +168,7 @@ Keep downloaded datasets, checkpoints, generated images, and experiment outputs 
 
 ## Downstream VQA
 
-The Qwen3-VL OK-VQA training and prediction scripts are under [`src/pipeline/adapters/vqa/`](src/pipeline/adapters/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
+The Qwen3-VL OK-VQA training and prediction scripts are under [`pipeline/adapters/vqa/`](pipeline/adapters/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
 
 ## Links
 

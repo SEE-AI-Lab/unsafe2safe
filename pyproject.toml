@@ -9,7 +9,8 @@ description = "Project-specific components for privacy-preserving image editing"
 requires-python = ">=3.10"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
+include = ["pipeline*"]
 
 [tool.setuptools.package-data]
 pipeline = ["**/*.yaml", "**/*.md"]
