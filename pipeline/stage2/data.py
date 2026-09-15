@@ -17,7 +17,7 @@ def _image_tensor(image: Image.Image) -> torch.Tensor:
 class EditDataset(Dataset):
     """Load aligned unsafe/public image pairs and their two text conditions."""
 
-    def __init__(self, path: str, target_path: str, csv_path: str, split: str = "train", splits: tuple[float, float, float] = (0.9, 0.05, 0.05), min_resize_res: int = 256, max_resize_res: int = 256, crop_res: int = 256, flip_prob: float = 0.0, file_column: str = "file", public_caption_column: str = "caption_public", edit_caption_column: str = "caption_edit"):
+    def __init__(self, path: str, target_path: str, csv_path: str, split: str = "train", splits: tuple[float, float, float] = (0.9, 0.05, 0.05), crop_res: int = 256, flip_prob: float = 0.0, file_column: str = "file", public_caption_column: str = "caption_public", edit_caption_column: str = "caption_edit"):
         self.file_column = file_column
         self.public_caption_column = public_caption_column
         self.edit_caption_column = edit_caption_column
@@ -38,8 +38,6 @@ class EditDataset(Dataset):
         self.rows = selected_df.to_dict(orient="records")
         self.root_dir = Path(path)
         self.target_dir = Path(target_path)
-        self.min_resize_res = min_resize_res
-        self.max_resize_res = max_resize_res
         self.crop_res = crop_res
         self.flip_prob = flip_prob
 
@@ -54,11 +52,11 @@ class EditDataset(Dataset):
         caption_edit = str(entry[self.edit_caption_column])
         target_image_path = self.target_dir / relative_path
 
-        resize_res = torch.randint(self.min_resize_res, self.max_resize_res + 1, ()).item()
+        # Both images use the fixed 256px training resolution from the paper.
         with Image.open(image_path) as image:
-            image_0 = _image_tensor(image.convert("RGB").resize((resize_res, resize_res), Image.Resampling.LANCZOS))
+            image_0 = _image_tensor(image.convert("RGB").resize((self.crop_res, self.crop_res), Image.Resampling.LANCZOS))
         with Image.open(target_image_path) as image:
-            image_1 = _image_tensor(image.convert("RGB").resize((resize_res, resize_res), Image.Resampling.LANCZOS))
+            image_1 = _image_tensor(image.convert("RGB").resize((self.crop_res, self.crop_res), Image.Resampling.LANCZOS))
 
         crop = torchvision.transforms.RandomCrop(self.crop_res)
         flip = torchvision.transforms.RandomHorizontalFlip(float(self.flip_prob))
