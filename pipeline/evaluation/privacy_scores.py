@@ -14,9 +14,9 @@ def token_set_similarity(original_text: str, anonymized_text: str) -> float:
     return token_set_ratio(original_text, anonymized_text) / 100.0
 
 
-def normalized_race_entropy(predicted_races, categories=RACE_CATEGORIES) -> float:
+def normalized_race_entropy(predicted_races) -> float:
     """Return normalized demographic entropy for one image's VLM predictions."""
-    counts = Counter(race for race in predicted_races if race in categories)
+    counts = Counter(race for race in predicted_races if race in RACE_CATEGORIES)
     total = sum(counts.values())
     entropy = -sum((count / total) * log(count / total) for count in counts.values())
-    return entropy / log(len(categories))
+    return entropy / log(len(RACE_CATEGORIES))

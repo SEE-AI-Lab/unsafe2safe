@@ -13,7 +13,7 @@ from pipeline.stage1.internvl_common import load_internvl_model_and_tokenizer, p
 from pipeline.stage1.qwen_common import write_caption_json
 
 
-def run_pair_batch(model, tokenizer, raw_paths, anonymized_paths, prompt, *, system_prompt, image_size=448, max_new_tokens=512, do_sample=False, device="cuda"):
+def run_pair_batch(model, tokenizer, raw_paths, anonymized_paths, prompt, *, system_prompt, image_size=448, max_new_tokens=512, device="cuda"):
     pixel_values = []
     for raw_path, anonymized_path in zip(raw_paths, anonymized_paths):
         pixel_values.extend([preprocess_image(raw_path, image_size=image_size), preprocess_image(anonymized_path, image_size=image_size)])
@@ -22,7 +22,7 @@ def run_pair_batch(model, tokenizer, raw_paths, anonymized_paths, prompt, *, sys
     for _ in raw_paths:
         messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": "Image-1: <image>\nImage-2: <image>\n" + prompt}]
         questions.append(tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True))
-    generation_config = {"max_new_tokens": max_new_tokens, "do_sample": do_sample, "pad_token_id": tokenizer.eos_token_id}
+    generation_config = {"max_new_tokens": max_new_tokens, "pad_token_id": tokenizer.eos_token_id}
     return model.batch_chat(tokenizer, pixel_values, num_patches_list=[2] * len(raw_paths), questions=questions, generation_config=generation_config)
 
 
