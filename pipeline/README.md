@@ -147,3 +147,15 @@ The prompt demo is optional and requires its own `datasets`, `gradio`, and `open
 ```bash
 python pipeline/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
 ```
+
+## Optional ImageMAE dataset
+
+`image_mae_dataset.py` is the project-specific downstream classification
+dataset. It is intentionally separate from `unsafe2safe_dataset.py`, which is
+used by the diffusion editor. The ImageMAE loader only reads the manifest,
+selects original or edited image roots, applies ImageNet preprocessing, and
+returns `(image, class_id)` samples. The ImageMAE model and training code stay
+in the separately installed upstream checkout.
+
+See [`configs/image_mae_example.yaml`](configs/image_mae_example.yaml) for the
+small set of paths and settings a downstream training wrapper needs.
