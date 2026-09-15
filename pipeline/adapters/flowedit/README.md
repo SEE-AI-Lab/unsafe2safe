@@ -1,7 +1,7 @@
 # Unsafe2Safe adapter for FlowEdit
 
-This directory contains only the project-owned FlowEdit integration: CSV
-condition mapping, portable image I/O, configuration, and a batch launcher.
+This directory contains the FlowEdit integration: CSV condition mapping, image
+loading and saving, configuration, and a batch launcher.
 The FlowEdit sampler and model assets remain in a separately installed
 upstream checkout.
 
@@ -22,7 +22,7 @@ environment and notes that newer diffusers versions may be incompatible. Model
 downloads use the normal Hugging Face environment configuration; credentials
 are never passed through this repository or stored in its files.
 
-## Data and reproduction settings
+## Data and run settings
 
 Run from the Unsafe2Safe repository root:
 

@@ -1,6 +1,6 @@
-# Example BLIP-2 captioning handoff from the paper.
+# Example BLIP-2 captioning settings from the paper.
 # LAVIS and its model/trainer remain external; these values fill the launcher
-# arguments and the standard LAVIS caption_coco_ft.yaml recipe.
+# arguments and the standard LAVIS caption_coco_ft.yaml setup.
 
 lavis_root: /absolute/path/to/LAVIS
 lavis_config: /absolute/path/to/LAVIS/lavis/projects/blip2/train/caption_coco_ft.yaml

@@ -1,6 +1,5 @@
-# Example evaluation inputs matching the paper's downstream protocol.
-# The modules in pipeline/evaluation are small functions/CLI tools; this file
-# is a shared checklist of their inputs rather than an upstream config format.
+# Example inputs for the evaluation helpers.
+# This file documents the values used by the commands; the helpers do not read it.
 
 split: test
 metadata: metadata/mscoco_test.csv

@@ -1,5 +1,5 @@
-# Example paper-aligned OminiControl recipe.
-# OminiControl itself is intentionally not vendored by this repository. See
+# Example OminiControl settings from the paper.
+# OminiControl is not included in this repository. See
 # README.md for the external checkout and installation instructions.
 flux_path: "black-forest-labs/FLUX.1-dev"
 dtype: "bfloat16"

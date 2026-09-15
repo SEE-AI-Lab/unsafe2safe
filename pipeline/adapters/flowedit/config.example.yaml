@@ -1,4 +1,4 @@
-# Example paper-aligned FlowEdit SD3 settings.
+# Example FlowEdit SD3 settings from the paper.
 # Text-column names are supplied on the command line; this file is not a
 # schema for any particular dataset. See README.md.
 model_type: SD3

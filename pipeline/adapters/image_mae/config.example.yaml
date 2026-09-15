@@ -1,4 +1,4 @@
-# Example ImageMAE downstream classification recipe from the paper.
+# Example ImageMAE downstream classification settings from the paper.
 # The ImageMAE repository and trainer remain external.
 
 image_mae_root: /absolute/path/to/mae

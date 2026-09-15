@@ -49,7 +49,7 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 ```text
 prompts/                    Captioning, privacy, and edit-instruction prompts.
 pipeline/stage1/            Stage 1 generation, parsing, and flag evaluation.
-pipeline/stage2/            Stage 2 editor, data loader, SafeAttention, and external boundary.
+pipeline/stage2/            Stage 2 editor, data loader, SafeAttention, and external model wrapper.
 pipeline/filter_dataset.py  CLIP filtering for generated image pairs.
 pipeline/evaluation/        CLIP, image, privacy, caption, and utility scores.
 pipeline/adapters/          Optional FlowEdit, OminiControl, Face Anon Simple, LAVIS, and VQA adapters.
@@ -59,15 +59,15 @@ pipeline/scripts/           Training and adapter launchers.
 The commands below assume they are run from the repository root. Change the
 data, metadata, checkpoint, and output paths to match your local setup.
 
-Paper-aligned handoff configs are kept beside the code they configure:
+Example configuration files are stored next to the code they configure:
 
 - `pipeline/stage1/config.yaml`: InternVL/Qwen captioning, flagging, and prompt-preparation jobs.
 - `pipeline/stage2/configs/`: SafeAttention/InstructPix2Pix training.
 - `pipeline/adapters/*/config.example.yaml`: FreePrompt, FlowEdit, OminiControl,
-  ImageMAE, BLIP-2, and Qwen3-VL recipes.
+  ImageMAE, BLIP-2, and Qwen3-VL settings.
 - `pipeline/adapters/baselines.example.yaml` and
   `pipeline/evaluation/config.example.yaml`:
-  external baselines and the evaluation checklist.
+  baseline settings and the evaluation inputs.
 
 ## Stage 1: captioning and privacy instructions
 
@@ -206,7 +206,7 @@ provides the paper's SD3 condition mapping. [Face Anon Simple](pipeline/adapters
 is an optional external baseline.
 
 The [baseline config](pipeline/adapters/baselines.example.yaml) records the
-external FreePrompt and DeepPrivacy2 handoffs.
+settings used for the external FreePrompt and DeepPrivacy2 baselines.
 
 ## Evaluation
 
@@ -271,7 +271,7 @@ contains the full BLIP-2/LAVIS preparation and training commands.
 
 ## Downstream experiments
 
-The repository includes project-specific data adapters and handoff configs for
+The repository includes project-specific data adapters and example configs for
 the downstream experiments in the paper:
 
 - [ImageMAE](pipeline/adapters/image_mae/config.example.yaml) classification
@@ -282,7 +282,7 @@ the downstream experiments in the paper:
   evaluation settings.
 
 The BLIP-2/LAVIS and Qwen3-VL adapters have detailed command examples in
-their READMEs. ImageMAE is a dataset adapter plus a handoff config for the
+their READMEs. ImageMAE is a dataset adapter plus an example config for the
 external trainer.
 
 ## External dependencies

@@ -1,17 +1,17 @@
 # Unsafe2Safe implementation
 
-This directory contains the project-owned dataset, editing, training adapters, and evaluation helpers. External model repositories and checkpoints are not copied into this repository.
+This directory contains the dataset, editing, training, and evaluation code written for Unsafe2Safe. External model repositories and checkpoints are not included here.
 
 ## InstructPix2Pix integration
 
-The InstructPix2Pix path expects a clean external checkout. The current local reproduction used [`timothybrooks/instruct-pix2pix`](https://github.com/timothybrooks/instruct-pix2pix) at commit `0dffd1e`.
+The InstructPix2Pix path uses a separate checkout of [`timothybrooks/instruct-pix2pix`](https://github.com/timothybrooks/instruct-pix2pix), pinned to commit `0dffd1e`.
 
 ```bash
 git clone https://github.com/timothybrooks/instruct-pix2pix.git /path/to/instruct-pix2pix
 git -C /path/to/instruct-pix2pix checkout 0dffd1e
 ```
 
-`stage2/external.py` defines the external import boundary. `stage2/model.py` and `stage2/attention.py` provide the project-specific model integration without modifying the external checkout.
+`stage2/external.py` loads the external implementation. `stage2/model.py` and `stage2/attention.py` contain the Unsafe2Safe-specific changes without modifying that checkout.
 
 The training path is intentionally three small pieces:
 
@@ -20,9 +20,8 @@ The training path is intentionally three small pieces:
 3. `stage2/attention.py` fuses the full edit and public attention maps, then
    applies the fused public map to the public-caption values.
 
-The attention module is intentionally a small reference implementation of the
-paper's map-fusion operation. Its convolutional fuser is a compact choice for
-the paper's learned fuser and keeps the token length dynamic.
+The attention module implements the paper's map-fusion operation. Its small
+convolutional fuser accepts different token lengths.
 
 Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and checkpoint still come from the external InstructPix2Pix checkout.
 
@@ -72,17 +71,17 @@ When creating separate train and validation datasets, pass the same
 
 ## OminiControl adapter
 
-`adapters/ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`adapters/ominicontrol/README.md`](adapters/ominicontrol/README.md). The upstream OminiControl and FLUX source remain external. The paper recipe is in [`adapters/ominicontrol/config.example.yaml`](adapters/ominicontrol/config.example.yaml).
+`adapters/ominicontrol/` contains the Unsafe2Safe-specific dataset adapter and launch scripts. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`adapters/ominicontrol/README.md`](adapters/ominicontrol/README.md). The OminiControl and FLUX source remain external. The example settings are in [`adapters/ominicontrol/config.example.yaml`](adapters/ominicontrol/config.example.yaml).
 
 ## FlowEdit adapter
 
-`adapters/flowedit/` contains the Unsafe2Safe CSV-to-caption mapping and portable batch
-inference wrapper for an external FlowEdit checkout. It follows the paper's
+`adapters/flowedit/` contains the Unsafe2Safe CSV-to-caption mapping and batch
+inference script for a separate FlowEdit checkout. It follows the paper's
 SD3 configuration and imports the upstream sampler at runtime. See
 [`adapters/flowedit/README.md`](adapters/flowedit/README.md) for the pinned revision, data
-schema, and reproduction command.
+schema, and run command.
 
-The external FreePrompt and DeepPrivacy2 baseline handoffs are recorded in
+Example settings for the external FreePrompt and DeepPrivacy2 baselines are in
 [`adapters/baselines.example.yaml`](adapters/baselines.example.yaml) and
 [`adapters/freeprompt/config.example.yaml`](adapters/freeprompt/config.example.yaml).
 
@@ -161,7 +160,7 @@ Omit both manifests for an original-image baseline.  It writes absolute paths
 into the generated local annotations so vanilla LAVIS can read mixed original
 and safe roots without a patched dataset class.
 
-Train through the portable wrapper (the historical run used four processes):
+Train with the wrapper script (the paper run used four processes):
 
 ```bash
 NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
@@ -173,10 +172,10 @@ NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
   /path/to/coco
 ```
 
-The example config uses LAVIS's BLIP-2 captioning recipe; it controls the
+The example config uses LAVIS's BLIP-2 captioning setup; it controls the
 model, optimizer, resolution, and checkpoint output.  The paper evaluates
 generated captions with BLEU-4 and CIDEr; the reusable helper is
 `pipeline/evaluation/caption_scores.py`.
 
-The LAVIS launcher handoff is recorded in
+The LAVIS launcher settings are recorded in
 [`adapters/lavis/config.example.yaml`](adapters/lavis/config.example.yaml).
