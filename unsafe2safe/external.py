@@ -20,8 +20,8 @@ def _candidate_roots(explicit_root: Optional[str] = None):
     if configured:
         yield Path(configured).expanduser().resolve()
 
-    # This supports the documented layout where the external checkout is
-    # copied or linked as ``stable_diffusion/`` beside the pipeline code.
+    # Also support a checkout placed beside the repository or named directly
+    # by its ``stable_diffusion/`` subdirectory.
     local_root = Path.cwd()
     yield local_root
     yield local_root / "instruct-pix2pix"

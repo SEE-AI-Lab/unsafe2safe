@@ -77,6 +77,8 @@ class ImageMAEDataset(Dataset):
         class_to_idx: Mapping[str, int] | None = None,
         is_train: bool = False,
     ):
+        if not rows:
+            raise ValueError("rows must not be empty")
         self.rows = rows
         self.image_root = Path(image_root)
         self.edited_root = Path(edited_root) if edited_root else None
@@ -85,9 +87,7 @@ class ImageMAEDataset(Dataset):
         self.file_column = file_column
         self.privacy_column = privacy_column
         required = {class_column, file_column}
-        missing = sorted(
-            column for column in required if any(column not in row for row in rows)
-        )
+        missing = sorted(column for column in required if any(column not in row for row in rows))
         if missing:
             raise ValueError(f"rows are missing columns: {missing}")
         labels = {row[class_column] for row in rows}

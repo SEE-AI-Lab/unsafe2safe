@@ -67,6 +67,8 @@ the original or edited image root, applies ImageNet preprocessing, and returns
 `(image, class_id)` samples. The ImageMAE model and trainer remain in the
 separately installed upstream checkout. See
 [`configs/image_mae_example.yaml`](configs/image_mae_example.yaml).
+When creating separate train and validation datasets, pass the same
+`class_to_idx` mapping to both instances so class IDs remain stable.
 
 ## OminiControl adapter
 

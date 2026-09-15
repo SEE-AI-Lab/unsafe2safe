@@ -70,7 +70,7 @@ class EditDataset(Dataset):
             )
             df = df[(df["clip_edit"] / df["clip_orig"]) > 0.7]
 
-        # Filter by filename.
+        # Use the COCO filename split used by the released manifests.
         train_df = df[
             df[file_column].astype(str).str.contains("train2014", na=False)
         ].reset_index(drop=True)
@@ -78,7 +78,7 @@ class EditDataset(Dataset):
             df[file_column].astype(str).str.contains("val2014", na=False)
         ].reset_index(drop=True)
 
-        # Deterministic shuffle for train/val split
+        # Shuffle once so train/validation membership is reproducible.
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
         train_fraction = splits[0] / (splits[0] + splits[1])
         train_cutoff = int(train_fraction * len(train_df))
@@ -91,7 +91,7 @@ class EditDataset(Dataset):
             selected_df = test_df
 
         self.seeds = selected_df.to_dict(orient="records")
-        self.root_dir = Path(path)  # root folder for images
+        self.root_dir = Path(path)
         self.target_dir = Path(target_path)
         self.min_resize_res = min_resize_res
         self.max_resize_res = max_resize_res

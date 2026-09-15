@@ -78,10 +78,9 @@ def run_internvl_batch(
         questions.append(text_prompt)
     # One visual input per sample in this path.
     num_patches_list = [1] * len(image_paths)
-    generation_config = dict(max_new_tokens=max_new_tokens, do_sample=do_sample
-        )
+    generation_config = dict(max_new_tokens=max_new_tokens, do_sample=do_sample)
     if pad_token_id is not None:
-        generation_config['pad_token_id'] = pad_token_id
+        generation_config["pad_token_id"] = pad_token_id
     responses = model.batch_chat(
         tokenizer,
         pixel_values,
@@ -130,10 +129,9 @@ def run_internvl_pair_batch(
             messages, tokenize=False, add_generation_prompt=True
         )
         questions.append(text_prompt)
-    generation_config = dict(max_new_tokens=max_new_tokens, do_sample=do_sample
-        )
+    generation_config = dict(max_new_tokens=max_new_tokens, do_sample=do_sample)
     if pad_token_id is not None:
-        generation_config['pad_token_id'] = pad_token_id
+        generation_config["pad_token_id"] = pad_token_id
     responses = model.batch_chat(
         tokenizer,
         pixel_values,
