@@ -65,6 +65,7 @@ class SafeCrossAttention(nn.Module):
             (q_edit, q_public, k_edit, v_edit, k_public, v_public),
         )
 
+        # Build separate edit and public attention maps before fusion.
         sim_edit = einsum("b i d, b j d -> b i j", q_edit, k_edit) * self.scale
         sim_public = einsum("b i d, b j d -> b i j", q_public, k_public) * self.scale
         if mask is not None:
@@ -76,6 +77,7 @@ class SafeCrossAttention(nn.Module):
 
         attn_edit = sim_edit.softmax(dim=-1)
         attn_public = sim_public.softmax(dim=-1)
+        # Fuse along the token axis, then keep the public-token half for values.
         fused = torch.cat((attn_edit, attn_public), dim=-1)
         fused = self.map_fuse(fused.reshape(-1, 1, fused.shape[-1]))
         attn_public = fused[..., -attn_public.shape[-1] :].squeeze(1).reshape_as(attn_public).softmax(dim=-1)

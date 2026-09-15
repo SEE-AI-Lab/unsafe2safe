@@ -52,6 +52,7 @@ class Unsafe2Safe(LatentDiffusion):
         null_embed = self.get_learned_conditioning([""] * source.shape[0])
 
         random = torch.rand(source.shape[0], device=self.device)
+        # Drop text and image conditions with the paper's classifier-free probabilities.
         text_mask = rearrange(random < 2 * uncond, "b -> b 1 1")
         image_mask = 1 - rearrange(
             ((random >= uncond) & (random < 3 * uncond)).float(),
