@@ -7,7 +7,6 @@ external-checkout import boundary instead.
 
 from __future__ import annotations
 
-import math
 import random
 import sys
 from argparse import ArgumentParser
@@ -148,7 +147,6 @@ if __name__ == "__main__":
     model = load_model_from_config(config, args.ckpt, args.vae_ckpt)
     model.eval().cuda()
     model_wrap = K.external.CompVisDenoiser(model)
-    model_wrap_cfg = CFGDenoiser(model_wrap)
     null_token = model.get_learned_conditioning([""])
 
     os.makedirs(args.output, exist_ok=True)
@@ -228,7 +226,3 @@ if __name__ == "__main__":
             out_path = os.path.join(dest_dir, fname)
             os.makedirs(os.path.dirname(out_path), exist_ok=True)
             Image.fromarray(arr).save(out_path)
-
-
-if __name__ == "__main__":
-    main()
