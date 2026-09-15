@@ -120,6 +120,9 @@ The batch editor expects the external diffusion checkout at `stable_diffusion/` 
 
 The project also contains an Unsafe2Safe-specific OminiControl adapter in [`pipeline/ominicontrol/`](pipeline/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
 
+See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
+boundaries, attribution, and license status.
+
 ## Evaluation
 
 The reusable metric helpers in `pipeline/metrics/` cover the project’s current public evaluation surface:
