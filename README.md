@@ -81,6 +81,8 @@ metadata/mscoco.csv           CSV containing a file column.
 outputs/mscoco/               Generated JSON files.
 ```
 
+Each generation run also writes a CSV manifest beside its JSON files.
+
 Generate privacy-aware captions:
 
 ```bash
@@ -90,33 +92,19 @@ python pipeline/stage1/run_stage1.py \
   --dataset mscoco
 ```
 
-Collect generated captions into one CSV:
+When the run finishes, it writes the per-image JSON files and the collected
+manifest to `outputs/mscoco/generate_captions.csv`.
 
-```bash
-python -m pipeline.stage1.collect_captions \
-  --captions-dir outputs/mscoco/generate_captions \
-  --metadata metadata/mscoco.csv \
-  --output metadata/mscoco_with_captions.csv \
-  --parse-structured
-```
-
-The `generate_edit_instructions` profile reads the collected CSV and maps its
-`PUBLIC_CAPTION` field to the `{public_caption}` prompt argument. Collect its
-outputs into a second manifest for the `combine_caption_and_edit` profile:
+The `generate_edit_instructions` profile reads that manifest and maps its
+`PUBLIC_CAPTION` field to the `{public_caption}` prompt argument. It writes its
+own manifest to `outputs/mscoco/generate_edit_instructions.csv`, which the
+`combine_caption_and_edit` profile reads automatically:
 
 ```bash
 python pipeline/stage1/run_stage1.py \
   --config pipeline/stage1/config.yaml \
   --purpose generate_edit_instructions \
   --dataset mscoco
-```
-
-```bash
-python -m pipeline.stage1.collect_captions \
-  --captions-dir outputs/mscoco/generate_edit_instructions \
-  --metadata metadata/mscoco_with_captions.csv \
-  --output metadata/mscoco_with_edit_instructions.csv \
-  --output-column EDIT_INSTRUCTION
 ```
 
 Optionally combine the public caption and edit instruction into one caption for
@@ -128,6 +116,8 @@ python pipeline/stage1/run_stage1.py \
   --purpose combine_caption_and_edit \
   --dataset mscoco
 ```
+
+The combined captions are written to `outputs/mscoco/combine_caption_and_edit.csv`.
 
 Generate privacy flags for VISPR images:
 
@@ -141,10 +131,11 @@ python pipeline/stage1/run_stage1.py \
 Evaluate privacy flags against VISPR annotations:
 
 ```bash
-python -m pipeline.stage1.evaluate_flags metadata/vispr_predictions.csv data/vispr/annotations
+python -m pipeline.stage1.evaluate_flags outputs/vispr/generate_flags.csv data/vispr/annotations
 ```
 
-The flag-evaluation CSV must contain `file` and `PRIVACY_FLAG` columns. Structured model responses can also be parsed directly:
+The flag-evaluation CSV is written automatically and contains `file` and
+`PRIVACY_FLAG` columns. Structured model responses can also be parsed directly:
 
 ```python
 from pipeline.stage1.output_parser import parse_structured_output
