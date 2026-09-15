@@ -58,29 +58,11 @@ def render_templates(value, context):
 
 
 def build_effective_config(cfg, purpose, dataset):
-    defaults = cfg.get("defaults", {})
-    datasets = cfg.get("datasets", {})
-    purposes = cfg.get("purposes", {})
-
-    if dataset not in datasets:
-        raise ValueError(f"Unknown dataset '{dataset}'. Available: {list(datasets.keys())}")
-    if purpose not in purposes:
-        raise ValueError(f"Unknown purpose '{purpose}'. Available: {list(purposes.keys())}")
-
-    purpose_cfg = purposes[purpose]
-    dataset_cfg = datasets[dataset]
-    merged = deep_merge(defaults, purpose_cfg)
-
-    # Purpose config can include per-dataset overrides.
-    purpose_ds_overrides = purpose_cfg.get("dataset_overrides", {}).get(dataset, {})
-    merged = deep_merge(merged, purpose_ds_overrides)
-
-    # Attach dataset settings, then render templates globally.
-    merged["dataset"] = deep_merge(dataset_cfg, merged.get("dataset", {}))
-    context = {"dataset": dataset, "purpose": purpose, **merged["dataset"]}
-    merged = render_templates(merged, context)
-
-    return merged
+    purpose_cfg = cfg["purposes"][purpose]
+    merged = deep_merge(cfg["defaults"], purpose_cfg)
+    merged = deep_merge(merged, purpose_cfg.get("dataset_overrides", {}).get(dataset, {}))
+    merged["dataset"] = deep_merge(cfg["datasets"][dataset], merged.get("dataset", {}))
+    return render_templates(merged, {"dataset": dataset, "purpose": purpose, **merged["dataset"]})
 
 
 def read_prompt(path):
