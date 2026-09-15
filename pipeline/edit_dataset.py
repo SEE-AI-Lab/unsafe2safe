@@ -1,3 +1,9 @@
+"""Legacy single-root dataset used by the original editor experiments.
+
+The current Unsafe2Safe training loader is ``unsafe2safe_dataset.EditDataset``
+because it reads separate unsafe and safe image roots.
+"""
+
 from __future__ import annotations
 
 import json

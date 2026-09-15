@@ -1,3 +1,9 @@
+"""One-off CLIP retrieval script for building public-caption candidates.
+
+This file performs model loading and dataset work at import time, so run it as
+a standalone experiment rather than importing it from the training pipeline.
+"""
+
 import os
 import json
 import torch

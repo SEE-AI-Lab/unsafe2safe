@@ -1,3 +1,10 @@
+"""Legacy prompt-to-prompt image generation utility.
+
+It belongs to the historical dataset-construction workflow; the current
+Unsafe2Safe training and external InstructPix2Pix boundary are documented in
+the pipeline README.
+"""
+
 import argparse
 import json
 import sys
