@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import copy
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -35,17 +34,6 @@ def load_yaml(path):
         return yaml.safe_load(f)
 
 
-def deep_merge(base, extra):
-    # Recursive merge lets overrides patch only selected nested keys.
-    out = copy.deepcopy(base)
-    for k, v in extra.items():
-        if isinstance(v, dict) and isinstance(out.get(k), dict):
-            out[k] = deep_merge(out[k], v)
-        else:
-            out[k] = copy.deepcopy(v)
-    return out
-
-
 def render_templates(value, context):
     # Expand placeholders like {dataset}/{purpose} through nested config objects.
     if isinstance(value, str):
@@ -58,10 +46,9 @@ def render_templates(value, context):
 
 
 def build_effective_config(cfg, purpose, dataset):
-    purpose_cfg = cfg["purposes"][purpose]
-    merged = deep_merge(cfg["defaults"], purpose_cfg)
-    merged = deep_merge(merged, purpose_cfg.get("dataset_overrides", {}).get(dataset, {}))
-    merged["dataset"] = deep_merge(cfg["datasets"][dataset], merged.get("dataset", {}))
+    profile = cfg["purposes"][purpose]
+    override = profile.get("dataset_overrides", {}).get(dataset, {})
+    merged = {"run": {**cfg["defaults"]["run"], **profile["run"], **override.get("run", {})}, "source": {**profile["source"], **override.get("source", {})}, "output": cfg["defaults"]["output"], "dataset": cfg["datasets"][dataset]}
     return render_templates(merged, {"dataset": dataset, "purpose": purpose, **merged["dataset"]})
 
 
