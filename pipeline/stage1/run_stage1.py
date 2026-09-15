@@ -28,23 +28,14 @@ class Sample:
     vars: dict[str, Any]
 
 
-def render_templates(value, context):
-    # Expand placeholders like {dataset}/{purpose} through nested config objects.
-    if isinstance(value, str):
-        return value.format_map(context)
-    if isinstance(value, list):
-        return [render_templates(x, context) for x in value]
-    if isinstance(value, dict):
-        return {k: render_templates(v, context) for k, v in value.items()}
-    return value
-
-
 def build_effective_config(cfg, purpose, dataset):
     profile = cfg["purposes"][purpose]
     override = profile.get("dataset_overrides", {}).get(dataset, {})
     # Keep the paper's configuration shallow: shared run values, then local overrides.
-    merged = {"run": {**cfg["defaults"]["run"], **profile["run"], **override.get("run", {})}, "source": {**profile["source"], **override.get("source", {})}, "dataset": cfg["datasets"][dataset], "output_dir": f"outputs/{dataset}/{purpose}"}
-    return render_templates(merged, {"dataset": dataset, "purpose": purpose, **merged["dataset"]})
+    source = {**profile["source"], **override.get("source", {})}
+    if "csv_path" in source:
+        source["csv_path"] = source["csv_path"].format(dataset=dataset)
+    return {"run": {**cfg["defaults"]["run"], **profile["run"], **override.get("run", {})}, "source": source, "dataset": cfg["datasets"][dataset], "output_dir": f"outputs/{dataset}/{purpose}"}
 
 
 def _row_variables(row, source_cfg):
