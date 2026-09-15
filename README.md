@@ -65,6 +65,14 @@ python -m vlm_captioning.collect_captions --captions-dir outputs/mscoco/generate
 
 Add `--parse-structured` to include privacy flags and caption sections as separate columns.
 
+Evaluate Stage 1 flags against VISPR annotation JSON files:
+
+```bash
+python -m vlm_captioning.evaluate_flags metadata/vispr_predictions.csv data/vispr/annotations
+```
+
+The prediction CSV must contain `file` and `PRIVACY_FLAG` columns. Relative image paths are matched to annotation JSON files under the annotation directory.
+
 ## Pipeline code
 
 The `pipeline/` directory includes dataset creation, edit dataset loaders, batch editors, the Unsafe2Safe training wrapper, Safe Attention, and CLIP or face-similarity evaluation helpers.
