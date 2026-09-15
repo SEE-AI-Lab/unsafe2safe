@@ -124,8 +124,8 @@ python -m pipeline.stage1.collect_captions \
   --output-column EDIT_INSTRUCTION
 ```
 
-Combine the public caption and edit instruction into the caption used by the
-editor:
+Optionally combine the public caption and edit instruction into one caption for
+workflows that use a single text condition:
 
 ```bash
 python pipeline/stage1/run_stage1.py \
