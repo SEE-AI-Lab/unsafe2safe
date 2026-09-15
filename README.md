@@ -193,6 +193,8 @@ Train with the example configuration:
   0,1,2,3
 ```
 
+For eight GPUs, use `0,1,2,3,4,5,6,7` as the last argument. The Stage 1 and image-generation commands are single-process.
+
 Before training, set `ckpt_path`, `path`, `target_path`, and `csv_path` in
 [`pipeline/stage2/configs/train_unsafe2safe.yaml`](pipeline/stage2/configs/train_unsafe2safe.yaml)
 to your local files.

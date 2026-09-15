@@ -53,6 +53,8 @@ export OMINICONTROL_ROOT=/absolute/path/to/OminiControl
 bash pipeline/scripts/train_ominicontrol_unsafe2safe.sh
 ```
 
+For eight GPUs, run `CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 OMINI_NUM_PROCESSES=8 bash pipeline/scripts/train_ominicontrol_unsafe2safe.sh`.
+
 The checked-in settings use FLUX.1-dev, subject conditioning, batch size 4, and
 12,000 training steps. OminiControl's upstream trainer writes checkpoints and a
 copy of the resolved config below `train.save_path`.

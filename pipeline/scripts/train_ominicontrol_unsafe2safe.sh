@@ -8,5 +8,6 @@ export PYTHONPATH="${ROOT_DIR}:${OMINICONTROL_ROOT}:${PYTHONPATH:-}"
 export TOKENIZERS_PARALLELISM="false"
 
 CONFIG_PATH="${OMINI_CONFIG:-${ROOT_DIR}/pipeline/adapters/ominicontrol/config.example.yaml}"
+NUM_PROCESSES="${OMINI_NUM_PROCESSES:-1}"
 cd -- "${ROOT_DIR}"
-exec accelerate launch -m pipeline.adapters.ominicontrol.train_unsafe2safe --config "${CONFIG_PATH}"
+exec accelerate launch --num_processes "${NUM_PROCESSES}" -m pipeline.adapters.ominicontrol.train_unsafe2safe --config "${CONFIG_PATH}"

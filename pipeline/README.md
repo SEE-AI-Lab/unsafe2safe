@@ -45,6 +45,8 @@ path, `public_caption_column` identifies the privacy-safe caption, and
 `edit_caption_column` identifies the edit instruction. Use whatever column
 names your manifest already has.
 
+For eight GPUs, use `0,1,2,3,4,5,6,7` as the last argument. The launcher passes this list to the external DDP trainer.
+
 ## CLIP filtering
 
 Filter edited pairs by normalized CLIP similarity:
@@ -170,6 +172,8 @@ NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
   /tmp/unsafe2safe-blip2-annotations/test.json \
   /path/to/coco
 ```
+
+Use `NPROC_PER_NODE=8` for eight GPUs.
 
 The example config uses LAVIS's BLIP-2 captioning setup; it controls the
 model, optimizer, resolution, and checkpoint output.  The paper evaluates
