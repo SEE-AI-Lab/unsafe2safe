@@ -48,27 +48,9 @@ class Unsafe2SafeDataset(Dataset):
         tokenizer_name: str | None = "openai/clip-vit-base-patch32",
         max_caption_tokens: int | None = 73,
     ) -> None:
-        if split not in {"train", "val", "test"}:
-            raise ValueError("split must be one of: train, val, test")
-        if not 0 < train_fraction <= 1:
-            raise ValueError("train_fraction must be in (0, 1]")
-
         frame = pd.read_csv(csv_path)
-        required = {image_column, caption_column}
-        missing = required - set(frame.columns)
-        if missing:
-            raise ValueError(f"CSV is missing columns: {sorted(missing)}")
-
         if clip_score_path is not None:
             scores = pd.read_csv(clip_score_path)
-            score_columns = {
-                score_filename_column,
-                score_edit_column,
-                score_original_column,
-            }
-            missing = score_columns - set(scores.columns)
-            if missing:
-                raise ValueError(f"CLIP score CSV is missing columns: {sorted(missing)}")
             frame = scores.merge(
                 frame,
                 left_on=score_filename_column,
@@ -117,13 +99,6 @@ class Unsafe2SafeDataset(Dataset):
     def __len__(self) -> int:
         return len(self.rows)
 
-    @staticmethod
-    def _relative_path(value: Any) -> Path:
-        path = Path(str(value))
-        if path.is_absolute() or ".." in path.parts:
-            raise ValueError(f"manifest path must stay relative to the image root: {path}")
-        return path
-
     def _caption(self, value: Any) -> str:
         caption = "" if pd.isna(value) else str(value)
         if self.tokenizer is not None and self.max_caption_tokens is not None:
@@ -138,7 +113,7 @@ class Unsafe2SafeDataset(Dataset):
 
     def __getitem__(self, index: int) -> dict[str, Any]:
         row = self.rows[index]
-        relative_path = self._relative_path(row[self.image_column])
+        relative_path = Path(str(row[self.image_column]))
         with Image.open(self.image_root / relative_path) as image:
             condition = image.convert("RGB")
         with Image.open(self.target_root / relative_path) as image:
