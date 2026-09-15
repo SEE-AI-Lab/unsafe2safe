@@ -87,7 +87,7 @@ class Unsafe2Safe(LatentDiffusion):
         timestep = torch.randint(0, self.num_timesteps, (x.shape[0],), device=self.device).long()
         return self.p_losses(x, c, timestep, *args, **kwargs)
 
-    def apply_model(self, x_noisy, timestep, cond, return_ids=False):
+    def apply_model(self, x_noisy, timestep, cond):
         contexts = cond["c_crossattn"]
         x_input = torch.cat([x_noisy] + cond["c_concat"], dim=1)
         # Call the UNet directly: the upstream wrapper assumes one context and

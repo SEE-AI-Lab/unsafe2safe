@@ -2,25 +2,11 @@ from __future__ import annotations
 
 import argparse
 import os
-from pathlib import Path
 
 import torch
 import yaml
 
 from .unsafe2safe_dataset import Unsafe2SafeDataset
-
-
-def _resolve_path(config_path: Path, value: str | None) -> str | None:
-    if value is None or value == "":
-        return value
-    path = Path(value).expanduser()
-    if path.is_absolute():
-        return str(path)
-    for root in (Path.cwd(), config_path.parent):
-        candidate = (root / path).resolve()
-        if candidate.exists():
-            return str(candidate)
-    return str((Path.cwd() / path).resolve())
 
 
 def main() -> None:
@@ -45,13 +31,7 @@ def main() -> None:
 
     train_config = config["train"]
     dataset_config = dict(train_config["dataset"])
-    # Resolve existing data from the repository root first, then the config directory.
-    for key in ("csv_path", "image_root", "target_root", "clip_score_path"):
-        dataset_config[key] = _resolve_path(config_path, dataset_config.get(key))
-
     dataset = Unsafe2SafeDataset(**dataset_config)
-    if torch.cuda.is_available():
-        torch.cuda.set_device(int(os.environ.get("LOCAL_RANK", 0)))
 
     model = OminiModel(
         flux_pipe_id=config["flux_path"],
