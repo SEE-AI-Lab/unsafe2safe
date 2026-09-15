@@ -6,10 +6,13 @@
 
 Unsafe2Safe creates privacy-preserving image edits while preserving the useful visual content of the source image.
 
-This repository contains the project-owned captioning, data filtering, editing, training adapters, evaluation helpers, and prompt assets used by the project. Large third-party model repositories, checkpoints, datasets, and generated outputs stay outside the repository.
+This repository contains the project-specific code for both paper stages,
+prompt assets, evaluation helpers, and adapters for the downstream experiments.
+Model weights and external trainers are installed separately.
 
 > [!NOTE]
-> This is a practical research release. The public files cover the project-owned pipeline pieces; model-heavy stages still require external checkouts, local datasets, and checkpoints.
+> The commands below use example paths. Replace them with the locations of your
+> local datasets, checkpoints, and external model repositories.
 
 ## Contents
 
@@ -174,8 +177,9 @@ The input score CSV should contain `clip_orig` and `clip_edit` columns. Rows are
 
 Stage 2 is the paper's SafeAttention editor. It takes the unsafe image, a
 privacy-safe caption, and an edit instruction, then learns to produce the safe
-image. The project-specific attention code is in `pipeline/stage2/`; the
-InstructPix2Pix trainer, VAE, CLIP encoder, and checkpoints remain external.
+image. The project-specific attention code is in `pipeline/stage2/`. The
+InstructPix2Pix trainer and model files are installed separately; setup is
+described in the [pipeline README](pipeline/README.md#instructpix2pix-integration).
 
 The implementation has three parts:
 
@@ -194,7 +198,9 @@ Train with the example configuration:
   0,1,2,3
 ```
 
-The example config is [`pipeline/stage2/configs/train_unsafe2safe.yaml`](pipeline/stage2/configs/train_unsafe2safe.yaml). Replace its local data and checkpoint paths as needed.
+Before training, set `ckpt_path`, `path`, `target_path`, and `csv_path` in
+[`pipeline/stage2/configs/train_unsafe2safe.yaml`](pipeline/stage2/configs/train_unsafe2safe.yaml)
+to your local files.
 
 The training manifest needs `file`, `public_caption`, and `edit_instruction`
 columns. In the config, `path` is the unsafe image root and `target_path` is
@@ -272,7 +278,9 @@ the downstream experiments in the paper:
 - [Qwen3-VL OK-VQA](pipeline/adapters/vqa/config.example.yaml) training and
   evaluation settings.
 
-These model trainers remain external. See the adapter READMEs for commands.
+The BLIP-2/LAVIS and Qwen3-VL adapters have detailed command examples in
+their READMEs. ImageMAE is a dataset adapter plus a handoff config for the
+external trainer.
 
 ## External dependencies
 
