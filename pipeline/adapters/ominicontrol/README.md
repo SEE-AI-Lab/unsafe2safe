@@ -42,7 +42,7 @@ The default config expects the filtered MS-COCO edited-pair data used by the pap
 
 `image_root/file` is the unsafe source condition and `target_root/file` is the safe training target. Run `pipeline/filter_dataset.py` first when CLIP filtering is needed; the adapter reads the resulting CSV directly. It uses the same deterministic 75/25 train/validation split and zero positional offset as the local OminiControl experiment.
 
-Copy the example config and update its data paths before training. Keep private datasets, model tokens, generated images, and machine-specific checkpoint paths outside the repository.
+Copy the example config, replace its data and checkpoint paths, and run it from the repository root. Do not add private datasets, model tokens, generated images, or machine-specific checkpoints to the checkout.
 
 ## Train
 
