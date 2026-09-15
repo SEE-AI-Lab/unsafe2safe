@@ -7,4 +7,4 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export PYTHONPATH="${ROOT_DIR}:${FLOWEDIT_ROOT}:${PYTHONPATH:-}"
 export TOKENIZERS_PARALLELISM="false"
 
-exec python -m pipeline.flowedit.generate_unsafe2safe "$@"
+exec python -m unsafe2safe.flowedit.generate_unsafe2safe "$@"

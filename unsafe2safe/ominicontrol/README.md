@@ -36,7 +36,7 @@ No OminiControl source files need to be copied or modified.
 ## Data expected by the adapter
 
 The default config expects the filtered MS-COCO edited-pair data used by the
-paper. Paths are relative to `pipeline/ominicontrol/config.yaml` unless absolute
+paper. Paths are relative to `unsafe2safe/ominicontrol/config.yaml` unless absolute
 paths are supplied. The pair CSV must contain:
 
 * `file`: relative path shared by the source and edited target images;
@@ -57,7 +57,7 @@ From the Unsafe2Safe repository root:
 
 ```bash
 export OMINICONTROL_ROOT=/absolute/path/to/OminiControl
-bash pipeline/scripts/train_ominicontrol_unsafe2safe.sh
+bash unsafe2safe/scripts/train_ominicontrol_unsafe2safe.sh
 ```
 
 The checked-in recipe uses FLUX.1-dev, subject conditioning, batch size 4, and
@@ -71,7 +71,7 @@ OminiControl checkout and a saved adapter:
 
 ```bash
 export PYTHONPATH="$PWD:$OMINICONTROL_ROOT:${PYTHONPATH:-}"
-python -m pipeline.ominicontrol.generate_unsafe2safe \
+python -m unsafe2safe.ominicontrol.generate_unsafe2safe \
   --input-csv data/MSCOCO_Qwen_4B_detailed_face.csv \
   --image-root data/coco \
   --output-dir outputs/ominicontrol \

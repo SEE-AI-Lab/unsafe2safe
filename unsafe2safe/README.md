@@ -24,9 +24,9 @@ Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and c
 Train with the example configuration:
 
 ```bash
-./pipeline/scripts/train_unsafe2safe.sh \
+./unsafe2safe/scripts/train_unsafe2safe.sh \
   /path/to/instruct-pix2pix \
-  pipeline/configs/train_unsafe2safe.yaml \
+  unsafe2safe/configs/train_unsafe2safe.yaml \
   /path/to/logs \
   0,1,2,3
 ```
@@ -40,7 +40,7 @@ names your manifest already has.
 Run the legacy batch editor from the repository root:
 
 ```bash
-./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT \
+./unsafe2safe/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT \
   FILE_COLUMN PUBLIC_CAPTION_COLUMN EDIT_CAPTION_COLUMN
 ```
 
@@ -51,7 +51,7 @@ That editor expects the external diffusion checkout at `stable_diffusion/`, a co
 Filter edited pairs by normalized CLIP similarity:
 
 ```bash
-python pipeline/dataset_creation/filter_dataset.py \
+python unsafe2safe/dataset_creation/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -95,7 +95,7 @@ The reusable modules under `metrics/` provide:
 For example, collect VLM scores from generated caption JSON files:
 
 ```bash
-python pipeline/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
+python unsafe2safe/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
 ```
 
 ## BLIP-2 captioning evaluation
@@ -123,7 +123,7 @@ original pixels.
 Prepare annotations for a local run:
 
 ```bash
-python -m pipeline.blip2_captioning \
+python -m unsafe2safe.blip2_captioning \
   --train-annotations /path/to/coco_train.json \
   --val-annotations /path/to/coco_val.json \
   --test-annotations /path/to/coco_test.json \
@@ -144,7 +144,7 @@ and safe roots without a patched dataset class.
 Train through the portable wrapper (the historical run used four processes):
 
 ```bash
-NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
+NPROC_PER_NODE=4 ./unsafe2safe/scripts/train_blip2_captioning.sh \
   /path/to/LAVIS \
   /path/to/LAVIS/lavis/projects/blip2/train/caption_coco_ft.yaml \
   /tmp/unsafe2safe-blip2-annotations/train.json \
@@ -156,10 +156,10 @@ NPROC_PER_NODE=4 ./pipeline/scripts/train_blip2_captioning.sh \
 The example config uses LAVIS's BLIP-2 captioning recipe; it controls the
 model, optimizer, resolution, and checkpoint output.  The paper evaluates
 generated captions with BLEU-4 and CIDEr; the reusable helper is
-`pipeline/metrics/caption_scores.py`.
+`unsafe2safe/metrics/caption_scores.py`.
 
 The prompt demo is optional and requires its own `datasets`, `gradio`, and `openai` installation:
 
 ```bash
-python pipeline/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
+python unsafe2safe/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
 ```

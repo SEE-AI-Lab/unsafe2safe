@@ -1,7 +1,7 @@
 import json
 from argparse import ArgumentParser
 
-from pipeline.dataset_creation.generate_txt_dataset import DELIMITER_0, DELIMITER_1, STOP
+from unsafe2safe.dataset_creation.generate_txt_dataset import DELIMITER_0, DELIMITER_1, STOP
 
 
 def main(input_path: str, output_path: str):

@@ -41,11 +41,11 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 ```text
 prompts/                  Captioning, privacy, and edit-instruction prompts.
 vlm_captioning/           Stage 1 generation, parsing, and flag evaluation.
-pipeline/dataset_creation/  Metadata and image-pair preparation utilities.
-pipeline/metrics/         CLIP, image, privacy, caption, and utility scores.
-pipeline/vqa/             Qwen3-VL OK-VQA fine-tuning and prediction scripts.
-pipeline/scripts/          Download, training, and batch-inference launchers.
-pipeline/                 Editing adapters, datasets, Safe Attention, and demo.
+unsafe2safe/dataset_creation/  Metadata and image-pair preparation utilities.
+unsafe2safe/metrics/            CLIP, image, privacy, caption, and utility scores.
+unsafe2safe/vqa/                Qwen3-VL OK-VQA fine-tuning and prediction scripts.
+unsafe2safe/scripts/            Download, training, and batch-inference launchers.
+unsafe2safe/                    Editing adapters, datasets, Safe Attention, and demo.
 ```
 
 The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
@@ -106,10 +106,10 @@ parsed = parse_structured_output(model_response)
 
 ## Dataset preparation
 
-The dataset helpers in `pipeline/dataset_creation/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
+The dataset helpers in `unsafe2safe/dataset_creation/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
 
 ```bash
-python pipeline/dataset_creation/filter_dataset.py \
+python unsafe2safe/dataset_creation/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -123,9 +123,9 @@ The original diffusion implementation is not vendored. For the InstructPix2Pix p
 Train with the example configuration:
 
 ```bash
-./pipeline/scripts/train_unsafe2safe.sh \
+./unsafe2safe/scripts/train_unsafe2safe.sh \
   /path/to/instruct-pix2pix \
-  pipeline/configs/train_unsafe2safe.yaml \
+  unsafe2safe/configs/train_unsafe2safe.yaml \
   /path/to/logs \
   0,1,2,3
 ```
@@ -133,16 +133,16 @@ Train with the example configuration:
 Run batch editing from the repository root:
 
 ```bash
-./pipeline/scripts/run_unsafe2safe.sh \
+./unsafe2safe/scripts/run_unsafe2safe.sh \
   INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT
 ```
 
-The batch editor expects the external diffusion checkout at `stable_diffusion/` for its legacy runtime path, together with a compatible config and checkpoint. See `pipeline/README.md` for the external checkout details and data columns used by the training loader.
+The batch editor expects the external diffusion checkout at `stable_diffusion/` for its legacy runtime path, together with a compatible config and checkpoint. See `unsafe2safe/README.md` for the external checkout details and data columns used by the training loader.
 
-The project also contains an Unsafe2Safe-specific OminiControl adapter in [`pipeline/ominicontrol/`](pipeline/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
+The project also contains an Unsafe2Safe-specific OminiControl adapter in [`unsafe2safe/ominicontrol/`](unsafe2safe/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
 
 The project also contains a minimal FlowEdit adapter in
-[`pipeline/flowedit/`](pipeline/flowedit/README.md). FlowEdit remains an
+[`unsafe2safe/flowedit/`](unsafe2safe/flowedit/README.md). FlowEdit remains an
 external MIT-licensed dependency.
 
 See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
@@ -150,7 +150,7 @@ boundaries, attribution, and license status.
 
 ## Evaluation
 
-The reusable metric helpers in `pipeline/metrics/` cover the project’s current public evaluation surface:
+The reusable metric helpers in `unsafe2safe/metrics/` cover the project’s current public evaluation surface:
 
 - CLIP and directional CLIP similarity.
 - SSIM and LPIPS image similarity.
@@ -164,7 +164,7 @@ Keep downloaded datasets, checkpoints, generated images, and experiment outputs 
 
 ## Downstream VQA
 
-The Qwen3-VL OK-VQA training and prediction scripts are under [`pipeline/vqa/`](pipeline/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
+The Qwen3-VL OK-VQA training and prediction scripts are under [`unsafe2safe/vqa/`](unsafe2safe/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
 
 ## Links
 

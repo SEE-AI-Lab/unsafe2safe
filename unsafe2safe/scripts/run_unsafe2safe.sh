@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Usage: ./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT [FILE_COLUMN] [PUBLIC_CAPTION_COLUMN] [EDIT_CAPTION_COLUMN]
+# Usage: ./unsafe2safe/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT [FILE_COLUMN] [PUBLIC_CAPTION_COLUMN] [EDIT_CAPTION_COLUMN]
 FILE_COLUMN="${5:-file}"
 PUBLIC_CAPTION_COLUMN="${6:-caption_public}"
 EDIT_CAPTION_COLUMN="${7:-caption_edit}"
 
-exec python pipeline/edit_unsafe2safe_df.py \
+exec python unsafe2safe/edit_unsafe2safe_df.py \
   --input "$1" \
   --output "$2" \
   --ckpt "$3" \
