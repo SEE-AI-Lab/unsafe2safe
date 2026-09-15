@@ -21,7 +21,7 @@ The training path is intentionally three small pieces:
 
 Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and checkpoint still come from the external InstructPix2Pix checkout.
 
-Train with the released configuration:
+Train with the example configuration:
 
 ```bash
 ./pipeline/scripts/train_unsafe2safe.sh \

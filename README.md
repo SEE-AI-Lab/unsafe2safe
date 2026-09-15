@@ -99,7 +99,7 @@ The input score CSV should contain `clip_orig` and `clip_edit` columns. Rows are
 
 The original diffusion implementation is not vendored. For the InstructPix2Pix path, use a clean external checkout and keep its checkpoints outside this repository. The project adapter imports the external code and applies the project-specific model changes in memory.
 
-Train with the released configuration:
+Train with the example configuration:
 
 ```bash
 ./pipeline/scripts/train_unsafe2safe.sh \
