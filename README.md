@@ -16,9 +16,9 @@ Model weights and external trainers are installed separately.
 
 ## Updates
 
-- **September 15, 2026** — All project-specific code for the paper is now live,
+- **September 15, 2026**: All project-specific code for the paper is now live,
   including Stage 1, Stage 2, evaluation helpers, and example configurations.
-- **March 25, 2026** — Previous Stage 1 implementation update.
+- **March 25, 2026**: Stage 1 implementation published.
 
 ## Contents
 
