@@ -96,6 +96,14 @@ python vlm_captioning/run_stage1.py \
 
 The YAML configs define additional purpose profiles such as privacy flag generation and edit-instruction generation.
 
+Structured responses can be parsed without model-specific dependencies:
+```python
+from vlm_captioning.output_parser import parse_structured_output
+
+parsed = parse_structured_output(model_response)
+public_caption = parsed.get("PUBLIC_CAPTION", "")
+```
+
 ## Dataset
 The released dataset is hosted on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe). Please refer to the dataset card for the public data description, access details, and updates.
 
