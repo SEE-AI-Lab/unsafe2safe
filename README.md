@@ -82,6 +82,9 @@ outputs/mscoco/               Generated JSON files.
 ```
 
 Each generation run also writes a CSV manifest beside its JSON files.
+The collector only records generated values; it does not merge arbitrary source
+metadata. Prepare any additional columns in the input manifest when a later
+step needs them.
 
 Generate privacy-aware captions:
 
@@ -92,13 +95,16 @@ python pipeline/stage1/run_stage1.py \
   --dataset mscoco
 ```
 
-When the run finishes, it writes the per-image JSON files and the collected
-manifest to `outputs/mscoco/generate_captions.csv`.
+When the run finishes, it writes the per-image JSON files and a manifest with
+`file`, `PRIVACY_FLAG`, `PRIVATE_CAPTION`, and `PUBLIC_CAPTION` columns to
+`outputs/mscoco/generate_captions.csv`.
 
-The `generate_edit_instructions` profile reads that manifest and maps its
-`PUBLIC_CAPTION` field to the `{public_caption}` prompt argument. It writes its
-own manifest to `outputs/mscoco/generate_edit_instructions.csv`, which the
-`combine_caption_and_edit` profile reads automatically:
+The `generate_edit_instructions` profile expects that manifest's `file` and
+`PUBLIC_CAPTION` columns, maps `PUBLIC_CAPTION` to the `{public_caption}` prompt
+argument, and writes a manifest with an `EDIT_INSTRUCTION` column to
+`outputs/mscoco/generate_edit_instructions.csv`. The
+`combine_caption_and_edit` profile expects `file`, `PUBLIC_CAPTION`, and
+`EDIT_INSTRUCTION` columns from that manifest:
 
 ```bash
 python pipeline/stage1/run_stage1.py \
