@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -30,8 +29,7 @@ class Sample:
 
 
 def load_yaml(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    return yaml.safe_load(Path(path).read_text(encoding="utf-8"))
 
 
 def render_templates(value, context):
@@ -53,44 +51,11 @@ def build_effective_config(cfg, purpose, dataset):
 
 
 def read_prompt(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read().strip()
+    return Path(path).read_text(encoding="utf-8").strip()
 
 
 def ensure_parent(path):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-
-
-def resolve_path(path, *, config_dir):
-    """Resolve a config path from the working directory or the repository."""
-    if path is None:
-        return path
-    candidate = Path(os.path.expandvars(os.path.expanduser(str(path))))
-    if candidate.is_absolute():
-        return str(candidate)
-
-    search_roots = [Path.cwd(), Path(config_dir), Path(config_dir).parent.parent]
-    for root in search_roots:
-        resolved = (root / candidate).resolve()
-        if resolved.exists():
-            return str(resolved)
-    # Keep non-existent output/cache paths relative to the caller's directory.
-    return str((Path.cwd() / candidate).resolve())
-
-
-def resolve_runtime_paths(effective_cfg, config_dir):
-    """Resolve filesystem settings after template expansion."""
-    cfg = copy.deepcopy(effective_cfg)
-    for section, keys in {
-        "run": ("cache_dir", "hf_home", "prompt_path"),
-        "source": ("csv_path", "right_root_dir"),
-        "output": ("output_dir", "manifest_path"),
-        "dataset": ("root_dir",),
-    }.items():
-        for key in keys:
-            if key in cfg.get(section, {}):
-                cfg[section][key] = resolve_path(cfg[section][key], config_dir=config_dir)
-    return cfg
 
 
 def _row_variables(row, source_cfg):
@@ -156,8 +121,7 @@ def build_text_messages(system_prompt, prompt_template, batch):
     return messages
 
 
-def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
-    effective_cfg = resolve_runtime_paths(effective_cfg, config_dir or Path.cwd())
+def run_job(effective_cfg, purpose, dataset_name):
     run_cfg = effective_cfg["run"]
     source_cfg = effective_cfg["source"]
     output_cfg = effective_cfg["output"]
@@ -174,10 +138,6 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
     suffix = output_cfg.get("filename_suffix", "_caption.json")
 
     samples = build_samples(dataset_cfg, source_cfg)
-    if not samples:
-        print("No samples found.")
-        return
-
     if backend == "qwen_text":
         generator = build_text_generator(
             run_cfg["model_id"],
@@ -237,12 +197,8 @@ def main():
     cfg = load_yaml(config_path)
     purpose = args.purpose or cfg.get("active_purpose")
     dataset_name = args.dataset or cfg.get("active_dataset")
-
-    if not purpose or not dataset_name:
-        raise ValueError("Both purpose and dataset must be set (via config or CLI).")
-
     effective_cfg = build_effective_config(cfg, purpose, dataset_name)
-    run_job(effective_cfg, purpose, dataset_name, config_dir=config_path.parent)
+    run_job(effective_cfg, purpose, dataset_name)
 
 
 if __name__ == "__main__":
