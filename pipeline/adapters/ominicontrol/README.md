@@ -35,22 +35,14 @@ No OminiControl source files need to be copied or modified.
 
 ## Data expected by the adapter
 
-The default config expects the filtered MS-COCO edited-pair data used by the
-paper. Paths are relative to the repository root when using
-`pipeline/adapters/ominicontrol/config.example.yaml` unless absolute paths are
-supplied. The pair CSV must contain:
+The default config expects the filtered MS-COCO edited-pair data used by the paper. Paths are relative to the repository root when using `pipeline/adapters/ominicontrol/config.example.yaml` unless absolute paths are supplied. The pair CSV must contain:
 
 * `file`: relative path shared by the source and edited target images;
 * `caption`: the edit instruction used as the text condition.
 
-`image_root/file` is the unsafe source condition and
-`target_root/file` is the safe training target. If `clip_score_path` is provided,
-the adapter retains rows with `clip_edit / clip_orig > 0.7`, matching the paper's
-filtering rule. It uses the same deterministic 75/25 train/validation split and
-zero positional offset as the local OminiControl experiment.
+`image_root/file` is the unsafe source condition and `target_root/file` is the safe training target. Run `pipeline/filter_dataset.py` first when CLIP filtering is needed; the adapter reads the resulting CSV directly. It uses the same deterministic 75/25 train/validation split and zero positional offset as the local OminiControl experiment.
 
-Copy the example config and update its data paths before training. Do not commit private
-datasets, model tokens, generated images, or machine-specific checkpoint paths.
+Copy the example config and update its data paths before training. Keep private datasets, model tokens, generated images, and machine-specific checkpoint paths outside the repository.
 
 ## Train
 

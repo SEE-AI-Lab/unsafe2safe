@@ -7,12 +7,11 @@ import numpy as np
 import pandas as pd
 import torch
 import torchvision
-from einops import rearrange
 from PIL import Image
 from torch.utils.data import Dataset
 
 def _image_tensor(image: Image.Image) -> torch.Tensor:
-    return rearrange(2 * torch.tensor(np.array(image)).float() / 255 - 1, "h w c -> c h w")
+    return 2 * torch.from_numpy(np.array(image)).float().permute(2, 0, 1) / 255 - 1
 
 
 class EditDataset(Dataset):

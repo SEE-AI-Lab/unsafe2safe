@@ -11,9 +11,6 @@ from PIL import Image
 from torch.utils.data import Dataset
 from transformers import CLIPTokenizer
 
-from pipeline.filter_dataset import filter_by_clip_similarity
-
-
 class Unsafe2SafeDataset(Dataset):
     """Return Unsafe2Safe pairs in the format expected by OminiControl.
 
@@ -35,13 +32,8 @@ class Unsafe2SafeDataset(Dataset):
         *,
         split: str = "train",
         train_fraction: float = 0.75,
-        clip_score_path: str | Path | None = None,
-        clip_threshold: float = 0.7,
         image_column: str = "file",
         caption_column: str = "caption",
-        score_filename_column: str = "filename",
-        score_edit_column: str = "clip_edit",
-        score_original_column: str = "clip_orig",
         image_size: tuple[int, int] = (512, 512),
         drop_text_prob: float = 0.1,
         drop_image_prob: float = 0.1,
@@ -49,20 +41,6 @@ class Unsafe2SafeDataset(Dataset):
         max_caption_tokens: int = 73,
     ) -> None:
         frame = pd.read_csv(csv_path)
-        if clip_score_path is not None:
-            scores = pd.read_csv(clip_score_path)
-            frame = scores.merge(
-                frame,
-                left_on=score_filename_column,
-                right_on=image_column,
-                how="inner",
-            )
-            frame = filter_by_clip_similarity(
-                frame,
-                original_column=score_original_column,
-                edited_column=score_edit_column,
-                threshold=clip_threshold,
-            )
 
         # The paper's split is a deterministic 75/25 split of train2014;
         # val2014 is reserved for the test split.

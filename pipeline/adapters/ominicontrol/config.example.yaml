@@ -18,13 +18,11 @@ train:
   save_path: "runs/ominicontrol"
 
   dataset:
-    csv_path: "data/MSCOCO_Qwen_4B_detailed_face.csv"
+    csv_path: "data/MSCOCO_Qwen_4B_detailed_face_filtered.csv"
     image_root: "data/coco"
     target_root: "data/MSCOCO_private_editted_new"
-    clip_score_path: "data/clip_similarity_orig_edit.csv"
     split: "train"
     train_fraction: 0.75
-    clip_threshold: 0.7
     image_size: [512, 512]
     drop_text_prob: 0.1
     drop_image_prob: 0.1
