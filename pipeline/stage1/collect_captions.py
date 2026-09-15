@@ -1,4 +1,4 @@
-"""Collect Stage 1 JSON outputs into CSV or JSONL records."""
+"""Collect Stage 1 JSON outputs into a CSV table."""
 
 from __future__ import annotations
 

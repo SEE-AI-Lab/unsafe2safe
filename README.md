@@ -61,7 +61,7 @@ data, metadata, checkpoint, and output paths to match your local setup.
 
 Paper-aligned handoff configs are kept beside the code they configure:
 
-- `pipeline/stage1/config.yaml`: InternVL/Qwen captioning, flagging, and comparison jobs.
+- `pipeline/stage1/config.yaml`: InternVL/Qwen captioning, flagging, and prompt-preparation jobs.
 - `pipeline/stage2/configs/`: SafeAttention/InstructPix2Pix training.
 - `pipeline/adapters/*/config.example.yaml`: FreePrompt, FlowEdit, OminiControl,
   ImageMAE, BLIP-2, and Qwen3-VL recipes.
