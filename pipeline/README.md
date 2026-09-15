@@ -98,6 +98,20 @@ The reusable modules under `evaluation/` provide:
 - BLEU-4 and CIDEr captioning scores.
 - Downstream top-1 classification accuracy.
 
+Compare raw and anonymized images with the VLM judge, then collect the scores:
+
+```bash
+python -m pipeline.evaluation.compare_anonymized \
+  --input-csv metadata/mscoco_pairs.csv \
+  --raw-root data/mscoco \
+  --anonymized-root data/mscoco_anonymized \
+  --output-dir outputs/mscoco/compare_anonymization \
+  --prompt prompts/intern_image_flagging-compare.txt
+python pipeline/evaluation/vlm_score.py \
+  outputs/mscoco/compare_anonymization \
+  outputs/mscoco/vlm_scores.json
+```
+
 For example, collect VLM scores from generated caption JSON files:
 
 ```bash

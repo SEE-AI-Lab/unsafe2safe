@@ -7,6 +7,14 @@ metadata: metadata/mscoco_test.csv
 original_root: /absolute/path/to/coco
 edited_root: /absolute/path/to/unsafe2safe-images
 
+compare_anonymized:
+  input_csv: metadata/mscoco_pairs.csv
+  raw_root: /absolute/path/to/coco
+  anonymized_root: /absolute/path/to/mscoco-anonymized
+  output_dir: outputs/mscoco/compare_anonymization
+  prompt: prompts/intern_image_flagging-compare.txt
+  model_id: OpenGVLab/InternVL3_5-8B
+
 metrics:
   image_similarity: [ssim, lpips]
   privacy: [face_similarity, text_similarity, race_entropy, vlm_score]

@@ -71,7 +71,7 @@ Paper-aligned handoff configs are kept beside the code they configure:
 
 ## Stage 1: captioning and privacy instructions
 
-The default configuration uses an InternVL backend for image captioning and privacy flags, and a Qwen text backend for edit instructions and caption combination.
+The default configuration uses an InternVL backend for image captioning and privacy flags, and a Qwen text backend for edit instructions and caption combination. Raw/anonymized image comparison is an evaluation step described below.
 
 Expected local layout:
 
@@ -87,15 +87,6 @@ Generate privacy-aware captions:
 python pipeline/stage1/run_stage1.py \
   --config pipeline/stage1/config.yaml \
   --purpose generate_captions \
-  --dataset mscoco
-```
-
-Compare original and anonymized images:
-
-```bash
-python pipeline/stage1/run_stage1.py \
-  --config pipeline/stage1/config.yaml \
-  --purpose compare_anonymization \
   --dataset mscoco
 ```
 
@@ -228,6 +219,7 @@ model or input format. The public helpers are:
 
 | Result | Helper | Input |
 | --- | --- | --- |
+| VLM anonymization score | `compare_anonymized.py`, `vlm_score.py` | raw/anonymized image pairs |
 | CLIP similarity | `ClipSimilarity` | image and caption batches |
 | Directional CLIP | `compute_directional_clip_score` | original/edited images and captions |
 | SSIM and LPIPS | `compute_ssim`, `compute_lpips` | one original/edited path pair |
@@ -236,8 +228,19 @@ model or input format. The public helpers are:
 | Captioning | `compute_caption_scores` | predictions and references |
 | Classification | `top1_accuracy` | model and labeled dataloader |
 
-The VLM anonymization score has a command-line helper. First run the Stage 1
-`compare_anonymization` purpose, then collect its JSON scores:
+Compare raw and anonymized images with the InternVL judge:
+
+```bash
+python -m pipeline.evaluation.compare_anonymized \
+  --input-csv metadata/mscoco_pairs.csv \
+  --raw-root data/mscoco \
+  --anonymized-root data/mscoco_anonymized \
+  --output-dir outputs/mscoco/compare_anonymization \
+  --prompt prompts/intern_image_flagging-compare.txt
+```
+
+The command writes one `_caption.json` file per pair. Collect the scores from
+those files:
 
 ```bash
 python pipeline/evaluation/vlm_score.py \
