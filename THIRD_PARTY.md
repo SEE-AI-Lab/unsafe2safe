@@ -31,6 +31,19 @@ adapters. They leave the external checkout unchanged.
 `pipeline/ominicontrol/` contains only the Unsafe2Safe dataset mapping and
 launch/generation wrappers.
 
+## FlowEdit
+
+- Repository: [fallenshock/FlowEdit](https://github.com/fallenshock/FlowEdit)
+- Reproduction revision: `2620a9364f0f9c21368c36266e6200ff250273ec`
+- Install: clone the repository, check out that revision, install the
+  upstream-compatible diffusion dependencies, and set `FLOWEDIT_ROOT` as
+  described in [`pipeline/flowedit/README.md`](pipeline/flowedit/README.md).
+- License: upstream [MIT LICENSE](https://github.com/fallenshock/FlowEdit/blob/main/LICENSE).
+
+`pipeline/flowedit/` contains only the Unsafe2Safe CSV condition mapping and
+portable generation wrapper. The upstream sampler, assets, data, and model
+weights are not copied into this repository.
+
 ## BLIP-2 and LAVIS
 
 - Repository: [salesforce/LAVIS](https://github.com/salesforce/LAVIS)

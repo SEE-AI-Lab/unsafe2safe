@@ -120,6 +120,10 @@ The batch editor expects the external diffusion checkout at `stable_diffusion/` 
 
 The project also contains an Unsafe2Safe-specific OminiControl adapter in [`pipeline/ominicontrol/`](pipeline/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
 
+The project also contains a minimal FlowEdit adapter in
+[`pipeline/flowedit/`](pipeline/flowedit/README.md). FlowEdit remains an
+external MIT-licensed dependency.
+
 See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
 boundaries, attribution, and license status.
 

@@ -57,6 +57,14 @@ The input CSV must contain `clip_orig` and `clip_edit`. A row is kept when `clip
 
 `ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`ominicontrol/README.md`](ominicontrol/README.md). The upstream OminiControl and FLUX source remain external.
 
+## FlowEdit adapter
+
+`flowedit/` contains the Unsafe2Safe CSV-to-caption mapping and portable batch
+inference wrapper for an external FlowEdit checkout. It follows the paper's
+SD3 configuration and imports the upstream sampler at runtime. See
+[`flowedit/README.md`](flowedit/README.md) for the pinned revision, data
+schema, and reproduction command.
+
 ## Evaluation helpers
 
 The reusable modules under `metrics/` provide:
