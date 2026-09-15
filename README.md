@@ -104,6 +104,14 @@ parsed = parse_structured_output(model_response)
 public_caption = parsed.get("PUBLIC_CAPTION", "")
 ```
 
+To assemble generated JSON files for later training or evaluation, use the notebook-derived collector:
+```bash
+python -m vlm_captioning.collect_captions \
+  --captions-dir outputs/mscoco/generate_captions \
+  --metadata metadata/mscoco.csv \
+  --output metadata/mscoco_with_captions.csv
+```
+
 ## Dataset
 The released dataset is hosted on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe). Please refer to the dataset card for the public data description, access details, and updates.
 
