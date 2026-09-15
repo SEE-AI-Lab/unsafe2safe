@@ -90,7 +90,7 @@ data:
         edit_caption_column: edit_instruction
         split: train
         train_fraction: 0.95
-        crop_res: 256
+        image_size: 256
         flip_prob: 0.5
     validation:
       <<: *edit_dataset
