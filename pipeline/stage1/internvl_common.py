@@ -35,9 +35,6 @@ def run_internvl_batch(
     system_prompt,
     image_size=448,
     max_new_tokens=1024,
-    do_sample=False,
-    pad_token_id=None,
-    format_with_class=True,
     device="cuda",
 ):
     # InternVL batch_chat expects a single stacked tensor for all images.
@@ -45,8 +42,7 @@ def run_internvl_batch(
     pixel_values = torch.stack(pixel_values).to(device=device, dtype=torch.bfloat16)
     questions = []
     for image_class in image_classes:
-        # Some prompts use {image_class}; others are fixed text blocks.
-        user_text = prompt.format(image_class=image_class) if format_with_class else prompt
+        user_text = prompt.format(image_class=image_class)
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": "<image>\n" + user_text},
@@ -57,9 +53,7 @@ def run_internvl_batch(
         questions.append(text_prompt)
     # One visual input per sample in this path.
     num_patches_list = [1] * len(image_paths)
-    generation_config = dict(max_new_tokens=max_new_tokens, do_sample=do_sample)
-    if pad_token_id is not None:
-        generation_config["pad_token_id"] = pad_token_id
+    generation_config = {"max_new_tokens": max_new_tokens}
     responses = model.batch_chat(
         tokenizer,
         pixel_values,

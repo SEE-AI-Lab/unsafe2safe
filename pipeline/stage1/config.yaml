@@ -30,7 +30,6 @@ purposes:
       model_id: OpenGVLab/InternVL2_5-8B
       system_prompt: You are a vision-language assistant that generates privacy-aware, structured descriptions of real-world images.
       prompt_path: prompts/intern_image_captioning.txt
-      format_with_class: true
       parse_structured: true
     source:
       type: csv
@@ -56,7 +55,6 @@ purposes:
       model_id: OpenGVLab/InternVL2_5-8B
       system_prompt: You are a vision-language assistant for structured, privacy-aware image analysis.
       prompt_path: prompts/intern_image_flagging.txt
-      format_with_class: true
       parse_structured: true
       max_new_tokens: 128
     source:

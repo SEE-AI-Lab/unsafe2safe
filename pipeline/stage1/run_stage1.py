@@ -175,8 +175,6 @@ def run_job(effective_cfg, purpose, dataset_name):
                 system_prompt=system_prompt,
                 image_size=image_size,
                 max_new_tokens=max_new_tokens,
-                do_sample=run_cfg.get("do_sample", False),
-                format_with_class=run_cfg.get("format_with_class", True),
                 device=run_cfg.get("device", "cuda"),
             )
         for out_text, out_path in zip(outputs, save_paths):
