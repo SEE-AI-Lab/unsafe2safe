@@ -16,10 +16,7 @@ from typing import Any
 def _load_annotations(path: Path) -> list[dict[str, Any]]:
     """Read one LAVIS unified annotation list."""
     with path.open() as handle:
-        annotations = json.load(handle)
-    if not isinstance(annotations, list):
-        raise ValueError(f"{path} must contain a JSON list")
-    return annotations
+        return json.load(handle)
 
 
 def _load_files(path: Path | None) -> set[str]:
@@ -28,9 +25,7 @@ def _load_files(path: Path | None) -> set[str]:
         return set()
     with path.open(newline="") as handle:
         rows = csv.DictReader(handle)
-        if not rows.fieldnames or "file" not in rows.fieldnames:
-            raise ValueError(f"{path} must contain a 'file' column")
-        return {row["file"].strip() for row in rows if row.get("file", "").strip()}
+        return {row["file"].strip() for row in rows}
 
 
 def _image_path(root: Path, name: str) -> str:
@@ -57,8 +52,6 @@ def prepare_annotations(
     annotations = _load_annotations(annotation_path)
     safe_files = _load_files(safe_manifest)
     private_files = _load_files(private_manifest)
-    if safe_files and safe_root is None:
-        raise ValueError("--safe-root is required with --safe-manifest")
 
     routed: list[dict[str, Any]] = []
     dropped = 0
@@ -66,7 +59,6 @@ def prepare_annotations(
         name = annotation["image"]
         if name in safe_files:
             # Absolute paths let vanilla LAVIS read both image roots in one run.
-            assert safe_root is not None
             image = _image_path(safe_root, name)
         elif name in private_files:
             dropped += 1
