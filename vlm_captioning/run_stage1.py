@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import copy
 import os
@@ -36,7 +38,7 @@ class Sample:
 
 
 def load_yaml(path):
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
@@ -89,12 +91,44 @@ def build_effective_config(cfg, purpose, dataset):
 
 
 def read_prompt(path):
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read().strip()
 
 
 def ensure_parent(path):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+
+
+def resolve_path(path, *, config_dir):
+    """Resolve a config path from the working directory or the repository."""
+    if path is None:
+        return path
+    candidate = Path(os.path.expandvars(os.path.expanduser(str(path))))
+    if candidate.is_absolute():
+        return str(candidate)
+
+    search_roots = [Path.cwd(), Path(config_dir), Path(config_dir).parent.parent]
+    for root in search_roots:
+        resolved = (root / candidate).resolve()
+        if resolved.exists():
+            return str(resolved)
+    # Keep non-existent output/cache paths relative to the caller's directory.
+    return str((Path.cwd() / candidate).resolve())
+
+
+def resolve_runtime_paths(effective_cfg, config_dir):
+    """Resolve filesystem settings after template expansion."""
+    cfg = copy.deepcopy(effective_cfg)
+    for section, keys in {
+        "run": ("cache_dir", "hf_home", "prompt_path"),
+        "source": ("csv_path", "right_root_dir"),
+        "output": ("output_dir",),
+        "dataset": ("root_dir",),
+    }.items():
+        for key in keys:
+            if key in cfg.get(section, {}):
+                cfg[section][key] = resolve_path(cfg[section][key], config_dir=config_dir)
+    return cfg
 
 
 def apply_filters(df, filters):
@@ -191,6 +225,8 @@ def build_samples(dataset_cfg, source_cfg):
 def output_path_for(sample, output_dir, suffix="_caption.json"):
     # Preserve relative folder hierarchy in outputs.
     stem = Path(sample.rel_path).with_suffix("")
+    if stem.is_absolute() or ".." in stem.parts:
+        raise ValueError(f"Sample path must be relative and contained: {sample.rel_path}")
     return Path(output_dir) / f"{stem}{suffix}"
 
 
@@ -227,7 +263,8 @@ def build_qwen_vl_messages(system_prompt, prompt_template, batch):
 
 
 
-def run_job(effective_cfg, purpose, dataset_name):
+def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
+    effective_cfg = resolve_runtime_paths(effective_cfg, config_dir or Path.cwd())
     run_cfg = effective_cfg["run"]
     source_cfg = effective_cfg["source"]
     output_cfg = effective_cfg["output"]
@@ -258,7 +295,7 @@ def run_job(effective_cfg, purpose, dataset_name):
     elif backend in {"internvl", "internvl_pair"}:
         model, tokenizer = load_internvl_model_and_tokenizer(
             run_cfg["model_id"],
-            cache_dir=run_cfg.get("cache_dir", "/gpudata3/minh"),
+            cache_dir=run_cfg.get("cache_dir", ".cache/huggingface"),
             device=run_cfg.get("device", "cuda"),
         )
     else:
@@ -317,7 +354,8 @@ def main():
     parser.add_argument("--dataset", type=str, default=None, help="Override dataset profile")
     args = parser.parse_args()
 
-    cfg = load_yaml(args.config)
+    config_path = Path(args.config).expanduser().resolve()
+    cfg = load_yaml(config_path)
     purpose = args.purpose or cfg.get("active_purpose")
     dataset_name = args.dataset or cfg.get("active_dataset")
 
@@ -325,7 +363,7 @@ def main():
         raise ValueError("Both purpose and dataset must be set (via config or CLI).")
 
     effective_cfg = build_effective_config(cfg, purpose, dataset_name)
-    run_job(effective_cfg, purpose, dataset_name)
+    run_job(effective_cfg, purpose, dataset_name, config_dir=config_path.parent)
 
 
 if __name__ == "__main__":

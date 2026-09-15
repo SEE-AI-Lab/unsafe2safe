@@ -7,20 +7,20 @@ defaults:
     max_new_tokens: 1024
     image_size: 448
     device: cuda
-    cache_dir: /gpudata3/minh
+    cache_dir: .cache/huggingface
   output:
-    output_dir: /gpudata3/minh/data/{dataset}/{purpose}
+    output_dir: outputs/{dataset}/{purpose}
     filename_suffix: _caption.json
 
 datasets:
   mscoco:
-    root_dir: ....
+    root_dir: data/mscoco
   vispr:
-    root_dir: ...
+    root_dir: data/vispr
   caltech:
-    root_dir: ...
+    root_dir: data/caltech-101
   indoor:
-    root_dir: ...
+    root_dir: data/indoor
 
 purposes:
   generate_captions:
@@ -33,7 +33,7 @@ purposes:
     source:
       type: csv
       image_col: file
-      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
+      csv_path: metadata/{dataset}.csv
     dataset_overrides:
       vispr:
         source:
@@ -64,7 +64,7 @@ purposes:
     run:
       backend: qwen_text
       model_id: Qwen/Qwen3-4B-Instruct-2507
-      hf_home: /gpudata3/minh/
+      hf_home: .cache/huggingface
       system_prompt: You generate short change descriptions for real-world image captions.
       prompt_path: prompts/qwen_image_captioning-private-expand.txt
       max_new_tokens: 512
@@ -72,13 +72,13 @@ purposes:
     source:
       type: csv
       image_col: file
-      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
+      csv_path: metadata/{dataset}.csv
 
   combine_caption_and_edit:
     run:
       backend: qwen_text
       model_id: Qwen/Qwen3-4B-Instruct-2507
-      hf_home: /gpudata3/minh/
+      hf_home: .cache/huggingface
       system_prompt: You are a caption rewriting assistant that write coherent yet concise image caption.
       prompt_path: prompts/qwen_caption_combine.txt
       max_new_tokens: 512
@@ -86,4 +86,4 @@ purposes:
     source:
       type: csv
       image_col: file
-      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
+      csv_path: metadata/{dataset}.csv

@@ -15,7 +15,7 @@ def write_caption_json(path, caption):
 
 
 def load_internvl_model_and_tokenizer(model_path, *, cache_dir=
-    '/gpudata3/minh', device='cuda', torch_dtype=torch.bfloat16,
+    '.cache/huggingface', device='cuda', torch_dtype=torch.bfloat16,
     use_flash_attn=True):
     model = AutoModel.from_pretrained(model_path, cache_dir=cache_dir,
         torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_flash_attn=

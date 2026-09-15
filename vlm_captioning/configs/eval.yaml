@@ -1,4 +1,4 @@
-active_purpose: generate_captions
+active_purpose: compare_anonymization
 active_dataset: mscoco
 
 defaults:
@@ -7,20 +7,20 @@ defaults:
     max_new_tokens: 1024
     image_size: 448
     device: cuda
-    cache_dir: /gpudata3/minh
+    cache_dir: .cache/huggingface
   output:
-    output_dir: /gpudata3/minh/data/{dataset}/{purpose}
+    output_dir: outputs/{dataset}/{purpose}
     filename_suffix: _caption.json
 
 datasets:
   mscoco:
-    root_dir: /jumbo/jinlab/datasets/coco
+    root_dir: data/mscoco
   vispr:
-    root_dir: /jumbo/jinlab/datasets/VISPR/images_resize250
+    root_dir: data/vispr
   caltech:
-    root_dir: /scratch/minh/code/caltech-101/101_ObjectCategories
+    root_dir: data/caltech-101
   indoor:
-    root_dir: /jumbo/jinlab/minh/data/MIT_Indoor_67/Images
+    root_dir: data/indoor
 
 purposes:
   compare_anonymization:
@@ -32,8 +32,8 @@ purposes:
       max_new_tokens: 512
     source:
       type: paired_csv
-      csv_path: ../vlm_caption/MSCOCO_Qwen_4B_detailed_face_combined_full.csv
+      csv_path: metadata/{dataset}_pairs.csv
       left_image_col: file
       right_image_col: file
       rel_col: file
-      right_root_dir: /gpudata3/minh/MSCOCO_FlowEdit
+      right_root_dir: data/{dataset}_anonymized
