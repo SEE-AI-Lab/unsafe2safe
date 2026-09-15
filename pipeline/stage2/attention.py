@@ -16,7 +16,6 @@ from .external import configure_external
 configure_external()
 
 from ldm.modules import attention as base_attention  # noqa: E402
-from ldm.modules.diffusionmodules.util import checkpoint  # noqa: E402
 
 
 class SafeCrossAttention(nn.Module):
@@ -54,29 +53,10 @@ class SafeCrossAttention(nn.Module):
             self.to_k_public.weight.copy_(self.to_k.weight)
             self.to_v_public.weight.copy_(self.to_v.weight)
 
-    def _standard(self, x, context, mask=None):
-        h = self.heads
-        q = self.to_q(x)
-        k, v = self.to_k(context), self.to_v(context)
-        q, k, v = map(
-            lambda tensor: rearrange(tensor, "b n (h d) -> (b h) n d", h=h),
-            (q, k, v),
-        )
-        sim = einsum("b i d, b j d -> b i j", q, k) * self.scale
-        if mask is not None:
-            mask = rearrange(mask, "b ... -> b (...)")
-            mask = repeat(mask, "b j -> (b h) () j", h=h)
-            sim.masked_fill_(~mask, -torch.finfo(sim.dtype).max)
-        out = einsum("b i j, b j d -> b i d", sim.softmax(dim=-1), v)
-        out = rearrange(out, "(b h) n d -> b n (h d)", h=h)
-        return self.to_out(out)
-
-    def forward(self, x, context=None, context_edit=None, context_public=None, mask=None):
-        if context_edit is None:
-            context_edit = x if context is None else context
-        if context_public is None:
-            return self._standard(x, context_edit, mask=mask)
-
+    def forward(self, x, context=None, mask=None):
+        if not isinstance(context, (tuple, list)) or len(context) != 2:
+            raise ValueError("Safe attention context must be (public, edit)")
+        context_public, context_edit = context
         h = self.heads
         q_edit, q_public = self.to_q(x), self.to_q_public(x)
         k_edit, v_edit = self.to_k(context_edit), self.to_v(context_edit)
@@ -110,7 +90,7 @@ class SafeCrossAttention(nn.Module):
 
 
 class SafeBasicTransformerBlock(nn.Module):
-    def __init__(self, dim, n_heads, d_head, dropout=0.0, context_dim=None, gated_ff=True, checkpoint_enabled=True):
+    def __init__(self, dim, n_heads, d_head, dropout=0.0, context_dim=None, gated_ff=True):
         super().__init__()
         self.attn1 = base_attention.CrossAttention(
             query_dim=dim, heads=n_heads, dim_head=d_head, dropout=dropout
@@ -126,29 +106,15 @@ class SafeBasicTransformerBlock(nn.Module):
         self.norm1 = nn.LayerNorm(dim)
         self.norm2 = nn.LayerNorm(dim)
         self.norm3 = nn.LayerNorm(dim)
-        self.checkpoint = checkpoint_enabled
 
     def forward(self, x, context=None):
-        # The external checkpoint helper expects tensor inputs only.
-        if isinstance(context, (tuple, list)):
-            return self._forward(x, context)
-        return checkpoint(self._forward, (x, context), self.parameters(), self.checkpoint)
+        if not isinstance(context, (tuple, list)) or len(context) != 2:
+            raise ValueError("Safe attention context must be (public, edit)")
+        return self._forward(x, context)
 
-    def _forward(self, x, context=None):
+    def _forward(self, x, context):
         x = self.attn1(self.norm1(x)) + x
-        if isinstance(context, (tuple, list)):
-            if len(context) != 2:
-                raise ValueError("Safe attention context must be (public, edit)")
-            # Keep this order explicit: the public caption is the semantic
-            # anchor, while the edit instruction drives the normal branch.
-            context_public, context_edit = context
-            x = self.attn2(
-                self.norm2(x),
-                context_edit=context_edit,
-                context_public=context_public,
-            ) + x
-        else:
-            x = self.attn2(self.norm2(x), context=context) + x
+        x = self.attn2(self.norm2(x), context=context) + x
         return self.ff(self.norm3(x)) + x
 
 
