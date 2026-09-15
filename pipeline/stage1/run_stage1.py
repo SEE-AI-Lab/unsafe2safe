@@ -254,7 +254,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
             ensure_parent(out_path)
             write_caption_json(out_path, out_text)
 
-    collect_captions(output_dir, output_path=output_cfg.get("manifest_path"), metadata_path=source_cfg.get("csv_path"), filename_suffix=suffix, parse_structured=run_cfg.get("parse_structured", False), output_column=run_cfg.get("output_column", "caption"))
+    collect_captions(output_dir, output_path=output_cfg.get("manifest_path"), filename_suffix=suffix, parse_structured=run_cfg.get("parse_structured", False), output_column=run_cfg.get("output_column", "caption"))
 
 
 def main():

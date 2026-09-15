@@ -7,8 +7,8 @@ import json
 from pathlib import Path
 
 
-def collect_captions(captions_dir, *, output_path=None, metadata_path=None, filename_suffix="_caption.json", image_suffix=".jpg", parse_structured=False, output_column="caption"):
-    """Read generated captions, optionally merge metadata, and write a CSV."""
+def collect_captions(captions_dir, *, output_path=None, filename_suffix="_caption.json", image_suffix=".jpg", parse_structured=False, output_column="caption"):
+    """Read generated captions and optionally write a CSV; do not merge metadata."""
     root = Path(captions_dir)
     rows = []
     for caption_path in sorted(root.rglob(f"*{filename_suffix}")):
@@ -24,15 +24,6 @@ def collect_captions(captions_dir, *, output_path=None, metadata_path=None, file
 
             row.update(parse_structured_output(caption))
         rows.append(row)
-
-    if metadata_path:
-        captions = {row["file"]: row for row in rows}
-        with Path(metadata_path).open(encoding="utf-8", newline="") as handle:
-            rows = []
-            for row in csv.DictReader(handle):
-                if row["file"] in captions:
-                    row.update(captions[row["file"]])
-                    rows.append(row)
 
     if output_path:
         preferred = ["file", "caption", "PRIVACY_FLAG", "PRIVACY_REVIEW", "PRIVATE_CAPTION", "PUBLIC_CAPTION"]
