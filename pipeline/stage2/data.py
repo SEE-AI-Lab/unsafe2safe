@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 from pathlib import Path
 from typing import Any, Dict
 
@@ -13,20 +12,6 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from pipeline.filter_dataset import filter_by_clip_similarity
-
-
-def _image_path(root: Path, relative_path: str | Path) -> Path:
-    """Resolve a manifest path without allowing it to escape its image root."""
-    relative = Path(relative_path)
-    if relative.is_absolute() or ".." in relative.parts:
-        raise ValueError(f"manifest path must stay relative to the image root: {relative}")
-    root = root.resolve()
-    resolved = (root / relative).resolve()
-    try:
-        resolved.relative_to(root)
-    except ValueError as exc:
-        raise ValueError(f"manifest path must stay relative to the image root: {relative}") from exc
-    return resolved
 
 
 def _image_tensor(image: Image.Image) -> torch.Tensor:
@@ -56,28 +41,13 @@ class EditDataset(Dataset):
         score_edit_column: str = "clip_edit",
         clip_threshold: float = 0.7,
     ):
-        if split not in ("train", "val", "test"):
-            raise ValueError("split must be one of: train, val, test")
-        if any(value < 0 for value in splits) or not math.isclose(sum(splits), 1.0):
-            raise ValueError("splits must sum to 1")
-        if splits[0] + splits[1] == 0:
-            raise ValueError("train and validation split fractions cannot both be zero")
-
         self.file_column = file_column
         self.public_caption_column = public_caption_column
         self.edit_caption_column = edit_caption_column
 
         df = pd.read_csv(csv_path)
-        required = {file_column, public_caption_column, edit_caption_column}
-        missing = sorted(required - set(df.columns))
-        if missing:
-            raise ValueError(f"CSV is missing columns: {missing}")
         if clip_score_path is not None:
             df_clip_score = pd.read_csv(clip_score_path)
-            score_columns = {score_file_column, score_public_column, score_edit_column}
-            missing = sorted(score_columns - set(df_clip_score.columns))
-            if missing:
-                raise ValueError(f"CLIP score CSV is missing columns: {missing}")
             df = df_clip_score.merge(df, left_on=score_file_column, right_on=file_column, how="inner")
             df = filter_by_clip_similarity(
                 df,
@@ -103,7 +73,7 @@ class EditDataset(Dataset):
             selected_df = train_df[:train_cutoff]
         elif split == "val":
             selected_df = train_df[train_cutoff:]
-        elif split == "test":
+        else:
             selected_df = test_df
 
         self.rows = selected_df.to_dict(orient="records")
@@ -120,10 +90,10 @@ class EditDataset(Dataset):
     def __getitem__(self, i: int) -> Dict[str, Any]:
         entry = self.rows[i]
         relative_path = entry[self.file_column]
-        image_path = _image_path(self.root_dir, relative_path)
+        image_path = self.root_dir / relative_path
         caption_public = str(entry[self.public_caption_column])
         caption_edit = str(entry[self.edit_caption_column])
-        target_image_path = _image_path(self.target_dir, relative_path)
+        target_image_path = self.target_dir / relative_path
 
         resize_res = torch.randint(self.min_resize_res, self.max_resize_res + 1, ()).item()
         with Image.open(image_path) as image:
