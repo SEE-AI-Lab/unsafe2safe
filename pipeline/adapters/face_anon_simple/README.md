@@ -38,7 +38,7 @@ python -m pipeline.adapters.face_anon_simple.generate_unsafe2safe \
   --input-root /path/to/coco/train2014 \
   --output-root /path/to/outputs/MSCOCO_FaceAnon \
   --cache-dir /path/to/huggingface-cache \
-  --num-inference-steps 25 \
+  --steps 25 \
   --guidance-scale 4.0 \
   --anonymization-degree 1.25
 ```
