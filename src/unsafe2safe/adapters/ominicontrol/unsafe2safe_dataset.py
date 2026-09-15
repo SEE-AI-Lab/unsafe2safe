@@ -32,6 +32,7 @@ class Unsafe2SafeDataset(Dataset):
         target_root: str | Path,
         *,
         split: str = "train",
+        train_fraction: float = 0.75,
         clip_score_path: str | Path | None = None,
         clip_threshold: float = 0.7,
         image_column: str = "file",
@@ -47,6 +48,8 @@ class Unsafe2SafeDataset(Dataset):
     ) -> None:
         if split not in {"train", "val", "test"}:
             raise ValueError("split must be one of: train, val, test")
+        if not 0 < train_fraction <= 1:
+            raise ValueError("train_fraction must be in (0, 1]")
 
         frame = pd.read_csv(csv_path)
         required = {image_column, caption_column}
@@ -83,7 +86,7 @@ class Unsafe2SafeDataset(Dataset):
         ].reset_index(drop=True)
 
         train_frame = train_frame.sample(frac=1.0, random_state=42).reset_index(drop=True)
-        val_cutoff = int(0.25 * len(train_frame))
+        val_cutoff = int((1 - train_fraction) * len(train_frame))
         if split == "train":
             selected = train_frame.iloc[val_cutoff:]
         elif split == "val":
@@ -108,6 +111,13 @@ class Unsafe2SafeDataset(Dataset):
     def __len__(self) -> int:
         return len(self.rows)
 
+    @staticmethod
+    def _relative_path(value: Any) -> Path:
+        path = Path(str(value))
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError(f"manifest path must stay relative to the image root: {path}")
+        return path
+
     def _caption(self, value: Any) -> str:
         caption = "" if pd.isna(value) else str(value)
         if self.tokenizer is not None and self.max_caption_tokens is not None:
@@ -122,9 +132,11 @@ class Unsafe2SafeDataset(Dataset):
 
     def __getitem__(self, index: int) -> dict[str, Any]:
         row = self.rows[index]
-        relative_path = Path(str(row[self.image_column]))
-        condition = Image.open(self.image_root / relative_path).convert("RGB")
-        target = Image.open(self.target_root / relative_path).convert("RGB")
+        relative_path = self._relative_path(row[self.image_column])
+        with Image.open(self.image_root / relative_path) as image:
+            condition = image.convert("RGB")
+        with Image.open(self.target_root / relative_path) as image:
+            target = image.convert("RGB")
 
         condition = condition.resize(self.image_size, Image.Resampling.LANCZOS)
         target = target.resize(self.image_size, Image.Resampling.LANCZOS)

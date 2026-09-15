@@ -6,7 +6,11 @@ set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=$(cd -- "$SCRIPT_DIR/../../.." && pwd)
 DIFFUSION_ROOT=$(cd -- "$1" && pwd)
-CONFIG=$(cd -- "$(dirname -- "$2")" && pwd)/$(basename -- "$2")
+CONFIG_PATH="$2"
+if [[ "$CONFIG_PATH" != /* && ! -f "$CONFIG_PATH" && -f "$REPO_ROOT/$CONFIG_PATH" ]]; then
+  CONFIG_PATH="$REPO_ROOT/$CONFIG_PATH"
+fi
+CONFIG=$(cd -- "$(dirname -- "$CONFIG_PATH")" && pwd)/$(basename -- "$CONFIG_PATH")
 LOG_DIR=$(mkdir -p "$3" && cd -- "$3" && pwd)
 GPU_IDS="$4"
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import math
 from pathlib import Path
 from typing import Any, Dict
@@ -50,6 +49,10 @@ class EditDataset(Dataset):
         file_column: str = "file",
         public_caption_column: str = "caption_public",
         edit_caption_column: str = "caption_edit",
+        score_file_column: str = "filename",
+        score_public_column: str = "clip_orig",
+        score_edit_column: str = "clip_edit",
+        clip_threshold: float = 0.7,
     ):
         if split not in ("train", "val", "test"):
             raise ValueError("split must be one of: train, val, test")
@@ -69,10 +72,12 @@ class EditDataset(Dataset):
             raise ValueError(f"CSV is missing columns: {missing}")
         if clip_score_path is not None:
             df_clip_score = pd.read_csv(clip_score_path)
-            df = df_clip_score.merge(
-                df, left_on="filename", right_on=file_column, how="inner"
-            )
-            df = df[(df["clip_edit"] / df["clip_orig"]) > 0.7]
+            score_columns = {score_file_column, score_public_column, score_edit_column}
+            missing = sorted(score_columns - set(df_clip_score.columns))
+            if missing:
+                raise ValueError(f"CLIP score CSV is missing columns: {missing}")
+            df = df_clip_score.merge(df, left_on=score_file_column, right_on=file_column, how="inner")
+            df = df[(df[score_edit_column] / df[score_public_column]) > clip_threshold]
 
         # Use the COCO filename split used by the released manifests.
         train_df = df[
@@ -131,50 +136,3 @@ class EditDataset(Dataset):
             caption_public=caption_public,
             caption_edit=caption_edit,
         )
-
-
-class EditDatasetEval(Dataset):
-    def __init__(
-        self,
-        path: str,
-        split: str = "train",
-        splits: tuple[float, float, float] = (0.9, 0.05, 0.05),
-        res: int = 256,
-    ):
-        if split not in ("train", "val", "test"):
-            raise ValueError("split must be one of: train, val, test")
-        if any(value < 0 for value in splits) or not math.isclose(sum(splits), 1.0):
-            raise ValueError("splits must sum to 1")
-        self.path = path
-        self.res = res
-
-        with open(Path(self.path, "seeds.json")) as f:
-            self.seeds = json.load(f)
-
-        split_0, split_1 = {
-            "train": (0.0, splits[0]),
-            "val": (splits[0], splits[0] + splits[1]),
-            "test": (splits[0] + splits[1], 1.0),
-        }[split]
-
-        idx_0 = math.floor(split_0 * len(self.seeds))
-        idx_1 = math.floor(split_1 * len(self.seeds))
-        self.seeds = self.seeds[idx_0:idx_1]
-
-    def __len__(self) -> int:
-        return len(self.seeds)
-
-    def __getitem__(self, i: int) -> dict[str, Any]:
-        name, seeds = self.seeds[i]
-        prompt_dir = Path(self.path, name)
-        seed = seeds[torch.randint(0, len(seeds), ()).item()]
-        with open(prompt_dir.joinpath("prompt.json")) as fp:
-            prompt = json.load(fp)
-            edit = prompt["edit"]
-            input_prompt = prompt["input"]
-            output_prompt = prompt["output"]
-
-        with Image.open(prompt_dir.joinpath(f"{seed}_0.jpg")) as image:
-            image_0 = _image_tensor(image.convert("RGB").resize((self.res, self.res), Image.Resampling.LANCZOS))
-
-        return dict(image_0=image_0, input_prompt=input_prompt, edit=edit, output_prompt=output_prompt)

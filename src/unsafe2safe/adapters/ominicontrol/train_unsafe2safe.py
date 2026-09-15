@@ -14,7 +14,13 @@ def _resolve_path(config_path: Path, value: str | None) -> str | None:
     if value is None or value == "":
         return value
     path = Path(value).expanduser()
-    return str(path if path.is_absolute() else (config_path.parent / path).resolve())
+    if path.is_absolute():
+        return str(path)
+    for root in (Path.cwd(), config_path.parent):
+        candidate = (root / path).resolve()
+        if candidate.exists():
+            return str(candidate)
+    return str((Path.cwd() / path).resolve())
 
 
 def main() -> None:
@@ -39,7 +45,7 @@ def main() -> None:
 
     train_config = config["train"]
     dataset_config = dict(train_config["dataset"])
-    # Dataset paths in the checked-in YAML are relative to that YAML file.
+    # Resolve existing data from the repository root first, then the config directory.
     for key in ("csv_path", "image_root", "target_root", "clip_score_path"):
         dataset_config[key] = _resolve_path(config_path, dataset_config.get(key))
 
