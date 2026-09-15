@@ -23,3 +23,5 @@ Collect VLM anonymization scores from generated caption JSON files:
 ```bash
 python pipeline/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
 ```
+
+`pipeline/metrics/face_similarity.py` also exposes `nearest_face_similarity`, which follows the paper's nearest-counterpart FaceSim definition.
