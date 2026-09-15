@@ -214,6 +214,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
             run_cfg["model_id"],
             hf_home=run_cfg.get("hf_home"),
             device_map=run_cfg.get("device_map", "cuda"),
+            torch_dtype=run_cfg.get("torch_dtype", "auto"),
         )
     elif backend == "internvl":
         model, tokenizer = load_internvl_model_and_tokenizer(
