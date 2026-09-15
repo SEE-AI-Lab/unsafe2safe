@@ -9,3 +9,11 @@ The diffusion entry points expect a compatible Stable Diffusion or InstructPix2P
 `unsafe2safe_model.py` provides the project-specific training wrapper on top of the external diffusion base.
 
 The dataset and metrics helpers can be used independently with local image and metadata paths.
+
+To keep edited training pairs with enough semantic overlap, first compute the original and edited CLIP scores, then run:
+
+```bash
+python pipeline/dataset_creation/filter_dataset.py scores.csv filtered_scores.csv --threshold 0.7
+```
+
+The default threshold follows the paper's MS-COCO filtering step.
