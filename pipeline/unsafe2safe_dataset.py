@@ -29,29 +29,48 @@ class EditDataset(Dataset):
         max_resize_res: int = 256,
         crop_res: int = 256,
         flip_prob: float = 0.0,
+        file_column: str = "file",
+        public_caption_column: str = "caption_public",
+        edit_caption_column: str = "caption_edit",
     ):
-        assert split in ("train", "val", "test")
-        assert sum(splits) == 1
+        if split not in ("train", "val", "test"):
+            raise ValueError("split must be one of: train, val, test")
+        if not math.isclose(sum(splits), 1.0):
+            raise ValueError("splits must sum to 1")
+
+        self.file_column = file_column
+        self.public_caption_column = public_caption_column
+        self.edit_caption_column = edit_caption_column
 
         df = pd.read_csv(csv_path)
+        required = {file_column, public_caption_column, edit_caption_column}
+        missing = sorted(required - set(df.columns))
+        if missing:
+            raise ValueError(f"CSV is missing columns: {missing}")
         if clip_score_path is not None:
             df_clip_score = pd.read_csv(clip_score_path)
-            df = df_clip_score.merge(df, left_on="filename", right_on="file", how="inner")
+            df = df_clip_score.merge(
+                df, left_on="filename", right_on=file_column, how="inner"
+            )
             df = df[(df["clip_edit"] / df["clip_orig"]) > 0.7]
 
         # Filter by filename.
-        train_df = df[df["file"].str.contains("train2014", na=False)].reset_index(drop=True)
-        test_df = df[df["file"].str.contains("val2014", na=False)].reset_index(drop=True)
+        train_df = df[
+            df[file_column].astype(str).str.contains("train2014", na=False)
+        ].reset_index(drop=True)
+        test_df = df[
+            df[file_column].astype(str).str.contains("val2014", na=False)
+        ].reset_index(drop=True)
 
         # Deterministic shuffle for train/val split
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
         train_fraction = splits[0] / (splits[0] + splits[1])
-        val_cutoff = int(train_fraction * len(train_df))
+        train_cutoff = int(train_fraction * len(train_df))
 
         if split == "train":
-            selected_df = train_df[val_cutoff:]
+            selected_df = train_df[:train_cutoff]
         elif split == "val":
-            selected_df = train_df[:val_cutoff]
+            selected_df = train_df[train_cutoff:]
         elif split == "test":
             selected_df = test_df
 
@@ -66,30 +85,13 @@ class EditDataset(Dataset):
     def __len__(self):
         return len(self.seeds)
 
-    @staticmethod
-    def _first_caption(entry: Dict[str, Any], keys, label: str) -> str:
-        for key in keys:
-            value = entry.get(key)
-            if value is not None and not pd.isna(value):
-                return str(value)
-        raise KeyError(f"metadata is missing a {label} caption")
-
     def __getitem__(self, i: int) -> Dict[str, Any]:
         entry = self.seeds[i]
-        image_path = self.root_dir / entry["file"]
-        # Historical metadata labels c1 as priv_caption in some exports, but
-        # Caption_Gather.py establishes that c1 is the public caption.
-        caption_public = self._first_caption(
-            entry,
-            ("caption_public", "public_caption", "pub_caption", "c1", "priv_caption"),
-            "public",
-        )
-        caption_edit = self._first_caption(
-            entry,
-            ("caption_edit", "edit_caption", "c_edit", "caption"),
-            "edit",
-        )
-        target_image_path = self.target_dir / entry["file"]
+        relative_path = entry[self.file_column]
+        image_path = self.root_dir / relative_path
+        caption_public = str(entry[self.public_caption_column])
+        caption_edit = str(entry[self.edit_caption_column])
+        target_image_path = self.target_dir / relative_path
 
         image_0 = Image.open(image_path).convert("RGB")
         image_1 = Image.open(target_image_path).convert("RGB")

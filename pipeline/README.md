@@ -31,12 +31,17 @@ Train with the example configuration:
   0,1,2,3
 ```
 
-The training CSV should contain `file`, `c1`, and `caption`. The loader treats `c1` as the public semantic caption and `caption` as the edit instruction. Older exports may call `c1` `priv_caption`.
+The training CSV columns are configured explicitly in
+`configs/train_unsafe2safe.yaml`: `file_column` identifies the paired image
+path, `public_caption_column` identifies the privacy-safe caption, and
+`edit_caption_column` identifies the edit instruction. Use whatever column
+names your manifest already has.
 
 Run the legacy batch editor from the repository root:
 
 ```bash
-./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT
+./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT \
+  FILE_COLUMN PUBLIC_CAPTION_COLUMN EDIT_CAPTION_COLUMN
 ```
 
 That editor expects the external diffusion checkout at `stable_diffusion/`, a compatible config, and a checkpoint. Keep all three outside version control when possible.

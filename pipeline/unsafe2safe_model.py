@@ -43,10 +43,8 @@ class Unsafe2Safe(LatentDiffusion):
     ) -> List[Any]:
         source = batch["image_private"]
         target = batch["image_public"]
-        public_text = batch.get("caption_public", batch.get("caption_private"))
+        public_text = batch["caption_public"]
         edit_text = batch["caption_edit"]
-        if public_text is None:
-            raise KeyError("batch must contain caption_public")
 
         if bs is not None:
             source, target = source[:bs], target[:bs]

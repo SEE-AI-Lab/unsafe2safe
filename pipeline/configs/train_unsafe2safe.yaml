@@ -85,6 +85,9 @@ data:
         path: data/unsafe
         target_path: data/safe
         csv_path: metadata/triplets.csv
+        file_column: file
+        public_caption_column: public_caption
+        edit_caption_column: edit_instruction
         clip_score_path: null
         split: train
         min_resize_res: 256
@@ -97,6 +100,9 @@ data:
         path: data/unsafe
         target_path: data/safe
         csv_path: metadata/triplets.csv
+        file_column: file
+        public_caption_column: public_caption
+        edit_caption_column: edit_instruction
         clip_score_path: null
         split: val
         min_resize_res: 256
