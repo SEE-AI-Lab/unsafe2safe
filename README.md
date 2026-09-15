@@ -53,7 +53,8 @@ pipeline/adapters/          Optional FlowEdit, OminiControl, Face Anon Simple, L
 pipeline/scripts/           Training and adapter launchers.
 ```
 
-The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
+The commands below assume they are run from the repository root. Change the
+data, metadata, checkpoint, and output paths to match your local setup.
 
 Paper-aligned handoff configs are kept beside the code they configure:
 
@@ -134,6 +135,15 @@ python pipeline/stage1/run_stage1.py \
   --dataset mscoco
 ```
 
+Generate privacy flags for VISPR images:
+
+```bash
+python pipeline/stage1/run_stage1.py \
+  --config pipeline/stage1/config.yaml \
+  --purpose generate_flags \
+  --dataset vispr
+```
+
 Evaluate privacy flags against VISPR annotations:
 
 ```bash
@@ -185,6 +195,10 @@ Train with the example configuration:
 ```
 
 The example config is [`pipeline/stage2/configs/train_unsafe2safe.yaml`](pipeline/stage2/configs/train_unsafe2safe.yaml). Replace its local data and checkpoint paths as needed.
+
+The training manifest needs `file`, `public_caption`, and `edit_instruction`
+columns. In the config, `path` is the unsafe image root and `target_path` is
+the safe image root.
 
 ## Other editing adapters
 
