@@ -11,7 +11,7 @@ Official repository for **Unsafe2Safe: Controllable Image Anonymization for Down
 > [!IMPORTANT]
 > Unsafe2Safe was accepted at CVPR 2026 (Highlight).
 >
-> Public resources currently available: the [arXiv paper](https://arxiv.org/abs/2603.28605), the [project page](https://see-ai-lab.github.io/unsafe2safe/), the [Hugging Face dataset](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe), and the initial Stage 1 captioning code in this repository.
+> Public resources currently available: the [arXiv paper](https://arxiv.org/abs/2603.28605), the [project page](https://see-ai-lab.github.io/unsafe2safe/), the [Hugging Face dataset](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe), and the rough research implementation in this repository.
 
 ## Overview
 Unsafe2Safe is a two-stage pipeline for privacy-preserving image anonymization with downstream utility:
@@ -30,7 +30,7 @@ Unsafe2Safe is a two-stage pipeline for privacy-preserving image anonymization w
 - The paper is available on [arXiv](https://arxiv.org/abs/2603.28605).
 - The project website is live at [see-ai-lab.github.io/unsafe2safe](https://see-ai-lab.github.io/unsafe2safe/).
 - The dataset is public on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe).
-- This repository includes the initial Stage 1 vision-language captioning and evaluation utilities used in the project.
+- This repository includes Stage 1 captioning and evaluation utilities, dataset preparation scripts, diffusion editor entry points, evaluation code, and the Safe Attention layers used in the project.
 
 ## Current Repository Contents
 ```text
@@ -42,11 +42,20 @@ vlm_captioning/
   configs/
     stage1.yaml
     eval.yaml
+unsafe2safe/
+  dataset_creation/
+  metrics/
+  edit_cli.py
+  edit_privacy.py
+  edit_df.py
+  edit_unsafe2safe_df.py
+  safe_attention.py
+  unsafe2safe_dataset.py
 ```
 
-The current public code release focuses on the Stage 1 pipeline for privacy-aware caption generation, privacy flagging, edit-instruction generation, and pairwise anonymization evaluation.
+The public code is a rough release of the paper implementation. Stage 1 is the most documented part. The `unsafe2safe/` directory contains the existing dataset, editing, evaluation, and Safe Attention code; its diffusion entry points still expect the research checkpoints and configuration files used by the authors.
 
-The prompt templates used by the released configs are included in `prompts/`. This includes the Stage 1 generation prompts and the paper-aligned evaluation templates for custom privacy flagging, text extraction, demographic analysis, and pairwise anonymization scoring. Experimental notebooks, training scripts, and application prototypes remain outside this staged release and are not required by the Stage 1 runner.
+The prompt templates used by the released configs are included in `prompts/`. This includes the Stage 1 generation prompts and the paper-aligned evaluation templates for custom privacy flagging, text extraction, demographic analysis, and pairwise anonymization scoring. Experimental notebooks, generated datasets, and large external dependencies remain outside this public tree for now.
 
 ## Evaluation Protocol
 We report four metric groups in the paper:
@@ -58,7 +67,7 @@ We report four metric groups in the paper:
 Detailed metric definitions and results are available in the [paper](https://arxiv.org/abs/2603.28605) and on the [project page](https://see-ai-lab.github.io/unsafe2safe/).
 
 ## Quick Start
-This initial release is not yet a fully packaged end-to-end training repository. The published code currently centers on the Stage 1 runner in `vlm_captioning/`.
+This is a rough research release rather than a fully packaged end-to-end training repository. The published code currently centers on the documented Stage 1 runner, while the Stage 2 scripts expose the original training and inference paths for later cleanup.
 
 Before running:
 - Set up a Python environment and install the Stage 1 dependencies:
@@ -117,11 +126,11 @@ Use a `.jsonl` output for streaming records, or add `--parse-structured` to incl
 ## Dataset
 The released dataset is hosted on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe). Please refer to the dataset card for the public data description, access details, and updates.
 
-## Coming Soon
-- Pretrained checkpoints and model weights
-- Stage 2 diffusion editor training and inference code
-- A cleaner end-to-end reproduction guide
-- Additional documentation and public demo materials
+## Follow-up cleanup
+- Add a concise Stage 2 reproduction guide with checkpoint and configuration details.
+- Separate optional demo and download dependencies from the core installation list.
+- Remove duplicated helpers and debug output from the batch editor scripts.
+- Add the remaining external-repository integrations through their own forks when ready.
 
 ## Citation
 ```bibtex
