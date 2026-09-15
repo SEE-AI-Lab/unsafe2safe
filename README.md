@@ -81,6 +81,12 @@ The diffusion code expects a compatible Stable Diffusion or InstructPix2Pix chec
 
 Run batch inference with `./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT`.
 
+Start Stage 2 training from a compatible external diffusion checkout:
+
+```bash
+./pipeline/scripts/train_unsafe2safe.sh /path/to/stable_diffusion CONFIG LOG_DIR GPU_IDS
+```
+
 ## Dataset and links
 
 The public dataset is available on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe). Project links: [project page](https://see-ai-lab.github.io/unsafe2safe/) and [paper](https://arxiv.org/abs/2603.28605).
