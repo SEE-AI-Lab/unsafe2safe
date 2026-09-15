@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 6 ]]; then
-  echo "usage: $0 LAVIS_ROOT CONFIG TRAIN_JSON VAL_JSON TEST_JSON IMAGE_ROOT" >&2
-  echo "set NPROC_PER_NODE to choose the number of processes (default: 1)" >&2
-  exit 2
-fi
-
 LAVIS_ROOT=$1
 CONFIG=$2
 TRAIN_JSON=$3

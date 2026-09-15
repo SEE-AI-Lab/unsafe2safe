@@ -48,12 +48,12 @@ def main() -> None:
         relative_path = Path(str(row["file"]))
         output_path = output_dir / relative_path
         # Allow an interrupted generation run to resume without overwriting outputs.
-        output_path.parent.mkdir(parents=True, exist_ok=True)
         if output_path.exists():
             continue
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        source = Image.open(image_root / relative_path).convert("RGB")
-        source = source.resize((args.image_size, args.image_size), Image.Resampling.LANCZOS)
+        with Image.open(image_root / relative_path) as image:
+            source = image.convert("RGB").resize((args.image_size, args.image_size), Image.Resampling.LANCZOS)
         condition = Condition(source, "subject", position_delta=(0, 0))
         with torch.no_grad():
             result = generate(
