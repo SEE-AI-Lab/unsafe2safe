@@ -35,17 +35,15 @@ def main() -> None:
     parser.add_argument("--prompt", default="prompts/intern_image_flagging-compare.txt")
     parser.add_argument("--model-id", default="OpenGVLab/InternVL3_5-8B")
     parser.add_argument("--system-prompt", default="You are a vision-language evaluator for privacy-preserving image anonymization.")
-    parser.add_argument("--file-column", default="file")
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--image-size", type=int, default=448)
     parser.add_argument("--max-new-tokens", type=int, default=512)
     parser.add_argument("--device", default="cuda")
-    parser.add_argument("--cache-dir", default=".cache/huggingface")
     args = parser.parse_args()
 
-    files = [Path(str(value)) for value in pd.read_csv(args.input_csv)[args.file_column]]
+    files = [Path(str(value)) for value in pd.read_csv(args.input_csv)["file"]]
     prompt = Path(args.prompt).read_text(encoding="utf-8").strip()
-    model, tokenizer = load_internvl_model_and_tokenizer(args.model_id, cache_dir=args.cache_dir, device=args.device)
+    model, tokenizer = load_internvl_model_and_tokenizer(args.model_id, device=args.device)
     output_dir = Path(args.output_dir)
 
     for start in tqdm(range(0, len(files), args.batch_size), desc="compare raw/anonymized"):
