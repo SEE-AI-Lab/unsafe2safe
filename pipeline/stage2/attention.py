@@ -35,6 +35,7 @@ class SafeCrossAttention(nn.Module):
         self.scale = dim_head**-0.5
         self.heads = heads
         self.to_q = nn.Linear(query_dim, inner_dim, bias=False)
+        self.to_q_public = nn.Linear(query_dim, inner_dim, bias=False)
         self.to_k = nn.Linear(context_dim, inner_dim, bias=False)
         self.to_v = nn.Linear(context_dim, inner_dim, bias=False)
         self.to_k_public = nn.Linear(context_dim, inner_dim, bias=False)
@@ -49,6 +50,7 @@ class SafeCrossAttention(nn.Module):
             nn.Conv1d(16, 1, kernel_size=3, padding=1),
         )
         with torch.no_grad():
+            self.to_q_public.weight.copy_(self.to_q.weight)
             self.to_k_public.weight.copy_(self.to_k.weight)
             self.to_v_public.weight.copy_(self.to_v.weight)
 
@@ -76,17 +78,17 @@ class SafeCrossAttention(nn.Module):
             return self._standard(x, context_edit, mask=mask)
 
         h = self.heads
-        q = self.to_q(x)
+        q_edit, q_public = self.to_q(x), self.to_q_public(x)
         k_edit, v_edit = self.to_k(context_edit), self.to_v(context_edit)
         k_public = self.to_k_public(context_public)
         v_public = self.to_v_public(context_public)
-        q, k_edit, v_edit, k_public, v_public = map(
+        q_edit, q_public, k_edit, v_edit, k_public, v_public = map(
             lambda tensor: rearrange(tensor, "b n (h d) -> (b h) n d", h=h),
-            (q, k_edit, v_edit, k_public, v_public),
+            (q_edit, q_public, k_edit, v_edit, k_public, v_public),
         )
 
-        sim_edit = einsum("b i d, b j d -> b i j", q, k_edit) * self.scale
-        sim_public = einsum("b i d, b j d -> b i j", q, k_public) * self.scale
+        sim_edit = einsum("b i d, b j d -> b i j", q_edit, k_edit) * self.scale
+        sim_public = einsum("b i d, b j d -> b i j", q_public, k_public) * self.scale
         if mask is not None:
             mask = rearrange(mask, "b ... -> b (...)")
             mask = repeat(mask, "b j -> (b h) () j", h=h)
