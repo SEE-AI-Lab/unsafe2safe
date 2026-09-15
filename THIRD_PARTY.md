@@ -44,6 +44,21 @@ launch/generation wrappers.
 portable generation wrapper. The upstream sampler, assets, data, and model
 weights are not copied into this repository.
 
+## Face Anon Simple
+
+- Repository: [hanweikung/face_anon_simple](https://github.com/hanweikung/face_anon_simple)
+- Reproduction revision: `c36f276352873827e9d559ee8d130b7563491171`
+- Install: clone that revision separately, create the upstream environment,
+  and set `FACE_ANON_SIMPLE_ROOT` as described in
+  [`pipeline/adapters/face_anon_simple/README.md`](pipeline/adapters/face_anon_simple/README.md).
+- Model: [hkung/face-anon-simple](https://huggingface.co/hkung/face-anon-simple)
+- License: upstream [AGPL-3.0 LICENSE](https://github.com/hanweikung/face_anon_simple/blob/main/LICENSE).
+
+`pipeline/adapters/face_anon_simple/` contains only the Unsafe2Safe batch
+image routing and no-face handling. The upstream ReferenceNet/Diffusers source,
+face extractor, sample data, and model weights are not copied into this
+repository.
+
 ## BLIP-2 and LAVIS
 
 - Repository: [salesforce/LAVIS](https://github.com/salesforce/LAVIS)

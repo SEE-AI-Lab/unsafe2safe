@@ -45,7 +45,7 @@ pipeline/stage1/               Stage 1 generation, parsing, and flag evaluation.
 pipeline/stage2/               Stage 2 editor, data loader, Safe Attention, and external boundary.
 pipeline/data_prep/            CLIP filtering for generated image pairs.
 pipeline/evaluation/           CLIP, image, privacy, caption, and utility scores.
-pipeline/adapters/             Optional FlowEdit, OminiControl, LAVIS, and VQA adapters.
+pipeline/adapters/             Optional FlowEdit, OminiControl, Face Anon Simple, LAVIS, and VQA adapters.
 pipeline/scripts/              Training and adapter launchers.
 ```
 
@@ -148,6 +148,10 @@ The project also contains an Unsafe2Safe-specific OminiControl adapter in [`pipe
 The project also contains a minimal FlowEdit adapter in
 [`pipeline/adapters/flowedit/`](pipeline/adapters/flowedit/README.md). FlowEdit remains an
 external MIT-licensed dependency.
+
+The project also contains a Face Anon Simple batch adapter in
+[`pipeline/adapters/face_anon_simple/`](pipeline/adapters/face_anon_simple/README.md).
+The AGPL-3.0 upstream ReferenceNet implementation remains an external dependency.
 
 See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
 boundaries, attribution, and license status.
