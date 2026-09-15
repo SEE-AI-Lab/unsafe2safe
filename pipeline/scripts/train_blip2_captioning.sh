@@ -22,6 +22,8 @@ fi
 
 export PYTHONPATH="$LAVIS_ROOT${PYTHONPATH:+:$PYTHONPATH}"
 
+# Keep the project adapter outside LAVIS: these overrides point its standard
+# COCO builder at the locally prepared annotations and image root.
 exec python -m torch.distributed.run \
   --nproc_per_node="$NPROC_PER_NODE" \
   "$LAVIS_ROOT/train.py" \
