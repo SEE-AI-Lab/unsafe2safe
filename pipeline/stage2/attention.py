@@ -24,7 +24,8 @@ class SafeCrossAttention(nn.Module):
 
     ``to_q``, ``to_k``, ``to_v``, and ``to_out`` retain the upstream names so
     an InstructPix2Pix/MagicBrush checkpoint can initialize the edit branch.
-    The public branch is an auxiliary residual path initialized at zero.
+    The public branch is initialized from the edit branch and receives a
+    learned full attention-map fusion step.
     """
 
     def __init__(self, query_dim, context_dim=None, heads=8, dim_head=64, dropout=0.0):
@@ -43,13 +44,13 @@ class SafeCrossAttention(nn.Module):
             nn.Dropout(dropout),
         )
         self.map_fuse = nn.Sequential(
-            nn.Linear(2, 16),
+            nn.Conv1d(1, 16, kernel_size=3, padding=1),
             nn.GELU(),
-            nn.Linear(16, 1),
+            nn.Conv1d(16, 1, kernel_size=3, padding=1),
         )
-        # Start from the upstream edit branch; the public residual can then be
-        # learned without changing the initial checkpoint behavior.
-        self.public_scale = nn.Parameter(torch.zeros(1))
+        with torch.no_grad():
+            self.to_k_public.weight.copy_(self.to_k.weight)
+            self.to_v_public.weight.copy_(self.to_v.weight)
 
     def _standard(self, x, context, mask=None):
         h = self.heads
@@ -95,19 +96,13 @@ class SafeCrossAttention(nn.Module):
 
         attn_edit = sim_edit.softmax(dim=-1)
         attn_public = sim_public.softmax(dim=-1)
-        # Use a compact per-query summary of both maps to gate public features.
-        # This is the lightweight reference approximation used by this release;
-        # it is not the full token-map fuser described in the paper appendix.
-        map_features = torch.stack(
-            (attn_edit.amax(dim=-1), attn_public.amax(dim=-1)), dim=-1
-        )
-        public_gate = torch.sigmoid(self.map_fuse(map_features))
-        attn_public = attn_public * (1.0 + public_gate)
-        attn_public = attn_public / (attn_public.sum(dim=-1, keepdim=True) + 1e-6)
+        fused = torch.cat((attn_edit, attn_public), dim=-1)
+        fused = self.map_fuse(fused.reshape(-1, 1, fused.shape[-1]))
+        attn_public = fused[..., -attn_public.shape[-1] :].squeeze(1).reshape_as(attn_public).softmax(dim=-1)
 
         out_edit = einsum("b i j, b j d -> b i d", attn_edit, v_edit)
         out_public = einsum("b i j, b j d -> b i d", attn_public, v_public)
-        out = out_edit + self.public_scale * out_public
+        out = out_edit + out_public
         out = rearrange(out, "(b h) n d -> b n (h d)", h=h)
         return self.to_out(out)
 
@@ -132,7 +127,7 @@ class SafeBasicTransformerBlock(nn.Module):
         self.checkpoint = checkpoint_enabled
 
     def forward(self, x, context=None):
-        # The legacy external checkpoint helper expects tensor inputs only.
+        # The external checkpoint helper expects tensor inputs only.
         if isinstance(context, (tuple, list)):
             return self._forward(x, context)
         return checkpoint(self._forward, (x, context), self.parameters(), self.checkpoint)
