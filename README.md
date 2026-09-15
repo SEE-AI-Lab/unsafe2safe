@@ -42,7 +42,7 @@ vlm_captioning/
   configs/
     stage1.yaml
     eval.yaml
-unsafe2safe/
+pipeline/
   dataset_creation/
   metrics/
   edit_cli.py
@@ -53,7 +53,7 @@ unsafe2safe/
   unsafe2safe_dataset.py
 ```
 
-The public code is a rough release of the paper implementation. Stage 1 is the most documented part. The `unsafe2safe/` directory contains the existing dataset, editing, evaluation, and Safe Attention code; its diffusion entry points still expect the research checkpoints and configuration files used by the authors.
+The public code is a rough release of the paper implementation. Stage 1 is the most documented part. The `pipeline/` directory contains the existing dataset, editing, evaluation, and Safe Attention code; its diffusion entry points still expect the research checkpoints and configuration files used by the authors.
 
 The prompt templates used by the released configs are included in `prompts/`. This includes the Stage 1 generation prompts and the paper-aligned evaluation templates for custom privacy flagging, text extraction, demographic analysis, and pairwise anonymization scoring. Experimental notebooks, generated datasets, and large external dependencies remain outside this public tree for now.
 
