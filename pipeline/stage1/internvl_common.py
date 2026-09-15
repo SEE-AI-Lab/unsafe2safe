@@ -60,8 +60,6 @@ def run_internvl_batch(
     device="cuda",
 ):
     # InternVL batch_chat expects a single stacked tensor for all images.
-    if len(image_paths) != len(image_classes):
-        raise ValueError("image_paths and image_classes must have the same length")
     pixel_values = [preprocess_image(p, image_size=image_size) for p in image_paths]
     pixel_values = torch.stack(pixel_values).to(device=device, dtype=torch.bfloat16)
     questions = []
@@ -105,8 +103,6 @@ def run_internvl_pair_batch(
     pad_token_id=None,
     device="cuda",
 ):
-    if len(left_image_paths) != len(right_image_paths):
-        raise ValueError("left_image_paths and right_image_paths must have the same length")
     pixel_values_list = []
     num_patches_list = []
     # Pair mode packs two images per sample (left/right) for comparison prompts.
