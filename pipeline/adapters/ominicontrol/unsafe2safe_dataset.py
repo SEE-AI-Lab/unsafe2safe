@@ -24,22 +24,7 @@ class Unsafe2SafeDataset(Dataset):
     ``target_root``.
     """
 
-    def __init__(
-        self,
-        csv_path: str | Path,
-        image_root: str | Path,
-        target_root: str | Path,
-        *,
-        split: str = "train",
-        train_fraction: float = 0.75,
-        image_column: str = "file",
-        caption_column: str = "caption",
-        image_size: tuple[int, int] = (512, 512),
-        drop_text_prob: float = 0.1,
-        drop_image_prob: float = 0.1,
-        tokenizer_name: str = "openai/clip-vit-base-patch32",
-        max_caption_tokens: int = 73,
-    ) -> None:
+    def __init__(self, csv_path: str | Path, image_root: str | Path, target_root: str | Path, *, split: str = "train", train_fraction: float = 0.75, image_column: str = "file", caption_column: str = "caption", image_size: tuple[int, int] = (512, 512), drop_text_prob: float = 0.1, drop_image_prob: float = 0.1, tokenizer_name: str = "openai/clip-vit-base-patch32", max_caption_tokens: int = 73) -> None:
         frame = pd.read_csv(csv_path)
 
         # The paper's split is a deterministic 75/25 split of train2014;

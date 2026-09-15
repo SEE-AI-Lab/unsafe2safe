@@ -54,19 +54,7 @@ def _is_private(value: str) -> bool:
 class ImageMAEDataset(Dataset):
     """Load original images or edited counterparts for downstream labels."""
 
-    def __init__(
-        self,
-        rows: list[dict[str, str]],
-        image_root: str | Path,
-        edited_root: str | Path | None = None,
-        transform=None,
-        *,
-        class_column: str = "class",
-        file_column: str = "file",
-        privacy_column: str = "PRIVACY_FLAG",
-        class_to_idx: Mapping[str, int] | None = None,
-        is_train: bool = False,
-    ):
+    def __init__(self, rows: list[dict[str, str]], image_root: str | Path, edited_root: str | Path | None = None, transform=None, *, class_column: str = "class", file_column: str = "file", privacy_column: str = "PRIVACY_FLAG", class_to_idx: Mapping[str, int] | None = None, is_train: bool = False):
         self.rows = rows
         self.image_root = Path(image_root)
         self.edited_root = Path(edited_root) if edited_root else None

@@ -25,18 +25,7 @@ def preprocess_image(image_path, image_size=448):
     return transform(image)
 
 
-def run_internvl_batch(
-    model,
-    tokenizer,
-    image_paths,
-    image_classes,
-    prompt,
-    *,
-    system_prompt,
-    image_size=448,
-    max_new_tokens=1024,
-    device="cuda",
-):
+def run_internvl_batch(model, tokenizer, image_paths, image_classes, prompt, *, system_prompt, image_size=448, max_new_tokens=1024, device="cuda"):
     # InternVL batch_chat expects a single stacked tensor for all images.
     pixel_values = [preprocess_image(p, image_size=image_size) for p in image_paths]
     pixel_values = torch.stack(pixel_values).to(device=device, dtype=torch.bfloat16)

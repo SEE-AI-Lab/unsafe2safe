@@ -5,12 +5,7 @@ from argparse import ArgumentParser
 import pandas as pd
 
 
-def filter_by_clip_similarity(
-    scores: pd.DataFrame,
-    original_column: str = "clip_orig",
-    edited_column: str = "clip_edit",
-    threshold: float = 0.7,
-) -> pd.DataFrame:
+def filter_by_clip_similarity(scores: pd.DataFrame, original_column: str = "clip_orig", edited_column: str = "clip_edit", threshold: float = 0.7) -> pd.DataFrame:
     """Keep rows whose edited/original CLIP score is above ``threshold``."""
     original_scores = scores[original_column].replace(0, pd.NA)
     normalized = scores[edited_column] / original_scores

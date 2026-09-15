@@ -32,15 +32,7 @@ class Unsafe2Safe(LatentDiffusion):
     """
 
     @torch.no_grad()
-    def get_input(
-        self,
-        batch: Dict[str, Any],
-        k: str = "image_public",
-        return_first_stage_outputs: bool = False,
-        bs: Optional[int] = None,
-        uncond: float = 0.05,
-        **_: Any,
-    ) -> List[Any]:
+    def get_input(self, batch: Dict[str, Any], k: str = "image_public", return_first_stage_outputs: bool = False, bs: Optional[int] = None, uncond: float = 0.05, **_: Any) -> List[Any]:
         source = batch["image_private"]
         target = batch["image_public"]
         public_text = batch["caption_public"]

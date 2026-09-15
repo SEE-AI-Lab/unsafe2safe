@@ -12,13 +12,7 @@ def write_caption_json(path, caption):
         json.dump({"caption": caption}, handle, ensure_ascii=False)
 
 
-def build_text_generator(
-    model_id,
-    *,
-    hf_home=".cache/huggingface",
-    torch_dtype="auto",
-    device_map="cuda",
-):
+def build_text_generator(model_id, *, hf_home=".cache/huggingface", torch_dtype="auto", device_map="cuda"):
     os.environ["HF_HOME"] = hf_home
     return pipeline(
         "text-generation",

@@ -45,14 +45,7 @@ def format_example(question_id: int, image_path: Path, question: str, answer: st
     }
 
 
-def build_examples(
-    questions: list[dict],
-    answers_by_id: dict[int, dict],
-    image_root: Path,
-    safe_root: Path | None,
-    private_files: set[str],
-    safe_files: set[str],
-) -> list[dict]:
+def build_examples(questions: list[dict], answers_by_id: dict[int, dict], image_root: Path, safe_root: Path | None, private_files: set[str], safe_files: set[str]) -> list[dict]:
     examples = []
     for question in tqdm(questions, desc="Building VQA examples"):
         question_id = question["question_id"]

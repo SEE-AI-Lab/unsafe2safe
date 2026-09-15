@@ -32,9 +32,7 @@ class ClipSimilarity(nn.Module):
         image_features = image_features / image_features.norm(dim=1, keepdim=True)
         return image_features
 
-    def forward(
-        self, image_0: torch.Tensor, image_1: torch.Tensor, text_0: list[str], text_1: list[str]
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, image_0: torch.Tensor, image_1: torch.Tensor, text_0: list[str], text_1: list[str]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         image_features_0 = self.encode_image(image_0)
         image_features_1 = self.encode_image(image_1)
         text_features_0 = self.encode_text(text_0)

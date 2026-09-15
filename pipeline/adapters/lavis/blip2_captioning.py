@@ -33,16 +33,7 @@ def _image_path(root: Path, name: str) -> str:
     return str((path if path.is_absolute() else root / path).resolve())
 
 
-def prepare_annotations(
-    annotation_path: Path,
-    output_path: Path,
-    *,
-    original_root: Path,
-    safe_root: Path | None = None,
-    safe_manifest: Path | None = None,
-    private_manifest: Path | None = None,
-    check_files: bool = False,
-) -> tuple[int, int]:
+def prepare_annotations(annotation_path: Path, output_path: Path, *, original_root: Path, safe_root: Path | None = None, safe_manifest: Path | None = None, private_manifest: Path | None = None, check_files: bool = False) -> tuple[int, int]:
     """Write one routed LAVIS annotation file and return (written, dropped).
 
     A safe manifest lists the same relative image names as the annotations.
