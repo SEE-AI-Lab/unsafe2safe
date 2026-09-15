@@ -115,8 +115,9 @@ def _relative_path(value: Any) -> Path:
 
 
 def _encode_source(pipe, image: Image.Image, device: torch.device) -> torch.Tensor:
-    image_src = pipe.image_processor.preprocess(image).to(device).half()
-    with torch.autocast("cuda"), torch.inference_mode():
+    dtype = pipe.vae.dtype
+    image_src = pipe.image_processor.preprocess(image).to(device=device, dtype=dtype)
+    with torch.autocast("cuda", dtype=dtype), torch.inference_mode():
         encoded = pipe.vae.encode(image_src).latent_dist.mode()
     return (encoded - pipe.vae.config.shift_factor) * pipe.vae.config.scaling_factor
 
@@ -140,7 +141,7 @@ def _sample(sampler, pipe, scheduler, latent, source_prompt: str, target_prompt:
 
 def _decode(pipe, latent: torch.Tensor) -> Image.Image:
     denormalized = latent / pipe.vae.config.scaling_factor + pipe.vae.config.shift_factor
-    with torch.autocast("cuda"), torch.inference_mode():
+    with torch.autocast("cuda", dtype=pipe.vae.dtype), torch.inference_mode():
         decoded = pipe.vae.decode(denormalized, return_dict=False)[0]
     return pipe.image_processor.postprocess(decoded)[0]
 
