@@ -79,9 +79,9 @@ data:
   params:
     batch_size: 64
     num_workers: 8
-    train:
+    train: &edit_dataset
       target: pipeline.stage2.data.EditDataset
-      params:
+      params: &edit_dataset_params
         path: data/unsafe
         target_path: data/safe
         csv_path: metadata/triplets.csv
@@ -99,23 +99,10 @@ data:
         crop_res: 256
         flip_prob: 0.5
     validation:
-      target: pipeline.stage2.data.EditDataset
+      <<: *edit_dataset
       params:
-        path: data/unsafe
-        target_path: data/safe
-        csv_path: metadata/triplets.csv
-        file_column: file
-        public_caption_column: public_caption
-        edit_caption_column: edit_instruction
-        clip_score_path: null
-        score_file_column: filename
-        score_public_column: clip_orig
-        score_edit_column: clip_edit
-        clip_threshold: 0.7
+        <<: *edit_dataset_params
         split: val
-        min_resize_res: 256
-        max_resize_res: 256
-        crop_res: 256
 
 lightning:
   callbacks:

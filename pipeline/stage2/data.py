@@ -99,7 +99,7 @@ class EditDataset(Dataset):
         elif split == "test":
             selected_df = test_df
 
-        self.seeds = selected_df.to_dict(orient="records")
+        self.rows = selected_df.to_dict(orient="records")
         self.root_dir = Path(path)
         self.target_dir = Path(target_path)
         self.min_resize_res = min_resize_res
@@ -108,10 +108,10 @@ class EditDataset(Dataset):
         self.flip_prob = flip_prob
 
     def __len__(self):
-        return len(self.seeds)
+        return len(self.rows)
 
     def __getitem__(self, i: int) -> Dict[str, Any]:
-        entry = self.seeds[i]
+        entry = self.rows[i]
         relative_path = entry[self.file_column]
         image_path = _image_path(self.root_dir, relative_path)
         caption_public = str(entry[self.public_caption_column])
