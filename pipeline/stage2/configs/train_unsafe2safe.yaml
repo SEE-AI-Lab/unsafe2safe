@@ -88,11 +88,6 @@ data:
         file_column: file
         public_caption_column: public_caption
         edit_caption_column: edit_instruction
-        clip_score_path: null
-        score_file_column: filename
-        score_public_column: clip_orig
-        score_edit_column: clip_edit
-        clip_threshold: 0.7
         split: train
         min_resize_res: 256
         max_resize_res: 256

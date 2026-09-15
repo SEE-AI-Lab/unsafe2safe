@@ -11,9 +11,6 @@ from einops import rearrange
 from PIL import Image
 from torch.utils.data import Dataset
 
-from pipeline.filter_dataset import filter_by_clip_similarity
-
-
 def _image_tensor(image: Image.Image) -> torch.Tensor:
     return rearrange(2 * torch.tensor(np.array(image)).float() / 255 - 1, "h w c -> c h w")
 
@@ -26,7 +23,6 @@ class EditDataset(Dataset):
         path: str,
         target_path: str,
         csv_path: str,
-        clip_score_path=None,
         split: str = "train",
         splits: tuple[float, float, float] = (0.9, 0.05, 0.05),
         min_resize_res: int = 256,
@@ -36,25 +32,12 @@ class EditDataset(Dataset):
         file_column: str = "file",
         public_caption_column: str = "caption_public",
         edit_caption_column: str = "caption_edit",
-        score_file_column: str = "filename",
-        score_public_column: str = "clip_orig",
-        score_edit_column: str = "clip_edit",
-        clip_threshold: float = 0.7,
     ):
         self.file_column = file_column
         self.public_caption_column = public_caption_column
         self.edit_caption_column = edit_caption_column
 
         df = pd.read_csv(csv_path)
-        if clip_score_path is not None:
-            df_clip_score = pd.read_csv(clip_score_path)
-            df = df_clip_score.merge(df, left_on=score_file_column, right_on=file_column, how="inner")
-            df = filter_by_clip_similarity(
-                df,
-                original_column=score_public_column,
-                edited_column=score_edit_column,
-                threshold=clip_threshold,
-            )
 
         # Use the COCO filename split used by the released manifests.
         train_df = df[
@@ -69,12 +52,7 @@ class EditDataset(Dataset):
         train_fraction = splits[0] / (splits[0] + splits[1])
         train_cutoff = int(train_fraction * len(train_df))
 
-        if split == "train":
-            selected_df = train_df[:train_cutoff]
-        elif split == "val":
-            selected_df = train_df[train_cutoff:]
-        else:
-            selected_df = test_df
+        selected_df = {"train": train_df[:train_cutoff], "val": train_df[train_cutoff:], "test": test_df}[split]
 
         self.rows = selected_df.to_dict(orient="records")
         self.root_dir = Path(path)

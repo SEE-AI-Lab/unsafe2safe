@@ -88,13 +88,7 @@ class Unsafe2Safe(LatentDiffusion):
         return self.p_losses(x, c, timestep, *args, **kwargs)
 
     def apply_model(self, x_noisy, timestep, cond, return_ids=False):
-        if return_ids:
-            raise NotImplementedError("return_ids is not supported by the two-context path")
-        if not isinstance(cond, dict):
-            raise TypeError("Unsafe2Safe conditioning must be a dictionary")
         contexts = cond["c_crossattn"]
-        if len(contexts) != 2:
-            raise ValueError("Unsafe2Safe requires [public_caption, edit_instruction]")
         x_input = torch.cat([x_noisy] + cond["c_concat"], dim=1)
         # Call the UNet directly: the upstream wrapper assumes one context and
         # would concatenate the two embeddings before SafeCrossAttention sees them.

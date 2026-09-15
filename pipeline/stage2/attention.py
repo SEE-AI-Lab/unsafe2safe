@@ -54,8 +54,6 @@ class SafeCrossAttention(nn.Module):
             self.to_v_public.weight.copy_(self.to_v.weight)
 
     def forward(self, x, context=None, mask=None):
-        if not isinstance(context, (tuple, list)) or len(context) != 2:
-            raise ValueError("Safe attention context must be (public, edit)")
         context_public, context_edit = context
         h = self.heads
         q_edit, q_public = self.to_q(x), self.to_q_public(x)
@@ -108,11 +106,6 @@ class SafeBasicTransformerBlock(nn.Module):
         self.norm3 = nn.LayerNorm(dim)
 
     def forward(self, x, context=None):
-        if not isinstance(context, (tuple, list)) or len(context) != 2:
-            raise ValueError("Safe attention context must be (public, edit)")
-        return self._forward(x, context)
-
-    def _forward(self, x, context):
         x = self.attn1(self.norm1(x)) + x
         x = self.attn2(self.norm2(x), context=context) + x
         return self.ff(self.norm3(x)) + x
