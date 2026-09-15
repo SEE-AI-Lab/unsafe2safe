@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
 import yaml
@@ -25,7 +24,7 @@ from pipeline.stage1.internvl_common import (
 class Sample:
     rel_path: Path
     image_path: Path
-    vars: dict[str, Any]
+    vars: dict
 
 
 def build_effective_config(cfg, purpose, dataset):

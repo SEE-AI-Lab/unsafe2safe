@@ -1,4 +1,4 @@
-"""Compute the paper's SSIM and LPIPS cheating scores for image pairs."""
+"""Compute the paper's SSIM and LPIPS image-similarity scores."""
 
 import lpips
 import numpy as np
