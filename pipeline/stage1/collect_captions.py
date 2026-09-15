@@ -6,6 +6,8 @@ import csv
 import json
 from pathlib import Path
 
+from pipeline.stage1.output_parser import parse_structured_output
+
 
 def collect_captions(captions_dir, output_path, *, parse_structured=False, output_column="caption"):
     """Read generated captions into a CSV; do not merge metadata."""
@@ -20,8 +22,6 @@ def collect_captions(captions_dir, output_path, *, parse_structured=False, outpu
         image_name = relative.name.removesuffix("_caption.json") + ".jpg"
         row = {"file": str(relative.with_name(image_name)), output_column: caption}
         if parse_structured:
-            from pipeline.stage1.output_parser import parse_structured_output
-
             row.update(parse_structured_output(caption))
         rows.append(row)
 
