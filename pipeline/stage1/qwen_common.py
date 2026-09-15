@@ -50,4 +50,3 @@ def run_text_batch(generator, messages_batch, *, max_new_tokens=512, batch_size=
 
     results = generator(messages_batch, max_new_tokens=max_new_tokens, batch_size=batch_size)
     return [_extract_assistant_text(result) for result in results]
-
