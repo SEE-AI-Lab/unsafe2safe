@@ -23,12 +23,6 @@ from pipeline.stage1.internvl_common import (
 )
 
 
-class SafeDict(dict):
-    # Preserve unresolved placeholders instead of raising KeyError during format_map.
-    def __missing__(self, key):
-        return "{" + key + "}"
-
-
 @dataclass
 class Sample:
     rel_path: Any
@@ -56,7 +50,7 @@ def deep_merge(base, extra):
 def render_templates(value, context):
     # Expand placeholders like {dataset}/{purpose} through nested config objects.
     if isinstance(value, str):
-        return value.format_map(SafeDict(context))
+        return value.format_map(context)
     if isinstance(value, list):
         return [render_templates(x, context) for x in value]
     if isinstance(value, dict):
@@ -258,7 +252,7 @@ def output_path_for(sample, output_dir, suffix="_caption.json"):
 def build_text_messages(system_prompt, prompt_template, batch):
     messages = []
     for s in batch:
-        user_text = prompt_template.format_map(SafeDict(s.vars))
+        user_text = prompt_template.format_map(s.vars)
         messages.append(
             [
                 {"role": "system", "content": system_prompt},
