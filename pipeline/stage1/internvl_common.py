@@ -5,28 +5,9 @@ from torchvision.transforms.functional import InterpolationMode
 from transformers import AutoModel, AutoTokenizer
 
 
-def load_internvl_model_and_tokenizer(
-    model_path,
-    *,
-    cache_dir=".cache/huggingface",
-    device="cuda",
-    torch_dtype=torch.bfloat16,
-    use_flash_attn=True,
-):
-    model = AutoModel.from_pretrained(
-        model_path,
-        cache_dir=cache_dir,
-        torch_dtype=torch_dtype,
-        low_cpu_mem_usage=True,
-        use_flash_attn=use_flash_attn,
-        trust_remote_code=True,
-    ).eval().to(device)
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_path,
-        cache_dir=cache_dir,
-        trust_remote_code=True,
-        use_fast=False,
-    )
+def load_internvl_model_and_tokenizer(model_path, cache_dir=".cache/huggingface", device="cuda"):
+    model = AutoModel.from_pretrained(model_path, cache_dir=cache_dir, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, use_flash_attn=True, trust_remote_code=True).eval().to(device)
+    tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir=cache_dir, trust_remote_code=True, use_fast=False)
     return model, tokenizer
 
 
