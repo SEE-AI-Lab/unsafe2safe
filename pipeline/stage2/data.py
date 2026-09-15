@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
-import torchvision
+from torchvision.transforms import RandomHorizontalFlip
 from PIL import Image
 from torch.utils.data import Dataset
 
@@ -56,11 +56,9 @@ class EditDataset(Dataset):
         with Image.open(target_image_path) as image:
             image_1 = _image_tensor(image.convert("RGB").resize((self.crop_res, self.crop_res), Image.Resampling.LANCZOS))
 
-        crop = torchvision.transforms.RandomCrop(self.crop_res)
-        flip = torchvision.transforms.RandomHorizontalFlip(float(self.flip_prob))
-        # Crop and flip the concatenated pair so both images keep identical
-        # geometry after augmentation.
-        image_0, image_1 = flip(crop(torch.cat((image_0, image_1)))).chunk(2)
+        flip = RandomHorizontalFlip(float(self.flip_prob))
+        # Flip the concatenated pair so both images keep identical geometry.
+        image_0, image_1 = flip(torch.cat((image_0, image_1))).chunk(2)
 
         return dict(
             image_private=image_0,
