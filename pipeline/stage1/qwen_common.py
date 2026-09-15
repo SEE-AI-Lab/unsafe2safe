@@ -12,8 +12,8 @@ def write_caption_json(path, caption):
         json.dump({"caption": caption}, handle, ensure_ascii=False)
 
 
-def build_text_generator(model_id, *, hf_home=".cache/huggingface", torch_dtype="auto", device_map="cuda"):
-    os.environ["HF_HOME"] = hf_home
+def build_text_generator(model_id, *, cache_dir=".cache/huggingface", torch_dtype="auto", device_map="cuda"):
+    os.environ["HF_HOME"] = cache_dir
     return pipeline(
         "text-generation",
         model=model_id,
@@ -27,6 +27,7 @@ def _extract_assistant_text(result):
 
 
 def run_text_batch(generator, messages_batch, *, max_new_tokens=512, batch_size=32):
+    # Left padding keeps batched prompts aligned for causal generation.
     generator.tokenizer.padding_side = "left"
     generator.tokenizer.pad_token = generator.tokenizer.eos_token
 

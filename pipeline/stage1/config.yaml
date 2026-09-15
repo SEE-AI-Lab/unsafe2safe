@@ -1,6 +1,4 @@
-active_purpose: generate_captions
-active_dataset: mscoco
-
+# Shared inference settings. Change these once for all Stage 1 jobs.
 defaults:
   run:
     batch_size: 16
@@ -8,12 +6,8 @@ defaults:
     image_size: 448
     device: cuda
     cache_dir: .cache/huggingface
-  output:
-    output_dir: outputs/{dataset}/{purpose}
-    manifest_path: outputs/{dataset}/{purpose}.csv
-    filename_suffix: _caption.json
-
 datasets:
+  # COCO uses metadata.csv; the other datasets are read from image folders.
   mscoco:
     root_dir: data/mscoco
   vispr:
@@ -30,24 +24,19 @@ purposes:
       model_id: OpenGVLab/InternVL2_5-8B
       system_prompt: You are a vision-language assistant that generates privacy-aware, structured descriptions of real-world images.
       prompt_path: prompts/intern_image_captioning.txt
-      parse_structured: true
     source:
       type: csv
-      image_col: file
       csv_path: metadata/{dataset}.csv
     dataset_overrides:
       vispr:
         source:
           type: glob
-          pattern: "**/*"
       caltech:
         source:
           type: glob
-          pattern: "**/*"
       indoor:
         source:
           type: glob
-          pattern: "**/*"
 
   generate_flags:
     run:
@@ -55,25 +44,20 @@ purposes:
       model_id: OpenGVLab/InternVL2_5-8B
       system_prompt: You are a vision-language assistant for structured, privacy-aware image analysis.
       prompt_path: prompts/intern_image_flagging.txt
-      parse_structured: true
       max_new_tokens: 128
     source:
       type: glob
-      pattern: "**/*"
 
   generate_edit_instructions:
     run:
       backend: qwen_text
       model_id: Qwen/Qwen3-4B-Instruct-2507
-      hf_home: .cache/huggingface
       system_prompt: You generate short change descriptions for real-world image captions.
       prompt_path: prompts/qwen_image_captioning-private-expand.txt
       max_new_tokens: 512
       batch_size: 64
-      output_column: EDIT_INSTRUCTION
     source:
       type: csv
-      image_col: file
       csv_path: outputs/{dataset}/generate_captions.csv
       prompt_columns:
         public_caption: PUBLIC_CAPTION
@@ -82,15 +66,12 @@ purposes:
     run:
       backend: qwen_text
       model_id: Qwen/Qwen3-4B-Instruct-2507
-      hf_home: .cache/huggingface
       system_prompt: You are a caption rewriting assistant that write coherent yet concise image caption.
       prompt_path: prompts/qwen_caption_combine.txt
       max_new_tokens: 512
       batch_size: 64
-      output_column: COMBINED_CAPTION
     source:
       type: csv
-      image_col: file
       csv_path: outputs/{dataset}/generate_edit_instructions.csv
       prompt_columns:
         public_caption: PUBLIC_CAPTION

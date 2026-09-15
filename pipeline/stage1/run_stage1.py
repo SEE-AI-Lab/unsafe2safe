@@ -46,7 +46,8 @@ def render_templates(value, context):
 def build_effective_config(cfg, purpose, dataset):
     profile = cfg["purposes"][purpose]
     override = profile.get("dataset_overrides", {}).get(dataset, {})
-    merged = {"run": {**cfg["defaults"]["run"], **profile["run"], **override.get("run", {})}, "source": {**profile["source"], **override.get("source", {})}, "output": cfg["defaults"]["output"], "dataset": cfg["datasets"][dataset]}
+    # Keep the paper's configuration shallow: shared run values, then local overrides.
+    merged = {"run": {**cfg["defaults"]["run"], **profile["run"], **override.get("run", {})}, "source": {**profile["source"], **override.get("source", {})}, "dataset": cfg["datasets"][dataset], "output_dir": f"outputs/{dataset}/{purpose}"}
     return render_templates(merged, {"dataset": dataset, "purpose": purpose, **merged["dataset"]})
 
 
@@ -69,12 +70,11 @@ def build_samples(dataset_cfg, source_cfg):
     if source_type == "csv":
         # Metadata-driven source: one row per image with optional extra columns for prompts.
         csv_path = source_cfg["csv_path"]
-        image_col = source_cfg.get("image_col", "file")
         df = pd.read_csv(csv_path)
 
         samples: list[Sample] = []
         for _, row in df.iterrows():
-            rel = Path(str(row[image_col]))
+            rel = Path(str(row["file"]))
             image_path = Path(root_dir) / rel
             vars_dict = _row_variables(row, source_cfg)
             vars_dict["image_class"] = Path(rel).parent.name
@@ -84,9 +84,7 @@ def build_samples(dataset_cfg, source_cfg):
 
     if source_type == "glob":
         # Raw folder source: enumerate files directly under dataset root.
-        pattern = source_cfg.get("pattern", "**/*")
-        exts = tuple(source_cfg.get("exts", [".jpg", ".jpeg", ".png"]))
-        files = [p for p in Path(root_dir).glob(pattern) if p.is_file() and p.suffix.lower() in exts]
+        files = [p for p in Path(root_dir).glob("**/*") if p.is_file() and p.suffix.lower() in {".jpg", ".jpeg", ".png"}]
 
         samples = []
         for p in files:
@@ -105,6 +103,7 @@ def output_path_for(sample, output_dir, suffix="_caption.json"):
 
 
 def build_text_messages(system_prompt, prompt_template, batch):
+    # Qwen receives one text-only chat conversation for each metadata row.
     messages = []
     for s in batch:
         user_text = prompt_template.format_map(s.vars)
@@ -120,32 +119,29 @@ def build_text_messages(system_prompt, prompt_template, batch):
 def run_job(effective_cfg, purpose, dataset_name):
     run_cfg = effective_cfg["run"]
     source_cfg = effective_cfg["source"]
-    output_cfg = effective_cfg["output"]
     dataset_cfg = effective_cfg["dataset"]
 
     backend = run_cfg["backend"]
-    batch_size = run_cfg.get("batch_size", 16)
-    max_new_tokens = run_cfg.get("max_new_tokens", 512)
-    image_size = run_cfg.get("image_size", 448)
+    batch_size = run_cfg["batch_size"]
+    max_new_tokens = run_cfg["max_new_tokens"]
+    image_size = run_cfg["image_size"]
     prompt_text = read_prompt(run_cfg["prompt_path"])
     system_prompt = run_cfg["system_prompt"]
 
-    output_dir = output_cfg["output_dir"]
-    suffix = output_cfg.get("filename_suffix", "_caption.json")
+    output_dir = effective_cfg["output_dir"]
 
     samples = build_samples(dataset_cfg, source_cfg)
+    # The paper uses InternVL for structured image responses and Qwen for text-only rewrites.
     if backend == "qwen_text":
         generator = build_text_generator(
             run_cfg["model_id"],
-            hf_home=run_cfg.get("hf_home", ".cache/huggingface"),
-            device_map=run_cfg.get("device_map", "cuda"),
-            torch_dtype=run_cfg.get("torch_dtype", "auto"),
+            cache_dir=run_cfg["cache_dir"],
         )
     elif backend == "internvl":
         model, tokenizer = load_internvl_model_and_tokenizer(
             run_cfg["model_id"],
-            cache_dir=run_cfg.get("cache_dir", ".cache/huggingface"),
-            device=run_cfg.get("device", "cuda"),
+            cache_dir=run_cfg["cache_dir"],
+            device=run_cfg["device"],
         )
     else:
         raise ValueError(f"Unsupported backend: {backend}")
@@ -154,14 +150,14 @@ def run_job(effective_cfg, purpose, dataset_name):
     for i in tqdm(range(0, len(samples), batch_size), desc=desc):
         # Full-batch inference keeps throughput high and avoids fragmented GPU work.
         batch = samples[i : i + batch_size]
-        save_paths = [output_path_for(s, output_dir, suffix=suffix) for s in batch]
+        save_paths = [output_path_for(s, output_dir) for s in batch]
 
         if backend == "qwen_text":
             msgs = build_text_messages(system_prompt, prompt_text, batch)
             outputs = run_text_batch(generator, msgs, max_new_tokens=max_new_tokens, batch_size=batch_size)
         elif backend == "internvl":
             image_paths = [s.image_path for s in batch]
-            image_classes = [s.vars.get("image_class", "") for s in batch]
+            image_classes = [s.vars["image_class"] for s in batch]
             outputs = run_internvl_batch(
                 model,
                 tokenizer,
@@ -171,26 +167,28 @@ def run_job(effective_cfg, purpose, dataset_name):
                 system_prompt=system_prompt,
                 image_size=image_size,
                 max_new_tokens=max_new_tokens,
-                device=run_cfg.get("device", "cuda"),
+                device=run_cfg["device"],
             )
         for out_text, out_path in zip(outputs, save_paths):
             out_path.parent.mkdir(parents=True, exist_ok=True)
             write_caption_json(out_path, out_text)
 
-    collect_captions(output_dir, output_cfg["manifest_path"], filename_suffix=suffix, parse_structured=run_cfg.get("parse_structured", False), output_column=run_cfg.get("output_column", "caption"))
+    # Keep one manifest per purpose so the next profile can consume it directly.
+    output_column = {"generate_captions": "caption", "generate_flags": "caption", "generate_edit_instructions": "EDIT_INSTRUCTION", "combine_caption_and_edit": "COMBINED_CAPTION"}[purpose]
+    collect_captions(output_dir, Path(output_dir).with_suffix(".csv"), parse_structured=backend == "internvl", output_column=output_column)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Unified Stage1 runner")
     parser.add_argument("--config", type=str, default="pipeline/stage1/config.yaml")
-    parser.add_argument("--purpose", type=str, default=None, help="Override purpose profile")
-    parser.add_argument("--dataset", type=str, default=None, help="Override dataset profile")
+    parser.add_argument("--purpose", default="generate_captions", help="Stage 1 job to run")
+    parser.add_argument("--dataset", default="mscoco", help="Dataset profile to run")
     args = parser.parse_args()
 
     config_path = Path(args.config).expanduser().resolve()
     cfg = load_yaml(config_path)
-    purpose = args.purpose or cfg.get("active_purpose")
-    dataset_name = args.dataset or cfg.get("active_dataset")
+    purpose = args.purpose
+    dataset_name = args.dataset
     effective_cfg = build_effective_config(cfg, purpose, dataset_name)
     run_job(effective_cfg, purpose, dataset_name)
 
