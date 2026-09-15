@@ -11,12 +11,12 @@ import pandas as pd
 import yaml
 from tqdm.auto import tqdm
 
-from unsafe2safe.stage1.qwen_common import (
+from pipeline.stage1.qwen_common import (
     build_text_generator,
     run_text_batch,
     write_caption_json,
 )
-from unsafe2safe.stage1.internvl_common import (
+from pipeline.stage1.internvl_common import (
     load_internvl_model_and_tokenizer,
     run_internvl_batch,
     run_internvl_pair_batch,
@@ -158,6 +158,13 @@ def _require_columns(df, columns, source_name):
         raise ValueError(f"{source_name} is missing columns: {missing}")
 
 
+def _relative_path(value):
+    path = Path(str(value))
+    if path.is_absolute() or ".." in path.parts:
+        raise ValueError(f"CSV file paths must stay relative: {path}")
+    return path
+
+
 def _row_variables(row, source_cfg):
     """Expose all row fields plus explicitly mapped prompt variables."""
     variables = row.to_dict()
@@ -185,8 +192,8 @@ def build_samples(dataset_cfg, source_cfg):
 
         samples: list[Sample] = []
         for _, row in df.iterrows():
-            rel = row[image_col]
-            image_path = rel if os.path.isabs(rel) else os.path.join(root_dir, rel)
+            rel = _relative_path(row[image_col])
+            image_path = Path(root_dir) / rel
             vars_dict = _row_variables(row, source_cfg)
             vars_dict["image_class"] = Path(rel).parent.name
             vars_dict["class_name"] = Path(rel).parent.name
@@ -226,11 +233,11 @@ def build_samples(dataset_cfg, source_cfg):
 
         samples: list[Sample] = []
         for _, row in df.iterrows():
-            rel = row[rel_col]
-            left_rel = row[left_col]
-            right_rel = row[right_col]
-            left_path = left_rel if os.path.isabs(left_rel) else os.path.join(root_dir, left_rel)
-            right_path = right_rel if os.path.isabs(right_rel) else os.path.join(right_root, right_rel)
+            rel = _relative_path(row[rel_col])
+            left_rel = _relative_path(row[left_col])
+            right_rel = _relative_path(row[right_col])
+            left_path = Path(root_dir) / left_rel
+            right_path = Path(right_root) / right_rel
             vars_dict = _row_variables(row, source_cfg)
             vars_dict["image_class"] = Path(rel).parent.name
             vars_dict["class_name"] = Path(rel).parent.name
@@ -369,7 +376,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Unified Stage1 runner")
-    parser.add_argument("--config", type=str, default="src/unsafe2safe/stage1/configs/stage1.yaml")
+    parser.add_argument("--config", type=str, default="src/pipeline/stage1/configs/stage1.yaml")
     parser.add_argument("--purpose", type=str, default=None, help="Override purpose profile")
     parser.add_argument("--dataset", type=str, default=None, help="Override dataset profile")
     args = parser.parse_args()

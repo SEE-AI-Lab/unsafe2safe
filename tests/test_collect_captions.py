@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from unsafe2safe.stage1.collect_captions import collect_captions
+from pipeline.stage1.collect_captions import collect_captions
 
 
 class CollectCaptionsTest(unittest.TestCase):

@@ -23,7 +23,7 @@ def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suf
         image_name = relative.name[: -len(filename_suffix)] + image_suffix
         row = {"file": str(relative.with_name(image_name)), output_column: caption}
         if parse_structured:
-            from unsafe2safe.stage1.output_parser import parse_structured_output
+            from pipeline.stage1.output_parser import parse_structured_output
 
             row.update(parse_structured_output(caption))
         rows.append(row)

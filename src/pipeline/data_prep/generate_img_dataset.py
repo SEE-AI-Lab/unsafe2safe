@@ -25,7 +25,7 @@ sys.path.append("./stable_diffusion")
 
 from ldm.modules.attention import CrossAttention
 from ldm.util import instantiate_from_config
-from unsafe2safe.evaluation.clip_similarity import ClipSimilarity
+from pipeline.evaluation.clip_similarity import ClipSimilarity
 
 
 ################################################################################

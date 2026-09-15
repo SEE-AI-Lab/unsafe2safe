@@ -27,7 +27,7 @@ are never passed through this repository or stored in its files.
 Run from the Unsafe2Safe repository root:
 
 ```bash
-bash src/unsafe2safe/scripts/run_flowedit_unsafe2safe.sh \
+bash src/pipeline/scripts/run_flowedit_unsafe2safe.sh \
   --input-csv /path/to/metadata.csv \
   --image-root /path/to/coco \
   --output-dir /path/to/outputs \

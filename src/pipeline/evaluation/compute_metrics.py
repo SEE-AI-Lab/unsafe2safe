@@ -18,8 +18,8 @@ from pathlib import Path
 
 sys.path.append("./")
 
-from unsafe2safe.evaluation.clip_similarity import ClipSimilarity
-from unsafe2safe.legacy.edit_dataset import EditDatasetEval
+from pipeline.evaluation.clip_similarity import ClipSimilarity
+from pipeline.legacy.edit_dataset import EditDatasetEval
 
 sys.path.append("./stable_diffusion")
 

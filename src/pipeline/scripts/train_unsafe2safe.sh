@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-# Usage: ./src/unsafe2safe/scripts/train_unsafe2safe.sh DIFFUSION_ROOT CONFIG LOG_DIR GPU_IDS
+# Usage: ./src/pipeline/scripts/train_unsafe2safe.sh DIFFUSION_ROOT CONFIG LOG_DIR GPU_IDS
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=$(cd -- "$SCRIPT_DIR/../../.." && pwd)
 DIFFUSION_ROOT=$(cd -- "$1" && pwd)

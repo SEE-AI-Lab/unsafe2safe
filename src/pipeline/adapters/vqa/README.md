@@ -13,7 +13,7 @@ pip install peft trl bitsandbytes qwen-vl-utils
 Build the LoRA adapter from the training split:
 
 ```bash
-python unsafe2safe/adapters/vqa/train_qwen3_okvqa.py \
+python src/pipeline/adapters/vqa/train_qwen3_okvqa.py \
   --questions /path/to/OpenEnded_mscoco_train2014_questions.json \
   --annotations /path/to/mscoco_train2014_annotations.json \
   --image-root /path/to/coco \
@@ -30,7 +30,7 @@ manifests for the original-image baseline.
 Generate predictions on the OK-VQA validation questions:
 
 ```bash
-python unsafe2safe/adapters/vqa/evaluate_qwen3_okvqa.py \
+python src/pipeline/adapters/vqa/evaluate_qwen3_okvqa.py \
   --questions /path/to/OpenEnded_mscoco_val2014_questions.json \
   --image-root /path/to/coco \
   --adapter /path/to/qwen3-okvqa-adapter \
