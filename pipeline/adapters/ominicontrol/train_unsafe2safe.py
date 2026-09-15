@@ -31,8 +31,7 @@ def main() -> None:
     from omini.train_flux.trainer import OminiModel, train
 
     train_config = config["train"]
-    dataset_config = dict(train_config["dataset"])
-    dataset = Unsafe2SafeDataset(**dataset_config)
+    dataset = Unsafe2SafeDataset(**train_config["dataset"])
 
     model = OminiModel(
         flux_pipe_id=config["flux_path"],
@@ -40,8 +39,8 @@ def main() -> None:
         device="cuda",
         dtype=getattr(torch, config["dtype"]),
         optimizer_config=train_config["optimizer"],
-        model_config=config.get("model", {}),
-        gradient_checkpointing=train_config.get("gradient_checkpointing", False),
+        model_config=config["model"],
+        gradient_checkpointing=train_config["gradient_checkpointing"],
     )
 
     # The upstream callback only samples when a test function is supplied.
