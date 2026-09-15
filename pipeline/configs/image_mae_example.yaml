@@ -1,0 +1,19 @@
+# Minimal example for the separate downstream ImageMAE dataset.
+# The ImageMAE repository and trainer remain external.
+
+image_mae_root: /absolute/path/to/mae
+metadata: metadata/downstream.csv
+image_root: data/original
+edited_root: outputs/edited
+
+model: vit_base_patch16
+image_size: 224
+batch_size: 64
+epochs: 50
+learning_rate: 0.001
+output_dir: runs/image_mae
+
+# Manifest columns: file, class, split, and PRIVACY_FLAG.
+train_split: train
+validation_split: val
+test_split: test

@@ -53,6 +53,16 @@ python pipeline/dataset_creation/filter_dataset.py \
 
 The input CSV must contain `clip_orig` and `clip_edit`. A row is kept when `clip_edit / clip_orig` is greater than the threshold.
 
+## Optional ImageMAE dataset
+
+`image_mae_dataset.py` is the project-specific downstream classification
+dataset, separate from `unsafe2safe_dataset.py` used by the diffusion editor.
+It reads `file`, `class`, `split`, and optional `PRIVACY_FLAG` columns, selects
+the original or edited image root, applies ImageNet preprocessing, and returns
+`(image, class_id)` samples. The ImageMAE model and trainer remain in the
+separately installed upstream checkout. See
+[`configs/image_mae_example.yaml`](configs/image_mae_example.yaml).
+
 ## OminiControl adapter
 
 `ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`ominicontrol/README.md`](ominicontrol/README.md). The upstream OminiControl and FLUX source remain external.

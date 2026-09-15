@@ -61,6 +61,14 @@ release.  Its project-specific COCO image routing was extracted into
 settings, and patched LAVIS internals were replaced by explicit arguments and
 the pinned external dependency.
 
+## ImageMAE dataset boundary
+
+The project-specific downstream dataset definition is kept in
+[`pipeline/image_mae_dataset.py`](pipeline/image_mae_dataset.py). It is
+separate from the diffusion dataset and contains no ImageMAE model code. The
+ImageMAE model/trainer remains external; the former local clone, notebooks,
+and experimental classifier code are not part of the public release.
+
 ## Unsafe2Safe license status
 
 This repository currently has no top-level project `LICENSE` file. Do not
