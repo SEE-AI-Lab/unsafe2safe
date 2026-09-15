@@ -1,35 +1,19 @@
-# Pipeline code
+# Pipeline
 
-This directory contains the paper-owned dataset, editing, evaluation, and Safe Attention code.
+This directory contains the project-owned dataset, editing, training adapters, evaluation, and prompt-demo code. External model repositories and checkpoints are not copied into this repository.
 
-The diffusion entry points expect a vanilla InstructPix2Pix checkout outside this repository. Set `INSTRUCT_PIX2PIX_ROOT` to that checkout, or use the training launcher below. The base diffusion repository is intentionally not vendored or modified here.
+## InstructPix2Pix integration
 
-For the current local reproduction, the base is
-[`timothybrooks/instruct-pix2pix`](https://github.com/timothybrooks/instruct-pix2pix)
-at commit `0dffd1e`. Pin a clean checkout when reproducing results:
+The InstructPix2Pix path expects a clean external checkout. The current local reproduction used [`timothybrooks/instruct-pix2pix`](https://github.com/timothybrooks/instruct-pix2pix) at commit `0dffd1e`.
 
 ```bash
 git clone https://github.com/timothybrooks/instruct-pix2pix.git /path/to/instruct-pix2pix
 git -C /path/to/instruct-pix2pix checkout 0dffd1e
 ```
 
-`instruct_pix2pix.py` is the import boundary for the external checkout. `safe_attention.py` supplies the project-specific public-caption/edit-instruction attention adapter and patches the external UNet in memory at model-construction time.
+`instruct_pix2pix.py` defines the external import boundary. `unsafe2safe_model.py` and `safe_attention.py` provide the project-specific model integration without modifying the external checkout.
 
-`unsafe2safe_model.py` provides the project-specific training wrapper on top of the external diffusion base. It does not require edits inside the external checkout.
-
-The canonical Stage 2 CSV contains `file`, `c1`, and `caption`. Historical exports sometimes call `c1` `priv_caption`; in the project metadata convention, `c1` is the public semantic caption. The loader returns this as `caption_public` together with `caption_edit`.
-
-The dataset and metrics helpers can be used independently with local image and metadata paths.
-
-To keep edited training pairs with enough semantic overlap, first compute the original and edited CLIP scores, then run:
-
-```bash
-python pipeline/dataset_creation/filter_dataset.py scores.csv filtered_scores.csv --threshold 0.7
-```
-
-The default threshold follows the paper's MS-COCO filtering step.
-
-Train the project wrapper against a vanilla checkout:
+Train with the released configuration:
 
 ```bash
 ./pipeline/scripts/train_unsafe2safe.sh \
@@ -39,28 +23,52 @@ Train the project wrapper against a vanilla checkout:
   0,1,2,3
 ```
 
-Update the dataset and checkpoint paths in `pipeline/configs/train_unsafe2safe.yaml` before launching. The launcher adds this repository and the external checkout to `PYTHONPATH`, then imports the project adapter from `pipeline/`.
+The training CSV should contain `file`, `c1`, and `caption`. The loader treats `c1` as the public semantic caption and `caption` as the edit instruction. Older exports may call `c1` `priv_caption`.
 
-Collect VLM anonymization scores from generated caption JSON files:
+Run the legacy batch editor from the repository root:
+
+```bash
+./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT
+```
+
+That editor expects the external diffusion checkout at `stable_diffusion/`, a compatible config, and a checkpoint. Keep all three outside version control when possible.
+
+## Dataset filtering
+
+Filter edited pairs by normalized CLIP similarity:
+
+```bash
+python pipeline/dataset_creation/filter_dataset.py \
+  scores.csv filtered_scores.csv \
+  --threshold 0.7
+```
+
+The input CSV must contain `clip_orig` and `clip_edit`. A row is kept when `clip_edit / clip_orig` is greater than the threshold.
+
+## OminiControl adapter
+
+`ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`ominicontrol/README.md`](ominicontrol/README.md). The upstream OminiControl and FLUX source remain external.
+
+## Evaluation helpers
+
+The reusable modules under `metrics/` provide:
+
+- CLIP and directional CLIP similarity.
+- SSIM and LPIPS image similarity.
+- Nearest-counterpart FaceSim.
+- Token-set TextSim and normalized Race Entropy.
+- VLM anonymization score collection.
+- BLEU-4 and CIDEr captioning scores.
+- Downstream top-1 classification accuracy.
+
+For example, collect VLM scores from generated caption JSON files:
 
 ```bash
 python pipeline/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
 ```
 
-`pipeline/metrics/face_similarity.py` also exposes `nearest_face_similarity`, which follows the paper's nearest-counterpart FaceSim definition.
+The prompt demo is optional and requires its own `datasets`, `gradio`, and `openai` installation:
 
-`pipeline/metrics/privacy_scores.py` provides the paper's token-set TextSim and normalized Race Entropy formula helpers.
-
-`pipeline/metrics/image_similarity.py` provides the paper's SSIM and VGG-16 LPIPS pair scores.
-
-`pipeline/metrics/utility_scores.py` provides the downstream top-1 classification accuracy helper.
-
-`pipeline/metrics/caption_scores.py` provides the BLEU-4 and CIDEr captioning utility scores.
-
-## OminiControl reproduction
-
-`pipeline/ominicontrol/` contains only the Unsafe2Safe dataset adapter and
-launch wrappers. OminiControl is intentionally an external dependency: clone
-and install it separately, set `OMINICONTROL_ROOT`, and follow
-[`pipeline/ominicontrol/README.md`](ominicontrol/README.md). No OminiControl
-source files are copied or modified in this repository.
+```bash
+python pipeline/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
+```

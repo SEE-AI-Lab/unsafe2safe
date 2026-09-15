@@ -1,10 +1,12 @@
 # Unsafe2Safe
 
-Unsafe2Safe creates privacy-preserving image datasets while keeping the visual content useful for downstream tasks.
+Unsafe2Safe creates privacy-preserving image edits while preserving the useful visual content of the source image.
 
-This repository contains the Stage 1 captioning tools, dataset preparation scripts, project-specific editing code, evaluation helpers, and Safe Attention layers.
+This repository contains the project-owned captioning, dataset preparation, editing, training adapters, evaluation helpers, and prompt assets used by the project. Large third-party model repositories, checkpoints, datasets, and generated outputs stay outside the repository.
 
-## Install
+## Installation
+
+Create an environment and install the shared Python dependencies:
 
 ```bash
 python -m venv .venv
@@ -12,44 +14,68 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Install a PyTorch build that matches the target CPU or CUDA platform when the default pip resolution is not suitable.
+Install a PyTorch build that matches the target CPU or CUDA platform when the default pip resolution is not suitable. Stage 1 also requires the model dependencies for the selected backend. The diffusion entry points require a compatible external diffusion checkout.
 
-## Repository layout
-
-```text
-prompts/                 Prompt templates.
-vlm_captioning/         Stage 1 captioning and parsing tools.
-pipeline/                Dataset, editing, training, and evaluation code.
-```
-
-The code is released in rough research form. Stage 1 is the most documented part. The project-specific Stage 2 files preserve the original workflow and still require compatible model checkpoints and configuration files.
-
-## Stage 1
-
-Place images under `data/` and metadata under `metadata/`. The default configuration expects a CSV with a `file` column whose values are relative to the image directory.
-
-Example layout:
+## Project layout
 
 ```text
-data/mscoco/<images...>
-metadata/mscoco.csv
-prompts/intern_image_captioning.txt
-outputs/mscoco/generate_captions/
+prompts/                  Captioning, privacy, and edit-instruction prompts.
+vlm_captioning/           Stage 1 generation, parsing, and flag evaluation.
+pipeline/dataset_creation/Metadata and image-pair preparation utilities.
+pipeline/metrics/         CLIP, image, privacy, caption, and utility scores.
+pipeline/scripts/          Download, training, and batch-inference launchers.
+pipeline/                 Editing adapters, datasets, Safe Attention, and demo.
 ```
 
-Generate captions:
+The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
+
+## Stage 1: captioning and privacy instructions
+
+The default configuration uses an InternVL backend for image captioning and privacy flags, and a Qwen text backend for edit instructions and caption combination.
+
+Expected local layout:
+
+```text
+data/mscoco/                  Source images.
+metadata/mscoco.csv           CSV containing a file column.
+outputs/mscoco/               Generated JSON files.
+```
+
+Generate privacy-aware captions:
 
 ```bash
-python vlm_captioning/run_stage1.py --config vlm_captioning/configs/stage1.yaml --purpose generate_captions --dataset mscoco
+python vlm_captioning/run_stage1.py \
+  --config vlm_captioning/configs/stage1.yaml \
+  --purpose generate_captions \
+  --dataset mscoco
 ```
 
-Run pairwise anonymization evaluation:
+Compare original and anonymized images:
 
 ```bash
-python vlm_captioning/run_stage1.py --config vlm_captioning/configs/eval.yaml --purpose compare_anonymization --dataset mscoco
+python vlm_captioning/run_stage1.py \
+  --config vlm_captioning/configs/eval.yaml \
+  --purpose compare_anonymization \
+  --dataset mscoco
 ```
 
-Parse a structured response:
+Collect generated captions into one CSV:
+
+```bash
+python -m vlm_captioning.collect_captions \
+  --captions-dir outputs/mscoco/generate_captions \
+  --metadata metadata/mscoco.csv \
+  --output metadata/mscoco_with_captions.csv \
+  --parse-structured
+```
+
+Evaluate privacy flags against VISPR annotations:
+
+```bash
+python -m vlm_captioning.evaluate_flags metadata/vispr_predictions.csv data/vispr/annotations
+```
+
+The flag-evaluation CSV must contain `file` and `PRIVACY_FLAG` columns. Structured model responses can also be parsed directly:
 
 ```python
 from vlm_captioning.output_parser import parse_structured_output
@@ -57,53 +83,62 @@ from vlm_captioning.output_parser import parse_structured_output
 parsed = parse_structured_output(model_response)
 ```
 
-Assemble generated caption files:
+## Dataset preparation
+
+The dataset helpers in `pipeline/dataset_creation/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
 
 ```bash
-python -m vlm_captioning.collect_captions --captions-dir outputs/mscoco/generate_captions --metadata metadata/mscoco.csv --output metadata/mscoco_with_captions.csv
+python pipeline/dataset_creation/filter_dataset.py \
+  scores.csv filtered_scores.csv \
+  --threshold 0.7
 ```
 
-Add `--parse-structured` to include privacy flags and caption sections as separate columns.
+The input score CSV should contain `clip_orig` and `clip_edit` columns. Rows are kept when `clip_edit / clip_orig` is greater than the threshold.
 
-Evaluate Stage 1 flags against VISPR annotation JSON files:
+## Editing and training
+
+The original diffusion implementation is not vendored. For the InstructPix2Pix path, use a clean external checkout and keep its checkpoints outside this repository. The project adapter imports the external code and applies the project-specific model changes in memory.
+
+Train with the released configuration:
 
 ```bash
-python -m vlm_captioning.evaluate_flags metadata/vispr_predictions.csv data/vispr/annotations
+./pipeline/scripts/train_unsafe2safe.sh \
+  /path/to/instruct-pix2pix \
+  pipeline/configs/train_unsafe2safe.yaml \
+  /path/to/logs \
+  0,1,2,3
 ```
 
-The prediction CSV must contain `file` and `PRIVACY_FLAG` columns. Relative image paths are matched to annotation JSON files under the annotation directory.
-
-## Pipeline code
-
-The `pipeline/` directory includes dataset creation, edit dataset loaders, batch editors, the Unsafe2Safe training wrapper, Safe Attention, and CLIP or face-similarity evaluation helpers.
-
-The diffusion code expects a vanilla InstructPix2Pix checkout outside this repository, plus the compatible configuration files and checkpoints. The unchanged base diffusion repository is not vendored here.
-
-Run batch inference with `./pipeline/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT`.
-
-Start Stage 2 training from a compatible external diffusion checkout:
+Run batch editing from the repository root:
 
 ```bash
-./pipeline/scripts/train_unsafe2safe.sh /path/to/instruct-pix2pix pipeline/configs/train_unsafe2safe.yaml LOG_DIR GPU_IDS
+./pipeline/scripts/run_unsafe2safe.sh \
+  INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT
 ```
 
-The training wrapper imports a vanilla external InstructPix2Pix checkout and patches its UNet in memory; it does not require modifying that checkout. See [`pipeline/README.md`](pipeline/README.md) and [`pipeline/configs/train_unsafe2safe.yaml`](pipeline/configs/train_unsafe2safe.yaml) for the canonical command and data contract.
+The batch editor expects the external diffusion checkout at `stable_diffusion/` for its legacy runtime path, together with a compatible config and checkpoint. See `pipeline/README.md` for the external checkout details and data columns used by the training loader.
 
-For the OminiControl experiment, install a separate OminiControl checkout and
-run the Unsafe2Safe adapter in [`pipeline/ominicontrol/`](pipeline/ominicontrol/README.md).
-The upstream OminiControl source is not copied into this repository.
+The project also contains an Unsafe2Safe-specific OminiControl adapter in [`pipeline/ominicontrol/`](pipeline/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
 
-Launch the optional prompt demo locally with `datasets`, `gradio`, and `openai` installed:
+## Evaluation
 
-```bash
-python pipeline/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
-```
+The reusable metric helpers in `pipeline/metrics/` cover the project’s current public evaluation surface:
 
-## Dataset and links
+- CLIP and directional CLIP similarity.
+- SSIM and LPIPS image similarity.
+- Nearest-counterpart FaceSim.
+- Token-set TextSim and normalized Race Entropy.
+- VLM anonymization score collection.
+- BLEU-4 and CIDEr captioning scores.
+- Downstream top-1 classification accuracy.
 
-The public dataset is available on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe). Project links: [project page](https://see-ai-lab.github.io/unsafe2safe/) and [paper](https://arxiv.org/abs/2603.28605).
+Keep downloaded datasets, checkpoints, generated images, and experiment outputs outside version control. The repository ignores common `outputs/` and `runs/` directories.
 
-Keep downloaded datasets, checkpoints, generated images, and experiment outputs outside version control.
+## Links
+
+- [Dataset on Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe)
+- [Project page](https://see-ai-lab.github.io/unsafe2safe/)
+- [Paper](https://arxiv.org/abs/2603.28605)
 
 ## Citation
 
