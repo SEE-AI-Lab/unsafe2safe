@@ -4,14 +4,11 @@ The public project owns the CSV-to-condition mapping and portable I/O. The
 FlowEdit sampler remains in the separately installed upstream repository.
 """
 
-from __future__ import annotations
-
 import argparse
 import os
 import random
 import sys
 from pathlib import Path
-from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -20,7 +17,7 @@ import yaml
 from PIL import Image
 
 
-def _load_config(path: Path) -> Dict[str, Any]:
+def _load_config(path):
     with path.open(encoding="utf-8") as handle:
         return yaml.safe_load(handle)
 
@@ -35,14 +32,14 @@ def _configure_external(root):
     return FlowEditSD3, FlowEditFLUX
 
 
-def _set_seed(seed: int) -> None:
+def _set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
 
 
-def _dtype(name: str) -> torch.dtype:
+def _dtype(name):
     values = {
         "float16": torch.float16,
         "half": torch.float16,
@@ -51,14 +48,14 @@ def _dtype(name: str) -> torch.dtype:
     return values[name.lower()]
 
 
-def _load_pipeline(model_type: str, model_id: str, dtype: torch.dtype):
+def _load_pipeline(model_type, model_id, dtype):
     from diffusers import FluxPipeline, StableDiffusion3Pipeline
 
     pipeline_class = {"SD3": StableDiffusion3Pipeline, "FLUX": FluxPipeline}[model_type.upper()]
     return pipeline_class.from_pretrained(model_id, torch_dtype=dtype)
 
 
-def _prepare_image(image: Image.Image, max_resolution: int) -> Image.Image:
+def _prepare_image(image, max_resolution):
     image = image.convert("RGB")
     width = image.width - image.width % 16
     height = image.height - image.height % 16
@@ -71,7 +68,7 @@ def _prepare_image(image: Image.Image, max_resolution: int) -> Image.Image:
     return image
 
 
-def _encode_source(pipe, image: Image.Image, device: torch.device) -> torch.Tensor:
+def _encode_source(pipe, image, device):
     dtype = pipe.vae.dtype
     image_src = pipe.image_processor.preprocess(image).to(device=device, dtype=dtype)
     with torch.autocast("cuda", dtype=dtype), torch.inference_mode():
@@ -79,7 +76,7 @@ def _encode_source(pipe, image: Image.Image, device: torch.device) -> torch.Tens
     return (encoded - pipe.vae.config.shift_factor) * pipe.vae.config.scaling_factor
 
 
-def _sample(sampler, pipe, scheduler, latent, source_prompt: str, target_prompt: str, config: Dict[str, Any]):
+def _sample(sampler, pipe, scheduler, latent, source_prompt, target_prompt, config):
     return sampler(
         pipe,
         scheduler,
@@ -87,16 +84,16 @@ def _sample(sampler, pipe, scheduler, latent, source_prompt: str, target_prompt:
         source_prompt,
         target_prompt,
         config["negative_prompt"],
-        int(config["steps"]),
-        int(config["n_avg"]),
-        float(config["src_guidance_scale"]),
-        float(config["tar_guidance_scale"]),
-        int(config["n_min"]),
-        int(config["n_max"]),
+        config["steps"],
+        config["n_avg"],
+        config["src_guidance_scale"],
+        config["tar_guidance_scale"],
+        config["n_min"],
+        config["n_max"],
     )
 
 
-def _decode(pipe, latent: torch.Tensor) -> Image.Image:
+def _decode(pipe, latent):
     denormalized = latent / pipe.vae.config.scaling_factor + pipe.vae.config.shift_factor
     with torch.autocast("cuda", dtype=pipe.vae.dtype), torch.inference_mode():
         decoded = pipe.vae.decode(denormalized, return_dict=False)[0]
