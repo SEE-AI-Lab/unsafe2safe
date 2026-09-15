@@ -14,12 +14,11 @@ Model weights and external trainers are installed separately.
 > The commands below use example paths. Replace them with the locations of your
 > local datasets, checkpoints, and external model repositories.
 
-> [!IMPORTANT]
-> **Update — September 15, 2026:** All project-specific code for the paper is
-> now live in this repository. The previous Stage 1 implementation was last
-> updated on March 25, 2026, nearly six months ago. This release brings the
-> current Stage 1, Stage 2, evaluation helpers, and example configurations
-> together in the public tree.
+## Updates
+
+- **September 15, 2026** — All project-specific code for the paper is now live,
+  including Stage 1, Stage 2, evaluation helpers, and example configurations.
+- **March 25, 2026** — Previous Stage 1 implementation update.
 
 ## Contents
 
