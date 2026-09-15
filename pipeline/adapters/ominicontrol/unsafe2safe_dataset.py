@@ -11,7 +11,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from transformers import CLIPTokenizer
 
-from pipeline.data_prep.filter_dataset import filter_by_clip_similarity
+from pipeline.filter_dataset import filter_by_clip_similarity
 
 
 class Unsafe2SafeDataset(Dataset):

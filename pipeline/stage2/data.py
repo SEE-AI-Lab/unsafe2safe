@@ -12,7 +12,7 @@ from einops import rearrange
 from PIL import Image
 from torch.utils.data import Dataset
 
-from pipeline.data_prep.filter_dataset import filter_by_clip_similarity
+from pipeline.filter_dataset import filter_by_clip_similarity
 
 
 def _image_path(root: Path, relative_path: str | Path) -> Path:

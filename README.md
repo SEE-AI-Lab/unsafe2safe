@@ -43,7 +43,7 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 prompts/                  Captioning, privacy, and edit-instruction prompts.
 pipeline/stage1/               Stage 1 generation, parsing, and flag evaluation.
 pipeline/stage2/               Stage 2 editor, data loader, Safe Attention, and external boundary.
-pipeline/data_prep/            CLIP filtering for generated image pairs.
+pipeline/filter_dataset.py     CLIP filtering for generated image pairs.
 pipeline/evaluation/           CLIP, image, privacy, caption, and utility scores.
 pipeline/adapters/             Optional FlowEdit, OminiControl, Face Anon Simple, LAVIS, and VQA adapters.
 pipeline/scripts/              Training and adapter launchers.
@@ -129,10 +129,10 @@ parsed = parse_structured_output(model_response)
 
 ## Dataset preparation
 
-The dataset helper in `pipeline/data_prep/` filters generated image pairs with the normalized CLIP threshold used by the project:
+The helper in `pipeline/filter_dataset.py` filters generated image pairs with the normalized CLIP threshold used by the project:
 
 ```bash
-python pipeline/data_prep/filter_dataset.py \
+python pipeline/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```

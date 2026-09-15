@@ -51,7 +51,7 @@ names your manifest already has.
 Filter edited pairs by normalized CLIP similarity:
 
 ```bash
-python pipeline/data_prep/filter_dataset.py \
+python pipeline/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
