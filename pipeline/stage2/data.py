@@ -16,16 +16,12 @@ def _image_tensor(image: Image.Image) -> torch.Tensor:
 class EditDataset(Dataset):
     """Load aligned unsafe/public image pairs and their two text conditions."""
 
-    def __init__(self, path: str, target_path: str, csv_path: str, split: str = "train", train_fraction: float = 0.95, image_size: int = 256, flip_prob: float = 0.0, file_column: str = "file", public_caption_column: str = "caption_public", edit_caption_column: str = "caption_edit"):
-        self.file_column = file_column
-        self.public_caption_column = public_caption_column
-        self.edit_caption_column = edit_caption_column
-
+    def __init__(self, path: str, target_path: str, csv_path: str, split: str = "train", train_fraction: float = 0.95, image_size: int = 256, flip_prob: float = 0.0):
         df = pd.read_csv(csv_path)
 
         # Use the COCO filename split used by the released manifests.
         train_df = df[
-            df[file_column].astype(str).str.contains("train2014", na=False)
+            df["file"].astype(str).str.contains("train2014", na=False)
         ].reset_index(drop=True)
         # Shuffle once so train/validation membership is reproducible.
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
@@ -44,10 +40,10 @@ class EditDataset(Dataset):
 
     def __getitem__(self, i):
         entry = self.rows[i]
-        relative_path = entry[self.file_column]
+        relative_path = entry["file"]
         image_path = self.root_dir / relative_path
-        caption_public = str(entry[self.public_caption_column])
-        caption_edit = str(entry[self.edit_caption_column])
+        caption_public = str(entry["public_caption"])
+        caption_edit = str(entry["edit_instruction"])
         target_image_path = self.target_dir / relative_path
 
         # Both images use the fixed 256px training resolution from the paper.

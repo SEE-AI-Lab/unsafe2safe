@@ -85,9 +85,6 @@ data:
         path: data/unsafe
         target_path: data/safe
         csv_path: metadata/triplets.csv
-        file_column: file
-        public_caption_column: public_caption
-        edit_caption_column: edit_instruction
         split: train
         train_fraction: 0.95
         image_size: 256

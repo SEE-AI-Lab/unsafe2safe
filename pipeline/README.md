@@ -39,11 +39,8 @@ Relative paths in the example config resolve from the repository root. Put
 local data, metadata, checkpoints, and logs in those locations or replace
 them with absolute paths in a copy of the config.
 
-The training CSV columns are configured explicitly in
-`stage2/configs/train_unsafe2safe.yaml`: `file_column` identifies the paired image
-path, `public_caption_column` identifies the privacy-safe caption, and
-`edit_caption_column` identifies the edit instruction. Use whatever column
-names your manifest already has.
+The training CSV must contain `file`, `public_caption`, and `edit_instruction`
+columns. `file` is shared by the unsafe and safe image roots.
 
 For eight GPUs, use `0,1,2,3,4,5,6,7` as the last argument. The launcher passes this list to the external DDP trainer.
 
