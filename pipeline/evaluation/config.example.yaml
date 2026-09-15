@@ -14,6 +14,8 @@ compare_anonymized:
   prompt: prompts/intern_image_flagging-compare.txt
   model_id: OpenGVLab/InternVL3_5-8B
 
+image_mae_config: pipeline/evaluation/image_mae/config.example.yaml
+
 metrics:
   image_similarity: [ssim, lpips]
   privacy: [face_similarity, text_similarity, race_entropy, vlm_score]

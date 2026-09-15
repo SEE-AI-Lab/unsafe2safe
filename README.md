@@ -29,7 +29,7 @@ Model weights and external trainers are installed separately.
 - [Stage 2: SafeAttention editing](#stage-2-safeattention-editing)
 - [Other editing adapters](#other-editing-adapters)
 - [Evaluation](#evaluation)
-- [Downstream experiments](#downstream-experiments)
+- [Downstream evaluation](#downstream-evaluation)
 - [External dependencies](#external-dependencies)
 - [Links](#links)
 - [Citation](#citation)
@@ -57,7 +57,7 @@ prompts/                    Captioning, privacy, and edit-instruction prompts.
 pipeline/stage1/            Stage 1 generation, parsing, and flag evaluation.
 pipeline/stage2/            Stage 2 editor, data loader, SafeAttention, and external model wrapper.
 pipeline/filter_dataset.py  CLIP filtering for generated image pairs.
-pipeline/evaluation/        CLIP, image, privacy, caption, and utility scores.
+pipeline/evaluation/        Metrics and the ImageMAE downstream evaluator.
 pipeline/adapters/          Optional FlowEdit, OminiControl, Face Anon Simple, LAVIS, and VQA adapters.
 pipeline/scripts/           Training and adapter launchers.
 ```
@@ -70,10 +70,12 @@ Example configuration files are stored next to the code they configure:
 - `pipeline/stage1/config.yaml`: InternVL/Qwen captioning, flagging, and prompt-preparation jobs.
 - `pipeline/stage2/configs/`: SafeAttention/InstructPix2Pix training.
 - `pipeline/adapters/*/config.example.yaml`: FreePrompt, FlowEdit, OminiControl,
-  ImageMAE, BLIP-2, and Qwen3-VL settings.
+  BLIP-2, and Qwen3-VL settings.
 - `pipeline/adapters/baselines.example.yaml` and
   `pipeline/evaluation/config.example.yaml`:
-  baseline settings and the evaluation inputs.
+  baseline settings and evaluation inputs.
+- `pipeline/evaluation/image_mae/config.example.yaml`: ImageMAE evaluation
+  settings.
 
 ## Stage 1: captioning and privacy instructions
 
@@ -272,13 +274,13 @@ helpers are used the same way; their function names are listed in
 lists the expected roots and model inputs. The [pipeline README](pipeline/README.md)
 contains the full BLIP-2/LAVIS preparation and training commands.
 
-## Downstream experiments
+## Downstream evaluation
 
-The repository includes project-specific data adapters and example configs for
-the downstream experiments in the paper:
+The repository includes the ImageMAE dataset adapter and example settings used
+for downstream classification evaluation in the paper:
 
-- [ImageMAE](pipeline/adapters/image_mae/config.example.yaml) classification
-  data and paper settings.
+- [ImageMAE](pipeline/evaluation/image_mae/config.example.yaml) classification
+  data and evaluation settings.
 - [BLIP-2/LAVIS](pipeline/adapters/lavis/config.example.yaml) captioning data
   routing and launcher settings.
 - [Qwen3-VL OK-VQA](pipeline/adapters/vqa/config.example.yaml) training and

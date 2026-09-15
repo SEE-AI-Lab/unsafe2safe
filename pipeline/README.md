@@ -57,15 +57,15 @@ python pipeline/filter_dataset.py \
 
 The input CSV must contain `clip_orig` and `clip_edit`. A row is kept when `clip_edit / clip_orig` is greater than the threshold.
 
-## Optional ImageMAE dataset
+## ImageMAE evaluation
 
-`adapters/image_mae/dataset.py` is the project-specific downstream classification
-dataset, separate from `stage2/data.py` used by the diffusion editor.
+`evaluation/image_mae/dataset.py` is the downstream classification dataset,
+separate from `stage2/data.py` used by the diffusion editor.
 It reads `file`, `class`, `split`, and optional `PRIVACY_FLAG` columns, selects
 the original or edited image root, applies ImageNet preprocessing, and returns
 `(image, class_id)` samples. The ImageMAE model and trainer remain in the
-separately installed upstream checkout. See
-[`adapters/image_mae/config.example.yaml`](adapters/image_mae/config.example.yaml).
+separately installed external repository. See
+[`evaluation/image_mae/config.example.yaml`](evaluation/image_mae/config.example.yaml).
 When creating separate train and validation datasets, pass the same
 `class_to_idx` mapping to both instances so class IDs remain stable.
 
