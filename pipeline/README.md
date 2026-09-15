@@ -31,3 +31,5 @@ python pipeline/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
 `pipeline/metrics/image_similarity.py` provides the paper's SSIM and VGG-16 LPIPS pair scores.
 
 `pipeline/metrics/utility_scores.py` provides the downstream top-1 classification accuracy helper.
+
+`pipeline/metrics/caption_scores.py` provides the BLEU-4 and CIDEr captioning utility scores.
