@@ -17,3 +17,9 @@ python pipeline/dataset_creation/filter_dataset.py scores.csv filtered_scores.cs
 ```
 
 The default threshold follows the paper's MS-COCO filtering step.
+
+Collect VLM anonymization scores from generated caption JSON files:
+
+```bash
+python pipeline/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
+```
