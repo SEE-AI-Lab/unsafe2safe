@@ -1,5 +1,6 @@
-# Paper-aligned FlowEdit SD3 reproduction defaults.
-# FlowEdit itself is installed separately; see README.md.
+# Example paper-aligned FlowEdit SD3 settings.
+# Text-column names are supplied on the command line; this file is not a
+# schema for any particular dataset. See README.md.
 model_type: SD3
 model_id: stabilityai/stable-diffusion-3-medium-diffusers
 dtype: float16
@@ -14,6 +15,4 @@ n_max: 33
 negative_prompt: ""
 max_resolution: 1536
 file_column: file
-source_column: c2
-target_column: c3
 exclude_file_prefix: val

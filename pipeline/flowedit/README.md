@@ -30,20 +30,36 @@ Run from the Unsafe2Safe repository root:
 bash pipeline/scripts/run_flowedit_unsafe2safe.sh \
   --input-csv /path/to/metadata.csv \
   --image-root /path/to/coco \
-  --output-dir /path/to/outputs
+  --output-dir /path/to/outputs \
+  --source-column SOURCE_COLUMN \
+  --condition TARGET_COLUMN
 ```
 
-The default config is [`config.yaml`](config.yaml). It reproduces the
+The example config is [`config.example.yaml`](config.example.yaml). It reproduces the
 paper-era FlowEdit SD3 route: 50 steps, `n_avg=1`, source guidance 3.5,
 target guidance 13.5, `n_min=0`, `n_max=33`, seed 42, and a maximum resolution
-of 1536 pixels. The historical experiment uses `c2` as the private/source
-caption and `c3` as the target caption; these roles are configurable with
-`--source-column` and `--target-column`. Rows whose `file` value begins with
-`val` are excluded by default, matching the historical batch script.
+of 1536 pixels. The source and target text columns are command-line inputs;
+the adapter does not assume names such as `c1`, `c2`, or `c3`. Pass multiple
+target columns to run them all:
+
+```bash
+... --source-column SOURCE_COLUMN --condition TARGET_A TARGET_B TARGET_C
+```
+
+Or run every other string-valued CSV column as a target condition:
+
+```bash
+... --source-column SOURCE_COLUMN --all-conditions
+```
+
+When multiple conditions are selected, outputs are placed in separate
+`output-dir/COLUMN/` directories. Rows whose `file` value begins with `val`
+are excluded by default, matching the historical batch script.
 
 The CSV must contain the configured file, source, and target columns. File
 values are relative paths; `image-root/file` is read and the generated image is
-written to `output-dir/file`. Existing outputs are skipped unless
+written to `output-dir/file` for one condition or `output-dir/COLUMN/file` for
+multiple conditions. Existing outputs are skipped unless
 `--overwrite` is supplied.
 
 ## Provenance and license boundary
