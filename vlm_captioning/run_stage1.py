@@ -325,6 +325,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
                 max_new_tokens=max_new_tokens,
                 do_sample=run_cfg.get("do_sample", False),
                 format_with_class=run_cfg.get("format_with_class", True),
+                device=run_cfg.get("device", "cuda"),
             )
         else:  # internvl_pair
             left_paths = [s.image_path for s in infer_batch]
@@ -340,6 +341,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
                 max_new_tokens=max_new_tokens,
                 do_sample=run_cfg.get("do_sample", False),
                 pad_token_id=tokenizer.eos_token_id,
+                device=run_cfg.get("device", "cuda"),
             )
 
         for out_text, out_path in zip(outputs, save_paths):
