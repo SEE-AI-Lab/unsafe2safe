@@ -16,7 +16,7 @@ def main() -> None:
     parser.add_argument("--image-root", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--checkpoint", required=True)
-    parser.add_argument("--base-model", default="black-forest-labs/FLUX.1-schnell")
+    parser.add_argument("--base-model", default="black-forest-labs/FLUX.1-dev")
     parser.add_argument("--adapter-name", default="subject")
     parser.add_argument("--caption-column", default="caption")
     parser.add_argument("--file-column", default="file")
