@@ -6,23 +6,27 @@
 
 Unsafe2Safe creates privacy-preserving image edits while preserving the useful visual content of the source image.
 
-This repository contains the project-owned captioning, dataset preparation, editing, training adapters, evaluation helpers, and prompt assets used by the project. Large third-party model repositories, checkpoints, datasets, and generated outputs stay outside the repository.
+This repository contains the project-owned captioning, data filtering, editing, training adapters, evaluation helpers, and prompt assets used by the project. Large third-party model repositories, checkpoints, datasets, and generated outputs stay outside the repository.
 
 > [!NOTE]
 > This is a practical research release. The public files cover the project-owned pipeline pieces; model-heavy stages still require external checkouts, local datasets, and checkpoints.
 
-## Pipeline at a glance
+## Contents
 
-```mermaid
-flowchart LR
-    A[Images and metadata] --> B[Stage 1: privacy review]
-    B --> C[Private/public captions and edit instructions]
-    C --> D[Edited pairs and CLIP filtering]
-    D --> E[Stage 2: diffusion editing]
-    E --> F[Quality, privacy, and utility evaluation]
-```
+- [Installation](#installation)
+- [Project layout](#project-layout)
+- [Stage 1: captioning and privacy instructions](#stage-1-captioning-and-privacy-instructions)
+- [CLIP filtering](#clip-filtering)
+- [Stage 2: SafeAttention editing](#stage-2-safeattention-editing)
+- [Other editing adapters](#other-editing-adapters)
+- [Evaluation](#evaluation)
+- [Downstream experiments](#downstream-experiments)
+- [External dependencies](#external-dependencies)
+- [Links](#links)
+- [Citation](#citation)
 
-Stage 2 can use the released project adapters for InstructPix2Pix, OminiControl, and FlowEdit while their upstream model repositories remain external.
+The repository follows the paper's two-stage structure: Stage 1 creates the
+privacy-safe text conditions, and Stage 2 trains the SafeAttention editor.
 
 ## Installation
 
@@ -40,13 +44,13 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 ## Project layout
 
 ```text
-prompts/                  Captioning, privacy, and edit-instruction prompts.
-pipeline/stage1/              Stage 1 generation, parsing, and flag evaluation.
-pipeline/stage2/              Stage 2 editor, data loader, Safe Attention, and external boundary.
-pipeline/filter_dataset.py     CLIP filtering for generated image pairs.
-pipeline/evaluation/          CLIP, image, privacy, caption, and utility scores.
-pipeline/adapters/            Optional FlowEdit, OminiControl, Face Anon Simple, LAVIS, and VQA adapters.
-pipeline/scripts/             Training and adapter launchers.
+prompts/                    Captioning, privacy, and edit-instruction prompts.
+pipeline/stage1/            Stage 1 generation, parsing, and flag evaluation.
+pipeline/stage2/            Stage 2 editor, data loader, SafeAttention, and external boundary.
+pipeline/filter_dataset.py  CLIP filtering for generated image pairs.
+pipeline/evaluation/        CLIP, image, privacy, caption, and utility scores.
+pipeline/adapters/          Optional FlowEdit, OminiControl, Face Anon Simple, LAVIS, and VQA adapters.
+pipeline/scripts/           Training and adapter launchers.
 ```
 
 The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
@@ -139,9 +143,19 @@ python pipeline/filter_dataset.py \
 
 The input score CSV should contain `clip_orig` and `clip_edit` columns. Rows are kept when `clip_edit / clip_orig` is greater than the threshold.
 
-## Editing and training
+## Stage 2: SafeAttention editing
 
-The original diffusion implementation is not vendored. For the InstructPix2Pix path, use a clean external checkout and keep its checkpoints outside this repository. The project adapter imports the external code and applies the project-specific model changes in memory.
+Stage 2 is the paper's SafeAttention editor. It takes the unsafe image, a
+privacy-safe caption, and an edit instruction, then learns to produce the safe
+image. The project-specific attention code is in `pipeline/stage2/`; the
+InstructPix2Pix trainer, VAE, CLIP encoder, and checkpoints remain external.
+
+The implementation has three parts:
+
+1. `stage2/data.py` loads paired images and the two text conditions.
+2. `stage2/model.py` sends the public caption and edit instruction to the UNet.
+3. `stage2/attention.py` fuses their attention maps and applies the fused map
+   to the public-caption values.
 
 Train with the example configuration:
 
@@ -153,17 +167,18 @@ Train with the example configuration:
   0,1,2,3
 ```
 
-The project also contains an Unsafe2Safe-specific OminiControl adapter in [`pipeline/adapters/ominicontrol/`](pipeline/adapters/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
+The example config is [`pipeline/stage2/configs/train_unsafe2safe.yaml`](pipeline/stage2/configs/train_unsafe2safe.yaml). Replace its local data and checkpoint paths as needed.
 
-The project also contains a minimal FlowEdit adapter in
-[`pipeline/adapters/flowedit/`](pipeline/adapters/flowedit/README.md). FlowEdit remains an
-external MIT-licensed dependency.
+## Other editing adapters
 
-The project also contains a Face Anon Simple batch adapter in
-[`pipeline/adapters/face_anon_simple/`](pipeline/adapters/face_anon_simple/README.md).
-The AGPL-3.0 upstream ReferenceNet implementation remains an external dependency.
+The optional [OminiControl adapter](pipeline/adapters/ominicontrol/README.md)
+provides the paper's FLUX-based alternative using the project’s unsafe/safe
+dataset mapping. The [FlowEdit adapter](pipeline/adapters/flowedit/README.md)
+provides the paper's SD3 condition mapping. [Face Anon Simple](pipeline/adapters/face_anon_simple/README.md)
+is an optional external baseline.
 
-See [`THIRD_PARTY.md`](THIRD_PARTY.md) for the external dependency boundaries.
+The [baseline config](pipeline/adapters/baselines.example.yaml) records the
+external FreePrompt and DeepPrivacy2 handoffs.
 
 ## Evaluation
 
@@ -179,9 +194,24 @@ The reusable metric helpers in `pipeline/evaluation/` cover the project’s curr
 
 Keep downloaded datasets, checkpoints, generated images, and experiment outputs outside version control. The repository ignores common `outputs/` and `runs/` directories.
 
-## Downstream VQA
+## Downstream experiments
 
-The Qwen3-VL OK-VQA training and prediction scripts are under [`pipeline/adapters/vqa/`](pipeline/adapters/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
+The repository includes project-specific data adapters and handoff configs for
+the downstream experiments in the paper:
+
+- [ImageMAE](pipeline/adapters/image_mae/config.example.yaml) classification
+  data and paper settings.
+- [BLIP-2/LAVIS](pipeline/adapters/lavis/config.example.yaml) captioning data
+  routing and launcher settings.
+- [Qwen3-VL OK-VQA](pipeline/adapters/vqa/config.example.yaml) training and
+  evaluation settings.
+
+These model trainers remain external. See the adapter READMEs for commands.
+
+## External dependencies
+
+See [`THIRD_PARTY.md`](THIRD_PARTY.md) for the external repositories used by
+the optional workflows. They are not included in this repository.
 
 ## Links
 
