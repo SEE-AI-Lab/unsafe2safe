@@ -17,7 +17,7 @@ def evaluate_flags(prediction_csv, annotation_root, flag_column="PRIVACY_FLAG"):
             image_path = Path(row["file"])
             annotation_path = annotation_root / image_path.with_suffix(".json")
             with annotation_path.open(encoding="utf-8") as annotation_handle:
-                labels = json.load(annotation_handle).get("labels", [])
+                labels = json.load(annotation_handle)["labels"]
             true_labels.append(int("a0_safe" not in labels))
             predicted_labels.append(int(row[flag_column].strip().upper() == "TRUE"))
 

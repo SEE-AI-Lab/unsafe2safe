@@ -19,7 +19,7 @@ def collect_scores(captions_dir, filename_suffix="_caption.json"):
     records = []
     for caption_path in sorted(root.rglob(f"*{filename_suffix}")):
         with caption_path.open(encoding="utf-8") as handle:
-            caption = json.load(handle).get("caption", "")
+            caption = json.load(handle)["caption"]
         score = extract_anonymization_score(caption)
         if score is not None:
             relative = caption_path.relative_to(root)

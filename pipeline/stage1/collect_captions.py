@@ -14,7 +14,7 @@ def collect_captions(captions_dir, output_path, *, filename_suffix="_caption.jso
     for caption_path in sorted(root.rglob(f"*{filename_suffix}")):
         with caption_path.open(encoding="utf-8") as handle:
             payload = json.load(handle)
-        caption = payload.get("caption", "")
+        caption = payload["caption"]
 
         relative = caption_path.relative_to(root)
         image_name = relative.name[: -len(filename_suffix)] + image_suffix
