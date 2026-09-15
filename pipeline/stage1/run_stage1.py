@@ -268,26 +268,6 @@ def build_text_messages(system_prompt, prompt_template, batch):
     return messages
 
 
-def build_qwen_vl_messages(system_prompt, prompt_template, batch):
-    messages = []
-    for s in batch:
-        user_text = prompt_template.format_map(SafeDict(s.vars))
-        messages.append(
-            [
-                {"role": "system", "content": system_prompt},
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": user_text},
-                        {"type": "image", "image": f"file://{s.image_path}"},
-                    ],
-                },
-            ]
-        )
-    return messages
-
-
-
 def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
     effective_cfg = resolve_runtime_paths(effective_cfg, config_dir or Path.cwd())
     run_cfg = effective_cfg["run"]
@@ -330,15 +310,14 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
     for i in tqdm(range(0, len(samples), batch_size), desc=desc):
         # Full-batch inference keeps throughput high and avoids fragmented GPU work.
         batch = samples[i : i + batch_size]
-        infer_batch = batch
-        save_paths = [output_path_for(s, output_dir, suffix=suffix) for s in infer_batch]
+        save_paths = [output_path_for(s, output_dir, suffix=suffix) for s in batch]
 
         if backend == "qwen_text":
-            msgs = build_text_messages(system_prompt, prompt_text, infer_batch)
+            msgs = build_text_messages(system_prompt, prompt_text, batch)
             outputs = run_text_batch(generator, msgs, max_new_tokens=max_new_tokens, batch_size=batch_size)
         elif backend == "internvl":
-            image_paths = [s.image_path for s in infer_batch]
-            image_classes = [s.vars.get("image_class", "") for s in infer_batch]
+            image_paths = [s.image_path for s in batch]
+            image_classes = [s.vars.get("image_class", "") for s in batch]
             outputs = run_internvl_batch(
                 model,
                 tokenizer,
@@ -353,8 +332,8 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
                 device=run_cfg.get("device", "cuda"),
             )
         else:  # internvl_pair
-            left_paths = [s.image_path for s in infer_batch]
-            right_paths = [s.right_image_path for s in infer_batch]
+            left_paths = [s.image_path for s in batch]
+            right_paths = [s.right_image_path for s in batch]
             outputs = run_internvl_pair_batch(
                 model,
                 tokenizer,
