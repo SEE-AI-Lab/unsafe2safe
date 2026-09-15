@@ -163,8 +163,7 @@ The project also contains a Face Anon Simple batch adapter in
 [`pipeline/adapters/face_anon_simple/`](pipeline/adapters/face_anon_simple/README.md).
 The AGPL-3.0 upstream ReferenceNet implementation remains an external dependency.
 
-See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
-boundaries, attribution, and license status.
+See [`THIRD_PARTY.md`](THIRD_PARTY.md) for the external dependency boundaries.
 
 ## Evaluation
 
