@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-
 import torch
 from einops import rearrange
 
@@ -32,7 +30,7 @@ class Unsafe2Safe(LatentDiffusion):
     """
 
     @torch.no_grad()
-    def get_input(self, batch: Dict[str, Any], k: str = "image_public", return_first_stage_outputs: bool = False, bs: Optional[int] = None, uncond: float = 0.05, **_: Any) -> List[Any]:
+    def get_input(self, batch, k="image_public", return_first_stage_outputs=False, bs=None, uncond=0.05, **_):
         source = batch["image_private"]
         target = batch["image_public"]
         public_text = batch["caption_public"]
@@ -67,12 +65,12 @@ class Unsafe2Safe(LatentDiffusion):
             "c_concat": [image_mask * source_latent],
             "c_crossattn": [public_embed, edit_embed],
         }
-        outputs: List[Any] = [target_latent, cond]
+        outputs = [target_latent, cond]
         if return_first_stage_outputs:
             outputs.extend([target, self.decode_first_stage(target_latent)])
         return outputs
 
-    def shared_step(self, batch: Dict[str, Any], **_: Any):
+    def shared_step(self, batch, **_):
         target_latent, cond = self.get_input(batch, self.first_stage_key)
         return self(target_latent, cond)
 

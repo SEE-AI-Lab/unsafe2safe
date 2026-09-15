@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import random
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -55,13 +54,13 @@ class Unsafe2SafeDataset(Dataset):
     def __len__(self) -> int:
         return len(self.rows)
 
-    def _caption(self, value: Any) -> str:
+    def _caption(self, value):
         caption = str(value)
         token_ids = self.tokenizer(caption, max_length=self.max_caption_tokens, truncation=True)["input_ids"]
         caption = self.tokenizer.decode(token_ids, skip_special_tokens=True).strip()
         return "" if random.random() < self.drop_text_prob else caption
 
-    def __getitem__(self, index: int) -> dict[str, Any]:
+    def __getitem__(self, index):
         row = self.rows[index]
         relative_path = Path(str(row[self.image_column]))
         with Image.open(self.image_root / relative_path) as image:

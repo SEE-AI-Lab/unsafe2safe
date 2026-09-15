@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -43,7 +42,7 @@ class EditDataset(Dataset):
     def __len__(self):
         return len(self.rows)
 
-    def __getitem__(self, i: int) -> Dict[str, Any]:
+    def __getitem__(self, i):
         entry = self.rows[i]
         relative_path = entry[self.file_column]
         image_path = self.root_dir / relative_path
