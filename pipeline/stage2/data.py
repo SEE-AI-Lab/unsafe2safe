@@ -12,6 +12,8 @@ from einops import rearrange
 from PIL import Image
 from torch.utils.data import Dataset
 
+from pipeline.data_prep.filter_dataset import filter_by_clip_similarity
+
 
 def _image_path(root: Path, relative_path: str | Path) -> Path:
     """Resolve a manifest path without allowing it to escape its image root."""
@@ -77,7 +79,12 @@ class EditDataset(Dataset):
             if missing:
                 raise ValueError(f"CLIP score CSV is missing columns: {missing}")
             df = df_clip_score.merge(df, left_on=score_file_column, right_on=file_column, how="inner")
-            df = df[(df[score_edit_column] / df[score_public_column]) > clip_threshold]
+            df = filter_by_clip_similarity(
+                df,
+                original_column=score_public_column,
+                edited_column=score_edit_column,
+                threshold=clip_threshold,
+            )
 
         # Use the COCO filename split used by the released manifests.
         train_df = df[
