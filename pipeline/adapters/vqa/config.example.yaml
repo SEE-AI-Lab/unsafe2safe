@@ -1,4 +1,4 @@
-# Example Qwen3-VL OK-VQA handoff from the paper.
+# Example Qwen3-VL OK-VQA settings from the paper.
 # The model, dataset, and trainer remain external.
 
 model_id: Qwen/Qwen3-VL-2B-Instruct
