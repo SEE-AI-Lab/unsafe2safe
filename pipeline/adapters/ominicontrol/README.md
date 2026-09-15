@@ -77,15 +77,13 @@ python -m pipeline.adapters.ominicontrol.generate_unsafe2safe \
   --image-root data/coco \
   --output-dir outputs/ominicontrol \
   --checkpoint runs/ominicontrol/<run>/ckpt/<step> \
-  --base-model black-forest-labs/FLUX.1-schnell \
+  --base-model black-forest-labs/FLUX.1-dev \
   --split-column split --split val
 ```
 
-The generation defaults follow the existing local inference recipe (512x512,
-8 steps, and a fixed seed), while all paths and model choices are explicit CLI
-arguments. The paper specifies the OminiControl training setup more precisely
-than the inference defaults, so record any changed inference settings with the
-results.
+The generation defaults are 512x512, 8 steps, FLUX.1-dev, and a fixed seed;
+all paths and model choices remain available as CLI arguments. Record changed
+inference settings with the results.
 
 ## Provenance
 
