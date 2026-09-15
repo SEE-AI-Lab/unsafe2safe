@@ -1,5 +1,4 @@
 import os
-from itertools import combinations
 
 import numpy as np
 from insightface.app import FaceAnalysis
@@ -35,42 +34,3 @@ def nearest_face_similarity(image_root, synthetic_root, items):
             if synthetic_faces:
                 similarities.append(max(cosine_similarity([original], [synthetic])[0][0] for synthetic in synthetic_faces))
     return float(np.mean(similarities)) if similarities else float("nan")
-
-
-def compare_id_consistency(image_root, synthetic_root, items):
-    """Compare face-embedding similarity between original and synthetic images."""
-    app = _load_app()
-
-    original_embeddings = []
-    synthetic_embeddings = []
-    for item in items:
-        original_faces = get_embeddings(app, load_image(os.path.join(image_root, item)))
-        synthetic_faces = get_embeddings(app, load_image(os.path.join(synthetic_root, item)))
-        original = original_faces[0] if original_faces else None
-        synthetic = synthetic_faces[0] if synthetic_faces else None
-        original_embeddings.append(original)
-        synthetic_embeddings.append(synthetic)
-
-    original_pairs = [
-        cosine_similarity([original_embeddings[i]], [original_embeddings[j]])[0][0]
-        for i, j in combinations(range(len(original_embeddings)), 2)
-        if original_embeddings[i] is not None and original_embeddings[j] is not None
-    ]
-    synthetic_pairs = [
-        cosine_similarity([synthetic_embeddings[i]], [synthetic_embeddings[j]])[0][0]
-        for i, j in combinations(range(len(synthetic_embeddings)), 2)
-        if synthetic_embeddings[i] is not None and synthetic_embeddings[j] is not None
-    ]
-    cross_pairs = [
-        cosine_similarity([original], [synthetic])[0][0]
-        for original in original_embeddings
-        if original is not None
-        for synthetic in synthetic_embeddings
-        if synthetic is not None
-    ]
-
-    return {
-        "original": np.asarray(original_pairs),
-        "synthetic": np.asarray(synthetic_pairs),
-        "cross": np.asarray(cross_pairs),
-    }

@@ -24,11 +24,6 @@ def read_manifest(path: str | Path) -> list[dict[str, str]]:
     return rows
 
 
-def split_rows(rows: list[dict[str, str]], split: str, split_column: str = "split"):
-    """Return one named split from the manifest."""
-    return [row for row in rows if row.get(split_column, "").strip() == split]
-
-
 def build_transform(is_train: bool, image_size: int = 224):
     """Build the ImageNet preprocessing used by standard MAE checkpoints."""
     if is_train:

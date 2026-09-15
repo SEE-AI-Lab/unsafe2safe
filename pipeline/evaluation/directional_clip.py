@@ -3,10 +3,9 @@ import torch.nn.functional as F
 
 
 @torch.no_grad()
-def compute_directional_clip_score(model, processor, original_images, edited_images, original_captions, edit_captions, device=None):
+def compute_directional_clip_score(model, processor, original_images, edited_images, original_captions, edit_captions):
     """Compute directional CLIP similarity for original and edited image batches."""
-    if device is None:
-        device = next(model.parameters()).device
+    device = next(model.parameters()).device
 
     images = torch.cat([original_images, edited_images], dim=0).to(device)
     image_features = model.get_image_features(images)

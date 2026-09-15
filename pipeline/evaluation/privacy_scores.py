@@ -18,7 +18,5 @@ def normalized_race_entropy(predicted_races, categories=RACE_CATEGORIES) -> floa
     """Return normalized demographic entropy for one image's VLM predictions."""
     counts = Counter(race for race in predicted_races if race in categories)
     total = sum(counts.values())
-    if not total or len(categories) < 2:
-        return 0.0
     entropy = -sum((count / total) * log(count / total) for count in counts.values())
     return entropy / log(len(categories))
