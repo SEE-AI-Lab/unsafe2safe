@@ -23,8 +23,8 @@ from pathlib import Path
 
 sys.path.append("./")
 
-from clip_similarity import ClipSimilarity
-from edit_dataset import EditDatasetEval
+from pipeline.metrics.clip_similarity import ClipSimilarity
+from pipeline.edit_dataset import EditDatasetEval
 
 sys.path.append("./stable_diffusion")
 
