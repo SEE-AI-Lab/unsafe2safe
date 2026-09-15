@@ -1,9 +1,7 @@
 """Make local LAVIS annotations for the Unsafe2Safe BLIP-2 run.
 
-The historical LAVIS patch chose an anonymized image when one was available,
-kept the original otherwise, and removed private images without a safe copy.
-This small adapter performs that project-specific routing before the external
-LAVIS package reads the annotations.
+This adapter routes each annotation to a safe or original image and removes
+private images without a safe copy before the external LAVIS package reads it.
 """
 
 from __future__ import annotations

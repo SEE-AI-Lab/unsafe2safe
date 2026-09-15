@@ -53,11 +53,12 @@ The code is released in practical research form. Paths, checkpoints, and model c
 
 Paper-aligned handoff configs are kept beside the code they configure:
 
-- `stage1/configs/`: InternVL/Qwen captioning, flagging, and comparison jobs.
-- `stage2/configs/`: SafeAttention/InstructPix2Pix training.
-- `adapters/*/config.example.yaml`: FreePrompt, FlowEdit, OminiControl,
+- `pipeline/stage1/configs/`: InternVL/Qwen captioning, flagging, and comparison jobs.
+- `pipeline/stage2/configs/`: SafeAttention/InstructPix2Pix training.
+- `pipeline/adapters/*/config.example.yaml`: FreePrompt, FlowEdit, OminiControl,
   ImageMAE, BLIP-2, and Qwen3-VL recipes.
-- `adapters/baselines.example.yaml` and `evaluation/config.example.yaml`:
+- `pipeline/adapters/baselines.example.yaml` and
+  `pipeline/evaluation/config.example.yaml`:
   external baselines and the evaluation checklist.
 
 ## Stage 1: captioning and privacy instructions

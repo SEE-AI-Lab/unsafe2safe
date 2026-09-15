@@ -53,7 +53,7 @@ Or run every other string-valued CSV column as a target condition:
 
 When multiple conditions are selected, outputs are placed in separate
 `output-dir/COLUMN/` directories. Rows whose `file` value begins with `val`
-are excluded by default, matching the historical batch script.
+are excluded by default, matching the paper's train-only generation convention.
 
 The CSV must contain the configured file, source, and target columns. File
 values are relative paths; `image-root/file` is read and the generated image is
