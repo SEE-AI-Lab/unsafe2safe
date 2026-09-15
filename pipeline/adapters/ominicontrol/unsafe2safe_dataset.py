@@ -45,8 +45,8 @@ class Unsafe2SafeDataset(Dataset):
         image_size: tuple[int, int] = (512, 512),
         drop_text_prob: float = 0.1,
         drop_image_prob: float = 0.1,
-        tokenizer_name: str | None = "openai/clip-vit-base-patch32",
-        max_caption_tokens: int | None = 73,
+        tokenizer_name: str = "openai/clip-vit-base-patch32",
+        max_caption_tokens: int = 73,
     ) -> None:
         frame = pd.read_csv(csv_path)
         if clip_score_path is not None:
@@ -75,12 +75,7 @@ class Unsafe2SafeDataset(Dataset):
 
         train_frame = train_frame.sample(frac=1.0, random_state=42).reset_index(drop=True)
         val_cutoff = int((1 - train_fraction) * len(train_frame))
-        if split == "train":
-            selected = train_frame.iloc[val_cutoff:]
-        elif split == "val":
-            selected = train_frame.iloc[:val_cutoff]
-        else:
-            selected = test_frame
+        selected = {"train": train_frame.iloc[val_cutoff:], "val": train_frame.iloc[:val_cutoff], "test": test_frame}[split]
 
         self.rows = selected.to_dict(orient="records")
         self.image_root = Path(image_root)
@@ -92,23 +87,15 @@ class Unsafe2SafeDataset(Dataset):
         self.drop_image_prob = drop_image_prob
         self.to_tensor = T.ToTensor()
         self.max_caption_tokens = max_caption_tokens
-        self.tokenizer = (
-            CLIPTokenizer.from_pretrained(tokenizer_name) if tokenizer_name else None
-        )
+        self.tokenizer = CLIPTokenizer.from_pretrained(tokenizer_name)
 
     def __len__(self) -> int:
         return len(self.rows)
 
     def _caption(self, value: Any) -> str:
-        caption = "" if pd.isna(value) else str(value)
-        if self.tokenizer is not None and self.max_caption_tokens is not None:
-            # Match the short CLIP text sequence used by the original loader.
-            token_ids = self.tokenizer(
-                caption,
-                max_length=self.max_caption_tokens,
-                truncation=True,
-            )["input_ids"]
-            caption = self.tokenizer.decode(token_ids, skip_special_tokens=True).strip()
+        caption = str(value)
+        token_ids = self.tokenizer(caption, max_length=self.max_caption_tokens, truncation=True)["input_ids"]
+        caption = self.tokenizer.decode(token_ids, skip_special_tokens=True).strip()
         return "" if random.random() < self.drop_text_prob else caption
 
     def __getitem__(self, index: int) -> dict[str, Any]:
