@@ -7,7 +7,6 @@ standard external MAE classifier.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 import csv
 from pathlib import Path
 
@@ -54,15 +53,12 @@ def _is_private(value: str) -> bool:
 class ImageMAEDataset(Dataset):
     """Load original images or edited counterparts for downstream labels."""
 
-    def __init__(self, rows: list[dict[str, str]], image_root: str | Path, edited_root: str | Path | None = None, transform=None, *, class_column: str = "class", file_column: str = "file", privacy_column: str = "PRIVACY_FLAG", class_to_idx: Mapping[str, int] | None = None, is_train: bool = False):
+    def __init__(self, rows, image_root, edited_root=None, transform=None, *, class_to_idx=None, is_train=False):
         self.rows = rows
         self.image_root = Path(image_root)
         self.edited_root = Path(edited_root) if edited_root else None
         self.transform = transform
-        self.class_column = class_column
-        self.file_column = file_column
-        self.privacy_column = privacy_column
-        labels = {row[class_column] for row in rows}
+        labels = {row["class"] for row in rows}
         if class_to_idx is None:
             labels = sorted(labels)
             self.class_to_idx = {label: index for index, label in enumerate(labels)}
@@ -75,8 +71,8 @@ class ImageMAEDataset(Dataset):
 
     def __getitem__(self, index):
         row = self.rows[index]
-        relative_path = Path(row[self.file_column])
-        if _is_private(row.get(self.privacy_column, "false")):
+        relative_path = Path(row["file"])
+        if _is_private(row.get("PRIVACY_FLAG", "false")):
             image_path = self.edited_root / relative_path
         else:
             image_path = self.image_root / relative_path
@@ -84,4 +80,4 @@ class ImageMAEDataset(Dataset):
         with Image.open(image_path) as image:
             image = image.convert("RGB")
             image = self.transform(image)
-        return image, self.class_to_idx[row[self.class_column]]
+        return image, self.class_to_idx[row["class"]]
