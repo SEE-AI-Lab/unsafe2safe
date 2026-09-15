@@ -1,4 +1,4 @@
-"""Collect Stage 1 JSON outputs into a simple CSV table."""
+"""Collect Stage 1 JSON outputs into CSV or JSONL records."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 
-def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suffix=".jpg"):
+def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suffix=".jpg", parse_structured=False):
     """Read generated captions and return rows keyed by relative image path."""
     root = Path(captions_dir)
     rows = []
@@ -21,8 +21,19 @@ def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suf
 
         relative = caption_path.relative_to(root)
         image_name = relative.name[: -len(filename_suffix)] + image_suffix
-        rows.append({"file": str(relative.with_name(image_name)), "caption": caption})
+        row = {"file": str(relative.with_name(image_name)), "caption": caption}
+        if parse_structured:
+            from vlm_captioning.output_parser import parse_structured_output
+
+            row.update(parse_structured_output(caption))
+        rows.append(row)
     return rows
+
+
+def _fieldnames(rows):
+    preferred = ["file", "caption", "PRIVACY_FLAG", "PRIVACY_REVIEW", "PRIVATE_CAPTION", "PUBLIC_CAPTION"]
+    available = {key for row in rows for key in row}
+    return [key for key in preferred if key in available] + sorted(available.difference(preferred))
 
 
 def write_caption_table(rows, output_path):
@@ -30,33 +41,44 @@ def write_caption_table(rows, output_path):
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["file", "caption"])
+        writer = csv.DictWriter(handle, fieldnames=_fieldnames(rows))
         writer.writeheader()
         writer.writerows(rows)
 
 
-def merge_with_metadata(rows, metadata_path, output_path):
-    """Keep metadata rows that have a matching generated caption."""
-    captions = {row["file"]: row["caption"] for row in rows}
+def write_caption_jsonl(rows, output_path):
+    """Write one JSON object per line for streaming and notebook use."""
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("w", encoding="utf-8") as handle:
+        for row in rows:
+            json.dump(row, handle, ensure_ascii=False)
+            handle.write("\n")
+
+
+def merge_with_metadata(rows, metadata_path):
+    """Return metadata rows that have a matching generated caption."""
+    captions = {row["file"]: row for row in rows}
     with Path(metadata_path).open(encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         if not reader.fieldnames or "file" not in reader.fieldnames:
             raise ValueError("Metadata CSV must contain a 'file' column")
-        fieldnames = list(reader.fieldnames)
-        if "caption" not in fieldnames:
-            fieldnames.append("caption")
         merged = []
         for row in reader:
             if row["file"] in captions:
-                row["caption"] = captions[row["file"]]
+                row.update(captions[row["file"]])
                 merged.append(row)
+    return merged
 
-    output = Path(output_path)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(merged)
+
+def write_records(rows, output_path, file_format=None):
+    """Write records as CSV or JSONL, using the output extension by default."""
+    file_format = file_format or ("jsonl" if output_path.suffix.lower() in {".jsonl", ".ndjson"} else "csv")
+    if file_format == "jsonl":
+        write_caption_jsonl(rows, output_path)
+    else:
+        write_caption_table(rows, output_path)
+
 
 
 def main():
@@ -64,13 +86,14 @@ def main():
     parser.add_argument("--captions-dir", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--metadata", type=Path, help="Optional CSV with a file column")
+    parser.add_argument("--format", choices=("csv", "jsonl"), help="Output format; inferred from --output when omitted")
+    parser.add_argument("--parse-structured", action="store_true", help="Add parsed privacy and caption fields")
     args = parser.parse_args()
 
-    rows = collect_captions(args.captions_dir)
+    rows = collect_captions(args.captions_dir, parse_structured=args.parse_structured)
     if args.metadata:
-        merge_with_metadata(rows, args.metadata, args.output)
-    else:
-        write_caption_table(rows, args.output)
+        rows = merge_with_metadata(rows, args.metadata)
+    write_records(rows, args.output, args.format)
 
 
 if __name__ == "__main__":

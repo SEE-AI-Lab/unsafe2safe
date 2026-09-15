@@ -112,6 +112,8 @@ python -m vlm_captioning.collect_captions \
   --output metadata/mscoco_with_captions.csv
 ```
 
+Use a `.jsonl` output for streaming records, or add `--parse-structured` to include privacy flags and caption sections as separate fields.
+
 ## Dataset
 The released dataset is hosted on [Hugging Face](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe). Please refer to the dataset card for the public data description, access details, and updates.
 
