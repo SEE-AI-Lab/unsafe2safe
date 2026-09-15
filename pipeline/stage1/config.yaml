@@ -10,6 +10,7 @@ defaults:
     cache_dir: .cache/huggingface
   output:
     output_dir: outputs/{dataset}/{purpose}
+    manifest_path: outputs/{dataset}/{purpose}.csv
     filename_suffix: _caption.json
 
 datasets:
@@ -30,6 +31,7 @@ purposes:
       system_prompt: You are a vision-language assistant that generates privacy-aware, structured descriptions of real-world images.
       prompt_path: prompts/intern_image_captioning.txt
       format_with_class: true
+      parse_structured: true
     source:
       type: csv
       image_col: file
@@ -55,6 +57,7 @@ purposes:
       system_prompt: You are a vision-language assistant for structured, privacy-aware image analysis.
       prompt_path: prompts/intern_image_flagging.txt
       format_with_class: true
+      parse_structured: true
       max_new_tokens: 128
     source:
       type: glob
@@ -69,10 +72,11 @@ purposes:
       prompt_path: prompts/qwen_image_captioning-private-expand.txt
       max_new_tokens: 512
       batch_size: 64
+      output_column: EDIT_INSTRUCTION
     source:
       type: csv
       image_col: file
-      csv_path: metadata/{dataset}_with_captions.csv
+      csv_path: outputs/{dataset}/generate_captions.csv
       prompt_columns:
         public_caption: PUBLIC_CAPTION
 
@@ -85,10 +89,11 @@ purposes:
       prompt_path: prompts/qwen_caption_combine.txt
       max_new_tokens: 512
       batch_size: 64
+      output_column: COMBINED_CAPTION
     source:
       type: csv
       image_col: file
-      csv_path: metadata/{dataset}_with_edit_instructions.csv
+      csv_path: outputs/{dataset}/generate_edit_instructions.csv
       prompt_columns:
         public_caption: PUBLIC_CAPTION
         edit_caption: EDIT_INSTRUCTION

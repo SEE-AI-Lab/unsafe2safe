@@ -11,6 +11,7 @@ import pandas as pd
 import yaml
 from tqdm.auto import tqdm
 
+from pipeline.stage1.collect_captions import collect_captions
 from pipeline.stage1.qwen_common import (
     build_text_generator,
     run_text_batch,
@@ -114,7 +115,7 @@ def resolve_runtime_paths(effective_cfg, config_dir):
     for section, keys in {
         "run": ("cache_dir", "hf_home", "prompt_path"),
         "source": ("csv_path", "right_root_dir"),
-        "output": ("output_dir",),
+        "output": ("output_dir", "manifest_path"),
         "dataset": ("root_dir",),
     }.items():
         for key in keys:
@@ -252,6 +253,8 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
         for out_text, out_path in zip(outputs, save_paths):
             ensure_parent(out_path)
             write_caption_json(out_path, out_text)
+
+    collect_captions(output_dir, output_path=output_cfg.get("manifest_path"), metadata_path=source_cfg.get("csv_path"), filename_suffix=suffix, parse_structured=run_cfg.get("parse_structured", False), output_column=run_cfg.get("output_column", "caption"))
 
 
 def main():
