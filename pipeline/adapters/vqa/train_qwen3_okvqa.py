@@ -75,7 +75,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--private-manifest", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--model-id", default=DEFAULT_MODEL_ID)
-    parser.add_argument("--cache-dir", type=Path)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--validation-fraction", type=float, default=0.25)
     return parser.parse_args()
@@ -116,15 +115,8 @@ def main() -> None:
         bnb_4bit_quant_type="nf4",
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
-    model_kwargs = {
-        "device_map": "auto",
-        "torch_dtype": torch.bfloat16,
-        "quantization_config": quantization,
-    }
-    if args.cache_dir:
-        model_kwargs["cache_dir"] = str(args.cache_dir)
-    model = Qwen3VLForConditionalGeneration.from_pretrained(args.model_id, **model_kwargs)
-    processor = AutoProcessor.from_pretrained(args.model_id, cache_dir=args.cache_dir)
+    model = Qwen3VLForConditionalGeneration.from_pretrained(args.model_id, device_map="auto", torch_dtype=torch.bfloat16, quantization_config=quantization)
+    processor = AutoProcessor.from_pretrained(args.model_id)
     training_args = SFTConfig(
         output_dir=str(args.output_dir),
         num_train_epochs=3,

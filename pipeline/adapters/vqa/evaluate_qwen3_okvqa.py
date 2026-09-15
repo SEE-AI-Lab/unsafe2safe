@@ -78,7 +78,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--adapter", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model-id", default=DEFAULT_MODEL_ID)
-    parser.add_argument("--cache-dir", type=Path)
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--max-new-tokens", type=int, default=64)
     return parser.parse_args()
@@ -88,15 +87,8 @@ def main() -> None:
     args = parse_args()
     questions = load_json(args.questions)["questions"]
     examples = build_examples(questions, args.image_root)
-    model_kwargs = {"device_map": "auto", "torch_dtype": torch.bfloat16}
-    if args.cache_dir:
-        model_kwargs["cache_dir"] = str(args.cache_dir)
-    model = Qwen3VLForConditionalGeneration.from_pretrained(args.model_id, **model_kwargs)
-    processor = AutoProcessor.from_pretrained(
-        args.model_id,
-        padding_side="left",
-        cache_dir=args.cache_dir,
-    )
+    model = Qwen3VLForConditionalGeneration.from_pretrained(args.model_id, device_map="auto", torch_dtype=torch.bfloat16)
+    processor = AutoProcessor.from_pretrained(args.model_id, padding_side="left")
     model.load_adapter(args.adapter)
 
     predictions = {}
