@@ -110,11 +110,28 @@ The `generate_edit_instructions` profile reads the collected CSV and maps its
 outputs into a second manifest for the `combine_caption_and_edit` profile:
 
 ```bash
+python pipeline/stage1/run_stage1.py \
+  --config pipeline/stage1/config.yaml \
+  --purpose generate_edit_instructions \
+  --dataset mscoco
+```
+
+```bash
 python -m pipeline.stage1.collect_captions \
   --captions-dir outputs/mscoco/generate_edit_instructions \
   --metadata metadata/mscoco_with_captions.csv \
   --output metadata/mscoco_with_edit_instructions.csv \
   --output-column EDIT_INSTRUCTION
+```
+
+Combine the public caption and edit instruction into the caption used by the
+editor:
+
+```bash
+python pipeline/stage1/run_stage1.py \
+  --config pipeline/stage1/config.yaml \
+  --purpose combine_caption_and_edit \
+  --dataset mscoco
 ```
 
 Evaluate privacy flags against VISPR annotations:
