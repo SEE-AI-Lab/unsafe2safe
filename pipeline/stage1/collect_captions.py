@@ -16,8 +16,6 @@ def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suf
         with caption_path.open(encoding="utf-8") as handle:
             payload = json.load(handle)
         caption = payload.get("caption", "")
-        if not isinstance(caption, str):
-            raise ValueError(f"Caption must be text: {caption_path}")
 
         relative = caption_path.relative_to(root)
         image_name = relative.name[: -len(filename_suffix)] + image_suffix
@@ -51,8 +49,6 @@ def merge_with_metadata(rows, metadata_path):
     captions = {row["file"]: row for row in rows}
     with Path(metadata_path).open(encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
-        if not reader.fieldnames or "file" not in reader.fieldnames:
-            raise ValueError("Metadata CSV must contain a 'file' column")
         merged = []
         for row in reader:
             if row["file"] in captions:
