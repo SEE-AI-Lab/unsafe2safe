@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 : "${OMINICONTROL_ROOT:?Set OMINICONTROL_ROOT to a local OminiControl checkout}"
 
-export PYTHONPATH="${ROOT_DIR}:${OMINICONTROL_ROOT}:${PYTHONPATH:-}"
+export PYTHONPATH="${ROOT_DIR}/src:${OMINICONTROL_ROOT}:${PYTHONPATH:-}"
 export TOKENIZERS_PARALLELISM="false"
 
-CONFIG_PATH="${OMINI_CONFIG:-${ROOT_DIR}/unsafe2safe/adapters/ominicontrol/config.yaml}"
+CONFIG_PATH="${OMINI_CONFIG:-${ROOT_DIR}/src/unsafe2safe/adapters/ominicontrol/config.yaml}"
 exec accelerate launch -m unsafe2safe.adapters.ominicontrol.train_unsafe2safe --config "${CONFIG_PATH}"

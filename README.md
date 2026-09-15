@@ -32,6 +32,7 @@ Create an environment and install the shared Python dependencies:
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
 ```
 
 Install a PyTorch build that matches the target CPU or CUDA platform when the default pip resolution is not suitable. Stage 1 also requires the model dependencies for the selected backend. The diffusion entry points require a compatible external diffusion checkout.
@@ -40,13 +41,13 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 
 ```text
 prompts/                  Captioning, privacy, and edit-instruction prompts.
-vlm_captioning/           Stage 1 generation, parsing, and flag evaluation.
-unsafe2safe/data_prep/          Metadata and image-pair preparation utilities.
-unsafe2safe/evaluation/         CLIP, image, privacy, caption, and utility scores.
-unsafe2safe/adapters/           Optional FlowEdit, OminiControl, LAVIS, and VQA adapters.
-unsafe2safe/scripts/            Download, training, and batch-inference launchers.
-unsafe2safe/                    Core editor, data loader, Safe Attention, and external boundary.
-unsafe2safe/legacy/             Historical editors and optional prompt demo; not the core method.
+src/unsafe2safe/stage1/         Stage 1 generation, parsing, and flag evaluation.
+src/unsafe2safe/stage2/         Stage 2 editor, data loader, Safe Attention, and external boundary.
+src/unsafe2safe/data_prep/      Metadata and image-pair preparation utilities.
+src/unsafe2safe/evaluation/     CLIP, image, privacy, caption, and utility scores.
+src/unsafe2safe/adapters/       Optional FlowEdit, OminiControl, LAVIS, and VQA adapters.
+src/unsafe2safe/scripts/        Download, training, and batch-inference launchers.
+src/unsafe2safe/legacy/         Historical editors and optional prompt demo; not the core method.
 ```
 
 The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
@@ -66,8 +67,8 @@ outputs/mscoco/               Generated JSON files.
 Generate privacy-aware captions:
 
 ```bash
-python vlm_captioning/run_stage1.py \
-  --config vlm_captioning/configs/stage1.yaml \
+python src/unsafe2safe/stage1/run_stage1.py \
+  --config src/unsafe2safe/stage1/configs/stage1.yaml \
   --purpose generate_captions \
   --dataset mscoco
 ```
@@ -75,8 +76,8 @@ python vlm_captioning/run_stage1.py \
 Compare original and anonymized images:
 
 ```bash
-python vlm_captioning/run_stage1.py \
-  --config vlm_captioning/configs/eval.yaml \
+python src/unsafe2safe/stage1/run_stage1.py \
+  --config src/unsafe2safe/stage1/configs/eval.yaml \
   --purpose compare_anonymization \
   --dataset mscoco
 ```
@@ -84,7 +85,7 @@ python vlm_captioning/run_stage1.py \
 Collect generated captions into one CSV:
 
 ```bash
-python -m vlm_captioning.collect_captions \
+python -m unsafe2safe.stage1.collect_captions \
   --captions-dir outputs/mscoco/generate_captions \
   --metadata metadata/mscoco.csv \
   --output metadata/mscoco_with_captions.csv \
@@ -96,7 +97,7 @@ The `generate_edit_instructions` profile reads the collected CSV and maps its
 outputs into a second manifest for the `combine_caption_and_edit` profile:
 
 ```bash
-python -m vlm_captioning.collect_captions \
+python -m unsafe2safe.stage1.collect_captions \
   --captions-dir outputs/mscoco/generate_edit_instructions \
   --metadata metadata/mscoco_with_captions.csv \
   --output metadata/mscoco_with_edit_instructions.csv \
@@ -106,23 +107,23 @@ python -m vlm_captioning.collect_captions \
 Evaluate privacy flags against VISPR annotations:
 
 ```bash
-python -m vlm_captioning.evaluate_flags metadata/vispr_predictions.csv data/vispr/annotations
+python -m unsafe2safe.stage1.evaluate_flags metadata/vispr_predictions.csv data/vispr/annotations
 ```
 
 The flag-evaluation CSV must contain `file` and `PRIVACY_FLAG` columns. Structured model responses can also be parsed directly:
 
 ```python
-from vlm_captioning.output_parser import parse_structured_output
+from unsafe2safe.stage1.output_parser import parse_structured_output
 
 parsed = parse_structured_output(model_response)
 ```
 
 ## Dataset preparation
 
-The dataset helpers in `unsafe2safe/data_prep/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
+The dataset helpers in `src/unsafe2safe/data_prep/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
 
 ```bash
-python unsafe2safe/data_prep/filter_dataset.py \
+python src/unsafe2safe/data_prep/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -136,9 +137,9 @@ The original diffusion implementation is not vendored. For the InstructPix2Pix p
 Train with the example configuration:
 
 ```bash
-./unsafe2safe/scripts/train_unsafe2safe.sh \
+./src/unsafe2safe/scripts/train_unsafe2safe.sh \
   /path/to/instruct-pix2pix \
-  unsafe2safe/configs/train_unsafe2safe.yaml \
+  src/unsafe2safe/stage2/configs/train_unsafe2safe.yaml \
   /path/to/logs \
   0,1,2,3
 ```
@@ -146,16 +147,16 @@ Train with the example configuration:
 Run batch editing from the repository root:
 
 ```bash
-./unsafe2safe/scripts/run_unsafe2safe.sh \
+./src/unsafe2safe/scripts/run_unsafe2safe.sh \
   INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT
 ```
 
-The batch editor expects the external diffusion checkout at `stable_diffusion/` for its legacy runtime path, together with a compatible config and checkpoint. See `unsafe2safe/README.md` for the external checkout details and data columns used by the training loader.
+The batch editor expects the external diffusion checkout at `stable_diffusion/` for its legacy runtime path, together with a compatible config and checkpoint. See `src/unsafe2safe/README.md` for the external checkout details and data columns used by the training loader.
 
-The project also contains an Unsafe2Safe-specific OminiControl adapter in [`unsafe2safe/adapters/ominicontrol/`](unsafe2safe/adapters/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
+The project also contains an Unsafe2Safe-specific OminiControl adapter in [`src/unsafe2safe/adapters/ominicontrol/`](src/unsafe2safe/adapters/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
 
 The project also contains a minimal FlowEdit adapter in
-[`unsafe2safe/adapters/flowedit/`](unsafe2safe/adapters/flowedit/README.md). FlowEdit remains an
+[`src/unsafe2safe/adapters/flowedit/`](src/unsafe2safe/adapters/flowedit/README.md). FlowEdit remains an
 external MIT-licensed dependency.
 
 See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
@@ -163,7 +164,7 @@ boundaries, attribution, and license status.
 
 ## Evaluation
 
-The reusable metric helpers in `unsafe2safe/evaluation/` cover the project’s current public evaluation surface:
+The reusable metric helpers in `src/unsafe2safe/evaluation/` cover the project’s current public evaluation surface:
 
 - CLIP and directional CLIP similarity.
 - SSIM and LPIPS image similarity.
@@ -177,7 +178,7 @@ Keep downloaded datasets, checkpoints, generated images, and experiment outputs 
 
 ## Downstream VQA
 
-The Qwen3-VL OK-VQA training and prediction scripts are under [`unsafe2safe/adapters/vqa/`](unsafe2safe/adapters/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
+The Qwen3-VL OK-VQA training and prediction scripts are under [`src/unsafe2safe/adapters/vqa/`](src/unsafe2safe/adapters/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
 
 ## Links
 

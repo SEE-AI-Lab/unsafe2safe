@@ -1,6 +1,6 @@
 import unittest
 
-from vlm_captioning.output_parser import parse_structured_output
+from unsafe2safe.stage1.output_parser import parse_structured_output
 
 
 class StructuredOutputParserTest(unittest.TestCase):

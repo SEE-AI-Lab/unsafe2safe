@@ -11,13 +11,13 @@ git clone https://github.com/timothybrooks/instruct-pix2pix.git /path/to/instruc
 git -C /path/to/instruct-pix2pix checkout 0dffd1e
 ```
 
-`external.py` defines the external import boundary. `model.py` and `attention.py` provide the project-specific model integration without modifying the external checkout.
+`stage2/external.py` defines the external import boundary. `stage2/model.py` and `stage2/attention.py` provide the project-specific model integration without modifying the external checkout.
 
 The training path is intentionally three small pieces:
 
-1. `data.py` returns an unsafe image, its public target, a public caption, and an edit instruction.
-2. `model.py` encodes the two texts and passes them to the UNet as `(public, edit)`.
-3. `attention.py` keeps the upstream edit attention and adds public features
+1. `stage2/data.py` returns an unsafe image, its public target, a public caption, and an edit instruction.
+2. `stage2/model.py` encodes the two texts and passes them to the UNet as `(public, edit)`.
+3. `stage2/attention.py` keeps the upstream edit attention and adds public features
    through a learned per-query gate.
 
 The attention module is intentionally a small reference implementation. Its
@@ -30,9 +30,9 @@ Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and c
 Train with the example configuration:
 
 ```bash
-./unsafe2safe/scripts/train_unsafe2safe.sh \
+./src/unsafe2safe/scripts/train_unsafe2safe.sh \
   /path/to/instruct-pix2pix \
-  unsafe2safe/configs/train_unsafe2safe.yaml \
+  src/unsafe2safe/stage2/configs/train_unsafe2safe.yaml \
   /path/to/logs \
   0,1,2,3
 ```
@@ -42,7 +42,7 @@ local data, metadata, checkpoints, and logs in those locations or replace
 them with absolute paths in a copy of the config.
 
 The training CSV columns are configured explicitly in
-`configs/train_unsafe2safe.yaml`: `file_column` identifies the paired image
+`stage2/configs/train_unsafe2safe.yaml`: `file_column` identifies the paired image
 path, `public_caption_column` identifies the privacy-safe caption, and
 `edit_caption_column` identifies the edit instruction. Use whatever column
 names your manifest already has.
@@ -50,7 +50,7 @@ names your manifest already has.
 Run the legacy batch editor from the repository root:
 
 ```bash
-./unsafe2safe/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT \
+./src/unsafe2safe/scripts/run_unsafe2safe.sh INPUT_CSV OUTPUT_DIR CHECKPOINT IMAGE_ROOT \
   FILE_COLUMN PUBLIC_CAPTION_COLUMN EDIT_CAPTION_COLUMN
 ```
 
@@ -61,7 +61,7 @@ That editor expects the external diffusion checkout at `stable_diffusion/`, a co
 Filter edited pairs by normalized CLIP similarity:
 
 ```bash
-python unsafe2safe/data_prep/filter_dataset.py \
+python src/unsafe2safe/data_prep/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -71,7 +71,7 @@ The input CSV must contain `clip_orig` and `clip_edit`. A row is kept when `clip
 ## Optional ImageMAE dataset
 
 `adapters/image_mae/dataset.py` is the project-specific downstream classification
-dataset, separate from `data.py` used by the diffusion editor.
+dataset, separate from `stage2/data.py` used by the diffusion editor.
 It reads `file`, `class`, `split`, and optional `PRIVACY_FLAG` columns, selects
 the original or edited image root, applies ImageNet preprocessing, and returns
 `(image, class_id)` samples. The ImageMAE model and trainer remain in the
@@ -107,7 +107,7 @@ The reusable modules under `evaluation/` provide:
 For example, collect VLM scores from generated caption JSON files:
 
 ```bash
-python unsafe2safe/evaluation/vlm_score.py outputs/scores outputs/vlm_scores.json
+python src/unsafe2safe/evaluation/vlm_score.py outputs/scores outputs/vlm_scores.json
 ```
 
 ## BLIP-2 captioning evaluation
@@ -156,7 +156,7 @@ and safe roots without a patched dataset class.
 Train through the portable wrapper (the historical run used four processes):
 
 ```bash
-NPROC_PER_NODE=4 ./unsafe2safe/scripts/train_blip2_captioning.sh \
+NPROC_PER_NODE=4 ./src/unsafe2safe/scripts/train_blip2_captioning.sh \
   /path/to/LAVIS \
   /path/to/LAVIS/lavis/projects/blip2/train/caption_coco_ft.yaml \
   /tmp/unsafe2safe-blip2-annotations/train.json \
@@ -173,5 +173,5 @@ generated captions with BLEU-4 and CIDEr; the reusable helper is
 The prompt demo is optional and requires its own `datasets`, `gradio`, and `openai` installation:
 
 ```bash
-python unsafe2safe/legacy/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
+python src/unsafe2safe/legacy/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
 ```

@@ -28,6 +28,10 @@ def _image_path(root: Path, relative_path: str | Path) -> Path:
     return resolved
 
 
+def _image_tensor(image: Image.Image) -> torch.Tensor:
+    return rearrange(2 * torch.tensor(np.array(image)).float() / 255 - 1, "h w c -> c h w")
+
+
 class EditDataset(Dataset):
     """Load aligned unsafe/public image pairs and their two text conditions."""
 
@@ -109,14 +113,11 @@ class EditDataset(Dataset):
         caption_edit = str(entry[self.edit_caption_column])
         target_image_path = _image_path(self.target_dir, relative_path)
 
-        image_0 = Image.open(image_path).convert("RGB")
-        image_1 = Image.open(target_image_path).convert("RGB")
         resize_res = torch.randint(self.min_resize_res, self.max_resize_res + 1, ()).item()
-        image_0 = image_0.resize((resize_res, resize_res), Image.Resampling.LANCZOS)
-        image_1 = image_1.resize((resize_res, resize_res), Image.Resampling.LANCZOS)
-
-        image_0 = rearrange(2 * torch.tensor(np.array(image_0)).float() / 255 - 1, "h w c -> c h w")
-        image_1 = rearrange(2 * torch.tensor(np.array(image_1)).float() / 255 - 1, "h w c -> c h w")
+        with Image.open(image_path) as image:
+            image_0 = _image_tensor(image.convert("RGB").resize((resize_res, resize_res), Image.Resampling.LANCZOS))
+        with Image.open(target_image_path) as image:
+            image_1 = _image_tensor(image.convert("RGB").resize((resize_res, resize_res), Image.Resampling.LANCZOS))
 
         crop = torchvision.transforms.RandomCrop(self.crop_res)
         flip = torchvision.transforms.RandomHorizontalFlip(float(self.flip_prob))
@@ -165,19 +166,15 @@ class EditDatasetEval(Dataset):
 
     def __getitem__(self, i: int) -> dict[str, Any]:
         name, seeds = self.seeds[i]
-        propt_dir = Path(self.path, name)
+        prompt_dir = Path(self.path, name)
         seed = seeds[torch.randint(0, len(seeds), ()).item()]
-        with open(propt_dir.joinpath("prompt.json")) as fp:
+        with open(prompt_dir.joinpath("prompt.json")) as fp:
             prompt = json.load(fp)
             edit = prompt["edit"]
             input_prompt = prompt["input"]
             output_prompt = prompt["output"]
 
-        image_0 = Image.open(propt_dir.joinpath(f"{seed}_0.jpg"))
-
-        reize_res = torch.randint(self.res, self.res + 1, ()).item()
-        image_0 = image_0.resize((reize_res, reize_res), Image.Resampling.LANCZOS)
-
-        image_0 = rearrange(2 * torch.tensor(np.array(image_0)).float() / 255 - 1, "h w c -> c h w")
+        with Image.open(prompt_dir.joinpath(f"{seed}_0.jpg")) as image:
+            image_0 = _image_tensor(image.convert("RGB").resize((self.res, self.res), Image.Resampling.LANCZOS))
 
         return dict(image_0=image_0, input_prompt=input_prompt, edit=edit, output_prompt=output_prompt)

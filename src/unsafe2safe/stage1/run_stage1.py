@@ -11,12 +11,12 @@ import pandas as pd
 import yaml
 from tqdm.auto import tqdm
 
-from vlm_captioning.qwen_common import (
+from unsafe2safe.stage1.qwen_common import (
     build_text_generator,
     run_text_batch,
     write_caption_json,
 )
-from vlm_captioning.internvl_common import (
+from unsafe2safe.stage1.internvl_common import (
     load_internvl_model_and_tokenizer,
     run_internvl_batch,
     run_internvl_pair_batch,
@@ -369,7 +369,7 @@ def run_job(effective_cfg, purpose, dataset_name, *, config_dir=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Unified Stage1 runner")
-    parser.add_argument("--config", type=str, default="vlm_captioning/configs/stage1.yaml")
+    parser.add_argument("--config", type=str, default="src/unsafe2safe/stage1/configs/stage1.yaml")
     parser.add_argument("--purpose", type=str, default=None, help="Override purpose profile")
     parser.add_argument("--dataset", type=str, default=None, help="Override dataset profile")
     args = parser.parse_args()
