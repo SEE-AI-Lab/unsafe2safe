@@ -67,17 +67,16 @@ OminiControl checkout and a saved adapter:
 ```bash
 export PYTHONPATH="$PWD:$OMINICONTROL_ROOT:${PYTHONPATH:-}"
 python -m pipeline.adapters.ominicontrol.generate_unsafe2safe \
-  --input-csv data/MSCOCO_Qwen_4B_detailed_face.csv \
+  --input-csv data/MSCOCO_Qwen_4B_detailed_face_val.csv \
   --image-root data/coco \
   --output-dir outputs/ominicontrol \
   --checkpoint runs/ominicontrol/<run>/ckpt/<step> \
-  --base-model black-forest-labs/FLUX.1-dev \
-  --split-column split --split val
+  --base-model black-forest-labs/FLUX.1-dev
 ```
 
-The generation defaults are 512x512, 8 steps, FLUX.1-dev, and a fixed seed;
-all paths and model choices remain available as CLI arguments. Record changed
-inference settings with the results.
+The generation CSV must already contain the rows to process and must provide
+`file` and `caption` columns. The defaults are 512x512, 8 steps, FLUX.1-dev,
+and seed 42. Existing output files are skipped.
 
 ## Provenance
 
