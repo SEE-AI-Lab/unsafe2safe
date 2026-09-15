@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 
-def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suffix=".jpg", parse_structured=False):
+def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suffix=".jpg", parse_structured=False, output_column="caption"):
     """Read generated captions and return rows keyed by relative image path."""
     root = Path(captions_dir)
     rows = []
@@ -21,7 +21,7 @@ def collect_captions(captions_dir, *, filename_suffix="_caption.json", image_suf
 
         relative = caption_path.relative_to(root)
         image_name = relative.name[: -len(filename_suffix)] + image_suffix
-        row = {"file": str(relative.with_name(image_name)), "caption": caption}
+        row = {"file": str(relative.with_name(image_name)), output_column: caption}
         if parse_structured:
             from vlm_captioning.output_parser import parse_structured_output
 
@@ -88,9 +88,10 @@ def main():
     parser.add_argument("--metadata", type=Path, help="Optional CSV with a file column")
     parser.add_argument("--format", choices=("csv", "jsonl"), help="Output format; inferred from --output when omitted")
     parser.add_argument("--parse-structured", action="store_true", help="Add parsed privacy and caption fields")
+    parser.add_argument("--output-column", default="caption", help="Column name for the generated text")
     args = parser.parse_args()
 
-    rows = collect_captions(args.captions_dir, parse_structured=args.parse_structured)
+    rows = collect_captions(args.captions_dir, parse_structured=args.parse_structured, output_column=args.output_column)
     if args.metadata:
         rows = merge_with_metadata(rows, args.metadata)
     write_records(rows, args.output, args.format)

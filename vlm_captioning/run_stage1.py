@@ -152,6 +152,22 @@ def apply_filters(df, filters):
     return out
 
 
+def _require_columns(df, columns, source_name):
+    missing = sorted(set(columns) - set(df.columns))
+    if missing:
+        raise ValueError(f"{source_name} is missing columns: {missing}")
+
+
+def _row_variables(row, source_cfg):
+    """Expose all row fields plus explicitly mapped prompt variables."""
+    variables = row.to_dict()
+    for variable, column in source_cfg.get("prompt_columns", {}).items():
+        if column not in row:
+            raise ValueError(f"Prompt variable {variable!r} refers to missing column {column!r}")
+        variables[variable] = row[column]
+    return variables
+
+
 def build_samples(dataset_cfg, source_cfg):
     source_type = source_cfg["type"]
     root_dir = dataset_cfg["root_dir"]
@@ -161,6 +177,7 @@ def build_samples(dataset_cfg, source_cfg):
         csv_path = source_cfg["csv_path"]
         image_col = source_cfg.get("image_col", "file")
         df = pd.read_csv(csv_path)
+        _require_columns(df, [image_col, *source_cfg.get("prompt_columns", {}).values()], csv_path)
         df = apply_filters(df, source_cfg.get("filters"))
         max_rows = source_cfg.get("max_rows")
         if max_rows:
@@ -170,7 +187,7 @@ def build_samples(dataset_cfg, source_cfg):
         for _, row in df.iterrows():
             rel = row[image_col]
             image_path = rel if os.path.isabs(rel) else os.path.join(root_dir, rel)
-            vars_dict = {k: row[k] for k in df.columns if k in row}
+            vars_dict = _row_variables(row, source_cfg)
             vars_dict["image_class"] = Path(rel).parent.name
             vars_dict["class_name"] = Path(rel).parent.name
             samples.append(Sample(rel_path=rel, image_path=image_path, vars=vars_dict))
@@ -201,6 +218,7 @@ def build_samples(dataset_cfg, source_cfg):
         right_root = source_cfg.get("right_root_dir", root_dir)
 
         df = pd.read_csv(csv_path)
+        _require_columns(df, [left_col, right_col, rel_col, *source_cfg.get("prompt_columns", {}).values()], csv_path)
         df = apply_filters(df, source_cfg.get("filters"))
         max_rows = source_cfg.get("max_rows")
         if max_rows:
@@ -213,7 +231,7 @@ def build_samples(dataset_cfg, source_cfg):
             right_rel = row[right_col]
             left_path = left_rel if os.path.isabs(left_rel) else os.path.join(root_dir, left_rel)
             right_path = right_rel if os.path.isabs(right_rel) else os.path.join(right_root, right_rel)
-            vars_dict = {k: row[k] for k in df.columns if k in row}
+            vars_dict = _row_variables(row, source_cfg)
             vars_dict["image_class"] = Path(rel).parent.name
             vars_dict["class_name"] = Path(rel).parent.name
             samples.append(Sample(rel_path=rel, image_path=left_path, right_image_path=right_path, vars=vars_dict))
