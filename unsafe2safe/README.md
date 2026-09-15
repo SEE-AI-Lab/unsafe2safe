@@ -17,7 +17,13 @@ The training path is intentionally three small pieces:
 
 1. `data.py` returns an unsafe image, its public target, a public caption, and an edit instruction.
 2. `model.py` encodes the two texts and passes them to the UNet as `(public, edit)`.
-3. `attention.py` keeps the upstream edit attention and adds the learned public-caption branch.
+3. `attention.py` keeps the upstream edit attention and adds public features
+   through a learned per-query gate.
+
+The attention module is intentionally a small reference implementation. Its
+gate is a compact approximation of the full attention-map fuser described in
+the paper appendix; it should not be treated as an exact reproduction of that
+fuser.
 
 Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and checkpoint still come from the external InstructPix2Pix checkout.
 

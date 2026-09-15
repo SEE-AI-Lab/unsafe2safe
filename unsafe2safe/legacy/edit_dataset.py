@@ -50,11 +50,11 @@ class EditDataset(Dataset):
         if missing:
             raise ValueError(f"CSV is missing columns: {missing}")
 
-        # Filter by filename.
+        # Match the COCO filename split used by the original experiment.
         train_df = df[df[file_column].astype(str).str.contains("train2014", na=False)].reset_index(drop=True)
         test_df = df[df[file_column].astype(str).str.contains("val2014", na=False)].reset_index(drop=True)
 
-        # Deterministic shuffle for train/val split
+        # Shuffle once so the train/validation split is reproducible.
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
         train_fraction = splits[0] / (splits[0] + splits[1])
         train_cutoff = int(train_fraction * len(train_df))
