@@ -148,8 +148,7 @@ Evaluate privacy flags against VISPR annotations:
 python -m pipeline.stage1.evaluate_flags outputs/vispr/generate_flags.csv data/vispr/annotations
 ```
 
-The flag-evaluation CSV is written automatically and contains `file` and
-`PRIVACY_FLAG` columns. Structured model responses can also be parsed directly:
+The command prints accuracy, precision, recall, F1, and the confusion matrix. The input manifest contains `file` and `PRIVACY_FLAG` columns. Structured model responses can also be parsed directly:
 
 ```python
 from pipeline.stage1.output_parser import parse_structured_output
