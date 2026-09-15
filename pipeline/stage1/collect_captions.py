@@ -46,16 +46,6 @@ def write_caption_table(rows, output_path):
         writer.writerows(rows)
 
 
-def write_caption_jsonl(rows, output_path):
-    """Write one JSON object per line for streaming and notebook use."""
-    output = Path(output_path)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            json.dump(row, handle, ensure_ascii=False)
-            handle.write("\n")
-
-
 def merge_with_metadata(rows, metadata_path):
     """Return metadata rows that have a matching generated caption."""
     captions = {row["file"]: row for row in rows}
@@ -71,22 +61,11 @@ def merge_with_metadata(rows, metadata_path):
     return merged
 
 
-def write_records(rows, output_path, file_format=None):
-    """Write records as CSV or JSONL, using the output extension by default."""
-    file_format = file_format or ("jsonl" if output_path.suffix.lower() in {".jsonl", ".ndjson"} else "csv")
-    if file_format == "jsonl":
-        write_caption_jsonl(rows, output_path)
-    else:
-        write_caption_table(rows, output_path)
-
-
-
 def main():
     parser = argparse.ArgumentParser(description="Collect generated Stage 1 captions")
     parser.add_argument("--captions-dir", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--metadata", type=Path, help="Optional CSV with a file column")
-    parser.add_argument("--format", choices=("csv", "jsonl"), help="Output format; inferred from --output when omitted")
     parser.add_argument("--parse-structured", action="store_true", help="Add parsed privacy and caption fields")
     parser.add_argument("--output-column", default="caption", help="Column name for the generated text")
     args = parser.parse_args()
@@ -94,7 +73,7 @@ def main():
     rows = collect_captions(args.captions_dir, parse_structured=args.parse_structured, output_column=args.output_column)
     if args.metadata:
         rows = merge_with_metadata(rows, args.metadata)
-    write_records(rows, args.output, args.format)
+    write_caption_table(rows, args.output)
 
 
 if __name__ == "__main__":
