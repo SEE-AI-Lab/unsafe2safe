@@ -1,3 +1,10 @@
+"""Legacy batch Unsafe2Safe editor for older copied diffusion configs.
+
+Use the external InstructPix2Pix adapter for the minimal training path. This
+CLI remains only for reproducing earlier inference experiments and expects
+the legacy ``stable_diffusion/`` layout described in the README.
+"""
+
 from __future__ import annotations
 
 import math

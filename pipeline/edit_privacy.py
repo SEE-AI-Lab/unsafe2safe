@@ -1,3 +1,9 @@
+"""Legacy single-image privacy editor.
+
+It is retained for compatibility with older checkpoints and configs. It does
+not implement the two-context Unsafe2Safe training path.
+"""
+
 from __future__ import annotations
 
 import math
