@@ -1,4 +1,4 @@
-# Pipeline
+# Unsafe2Safe implementation
 
 This directory contains the project-owned dataset, editing, training adapters, evaluation, and prompt-demo code. External model repositories and checkpoints are not copied into this repository.
 
@@ -11,13 +11,13 @@ git clone https://github.com/timothybrooks/instruct-pix2pix.git /path/to/instruc
 git -C /path/to/instruct-pix2pix checkout 0dffd1e
 ```
 
-`instruct_pix2pix.py` defines the external import boundary. `unsafe2safe_model.py` and `safe_attention.py` provide the project-specific model integration without modifying the external checkout.
+`external.py` defines the external import boundary. `model.py` and `attention.py` provide the project-specific model integration without modifying the external checkout.
 
 The training path is intentionally three small pieces:
 
-1. `unsafe2safe_dataset.py` returns an unsafe image, its public target, a public caption, and an edit instruction.
-2. `unsafe2safe_model.py` encodes the two texts and passes them to the UNet as `(public, edit)`.
-3. `safe_attention.py` keeps the upstream edit attention and adds the learned public-caption branch.
+1. `data.py` returns an unsafe image, its public target, a public caption, and an edit instruction.
+2. `model.py` encodes the two texts and passes them to the UNet as `(public, edit)`.
+3. `attention.py` keeps the upstream edit attention and adds the learned public-caption branch.
 
 Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and checkpoint still come from the external InstructPix2Pix checkout.
 
@@ -51,7 +51,7 @@ That editor expects the external diffusion checkout at `stable_diffusion/`, a co
 Filter edited pairs by normalized CLIP similarity:
 
 ```bash
-python unsafe2safe/dataset_creation/filter_dataset.py \
+python unsafe2safe/data_prep/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -60,8 +60,8 @@ The input CSV must contain `clip_orig` and `clip_edit`. A row is kept when `clip
 
 ## Optional ImageMAE dataset
 
-`image_mae_dataset.py` is the project-specific downstream classification
-dataset, separate from `unsafe2safe_dataset.py` used by the diffusion editor.
+`adapters/image_mae/dataset.py` is the project-specific downstream classification
+dataset, separate from `data.py` used by the diffusion editor.
 It reads `file`, `class`, `split`, and optional `PRIVACY_FLAG` columns, selects
 the original or edited image root, applies ImageNet preprocessing, and returns
 `(image, class_id)` samples. The ImageMAE model and trainer remain in the
@@ -70,19 +70,19 @@ separately installed upstream checkout. See
 
 ## OminiControl adapter
 
-`ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`ominicontrol/README.md`](ominicontrol/README.md). The upstream OminiControl and FLUX source remain external.
+`adapters/ominicontrol/` contains only the Unsafe2Safe-specific dataset adapter and launch wrappers. Install OminiControl separately, set `OMINICONTROL_ROOT`, and follow [`adapters/ominicontrol/README.md`](adapters/ominicontrol/README.md). The upstream OminiControl and FLUX source remain external.
 
 ## FlowEdit adapter
 
-`flowedit/` contains the Unsafe2Safe CSV-to-caption mapping and portable batch
+`adapters/flowedit/` contains the Unsafe2Safe CSV-to-caption mapping and portable batch
 inference wrapper for an external FlowEdit checkout. It follows the paper's
 SD3 configuration and imports the upstream sampler at runtime. See
-[`flowedit/README.md`](flowedit/README.md) for the pinned revision, data
+[`adapters/flowedit/README.md`](adapters/flowedit/README.md) for the pinned revision, data
 schema, and reproduction command.
 
 ## Evaluation helpers
 
-The reusable modules under `metrics/` provide:
+The reusable modules under `evaluation/` provide:
 
 - CLIP and directional CLIP similarity.
 - SSIM and LPIPS image similarity.
@@ -95,7 +95,7 @@ The reusable modules under `metrics/` provide:
 For example, collect VLM scores from generated caption JSON files:
 
 ```bash
-python unsafe2safe/metrics/vlm_score.py outputs/scores outputs/vlm_scores.json
+python unsafe2safe/evaluation/vlm_score.py outputs/scores outputs/vlm_scores.json
 ```
 
 ## BLIP-2 captioning evaluation
@@ -123,7 +123,7 @@ original pixels.
 Prepare annotations for a local run:
 
 ```bash
-python -m unsafe2safe.blip2_captioning \
+python -m unsafe2safe.adapters.lavis.blip2_captioning \
   --train-annotations /path/to/coco_train.json \
   --val-annotations /path/to/coco_val.json \
   --test-annotations /path/to/coco_test.json \
@@ -156,10 +156,10 @@ NPROC_PER_NODE=4 ./unsafe2safe/scripts/train_blip2_captioning.sh \
 The example config uses LAVIS's BLIP-2 captioning recipe; it controls the
 model, optimizer, resolution, and checkpoint output.  The paper evaluates
 generated captions with BLEU-4 and CIDEr; the reusable helper is
-`unsafe2safe/metrics/caption_scores.py`.
+`unsafe2safe/evaluation/caption_scores.py`.
 
 The prompt demo is optional and requires its own `datasets`, `gradio`, and `openai` installation:
 
 ```bash
-python unsafe2safe/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
+python unsafe2safe/legacy/prompt_app.py --openai-api-key "$OPENAI_API_KEY" --openai-model MODEL_NAME
 ```

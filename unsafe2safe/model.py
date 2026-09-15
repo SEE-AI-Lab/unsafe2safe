@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 import torch
 from einops import rearrange
 
-from .instruct_pix2pix import configure_external
+from .external import configure_external
 
 # Configure the external import boundary before importing any ``ldm`` module.
 configure_external()
@@ -15,7 +15,7 @@ configure_external()
 from ldm.models.diffusion.ddpm_edit import LatentDiffusion  # noqa: E402
 from ldm.modules.diffusionmodules import openaimodel  # noqa: E402
 
-from .safe_attention import SafeSpatialTransformer  # noqa: E402
+from .attention import SafeSpatialTransformer  # noqa: E402
 
 # UNetModel resolves SpatialTransformer from this module at construction time.
 # Replacing the symbol in memory keeps the external checkout's files pristine.

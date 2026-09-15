@@ -1,7 +1,7 @@
 """Legacy InstructPix2Pix batch editor.
 
 This script keeps the original single-context CFG sampling path for existing
-experiments. New Unsafe2Safe training uses ``unsafe2safe_model.py`` and the
+experiments. New Unsafe2Safe training uses ``model.py`` and the
 external-checkout import boundary instead.
 """
 

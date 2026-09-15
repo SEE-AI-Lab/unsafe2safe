@@ -1,12 +1,12 @@
 import json
 from argparse import ArgumentParser
 
-from unsafe2safe.dataset_creation.generate_txt_dataset import DELIMITER_0, DELIMITER_1, STOP
+from unsafe2safe.data_prep.generate_txt_dataset import DELIMITER_0, DELIMITER_1, STOP
 
 
 def main(input_path: str, output_path: str):
     with open(input_path) as f:
-        prompts = [json.loads(l) for l in f]
+        prompts = [json.loads(line) for line in f]
 
     with open(output_path, "w") as f:
         for prompt in prompts:

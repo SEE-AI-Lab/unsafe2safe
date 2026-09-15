@@ -1,0 +1,1 @@
+"""LAVIS captioning adapter."""

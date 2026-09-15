@@ -5,7 +5,7 @@ FILE_COLUMN="${5:-file}"
 PUBLIC_CAPTION_COLUMN="${6:-caption_public}"
 EDIT_CAPTION_COLUMN="${7:-caption_edit}"
 
-exec python unsafe2safe/edit_unsafe2safe_df.py \
+exec python unsafe2safe/legacy/edit_unsafe2safe_df.py \
   --input "$1" \
   --output "$2" \
   --ckpt "$3" \

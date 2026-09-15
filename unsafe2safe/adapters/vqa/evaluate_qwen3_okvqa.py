@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-from math import ceil
 from pathlib import Path
 
 import torch

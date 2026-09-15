@@ -25,7 +25,7 @@ sys.path.append("./stable_diffusion")
 
 from ldm.modules.attention import CrossAttention
 from ldm.util import instantiate_from_config
-from unsafe2safe.metrics.clip_similarity import ClipSimilarity
+from unsafe2safe.evaluation.clip_similarity import ClipSimilarity
 
 
 ################################################################################
@@ -312,7 +312,7 @@ def main():
                 image_1 = result.pop("image_1")
                 image_0.save(prompt_dir.joinpath(f"{seed}_0.jpg"), quality=100)
                 image_1.save(prompt_dir.joinpath(f"{seed}_1.jpg"), quality=100)
-                with open(prompt_dir.joinpath(f"metadata.jsonl"), "a") as fp:
+                with open(prompt_dir.joinpath("metadata.jsonl"), "a") as fp:
                     fp.write(f"{json.dumps(dict(seed=seed, **result))}\n")
 
     print("Done.")

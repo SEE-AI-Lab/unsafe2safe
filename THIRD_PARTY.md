@@ -14,8 +14,8 @@ source, checkpoints, datasets, or generated outputs.
   The upstream repository also contains components derived from Stable
   Diffusion, so follow the notices and terms in that checkout as well.
 
-`unsafe2safe/instruct_pix2pix.py`, `unsafe2safe/safe_attention.py`, and
-`unsafe2safe/unsafe2safe_model.py` are the Unsafe2Safe-specific import and model
+`unsafe2safe/external.py`, `unsafe2safe/attention.py`, and
+`unsafe2safe/model.py` are the Unsafe2Safe-specific import and model
 adapters. They leave the external checkout unchanged.
 
 ## OminiControl
@@ -25,10 +25,10 @@ adapters. They leave the external checkout unchanged.
 - Paper-era revision also supported by the adapter: `54913bc`
 - Install: clone the repository, check out one selected revision, install its
   requirements, and set `OMINICONTROL_ROOT` as described in
-  [`unsafe2safe/ominicontrol/README.md`](unsafe2safe/ominicontrol/README.md).
+  [`unsafe2safe/adapters/ominicontrol/README.md`](unsafe2safe/adapters/ominicontrol/README.md).
 - License: upstream [Apache-2.0 LICENSE](https://github.com/Yuanshi9815/OminiControl/blob/main/LICENSE).
 
-`unsafe2safe/ominicontrol/` contains only the Unsafe2Safe dataset mapping and
+`unsafe2safe/adapters/ominicontrol/` contains only the Unsafe2Safe dataset mapping and
 launch/generation wrappers.
 
 ## FlowEdit
@@ -37,10 +37,10 @@ launch/generation wrappers.
 - Reproduction revision: `2620a9364f0f9c21368c36266e6200ff250273ec`
 - Install: clone the repository, check out that revision, install the
   upstream-compatible diffusion dependencies, and set `FLOWEDIT_ROOT` as
-  described in [`unsafe2safe/flowedit/README.md`](unsafe2safe/flowedit/README.md).
+  described in [`unsafe2safe/adapters/flowedit/README.md`](unsafe2safe/adapters/flowedit/README.md).
 - License: upstream [MIT LICENSE](https://github.com/fallenshock/FlowEdit/blob/main/LICENSE).
 
-`unsafe2safe/flowedit/` contains only the Unsafe2Safe CSV condition mapping and
+`unsafe2safe/adapters/flowedit/` contains only the Unsafe2Safe CSV condition mapping and
 portable generation wrapper. The upstream sampler, assets, data, and model
 weights are not copied into this repository.
 
@@ -57,14 +57,14 @@ weights are not copied into this repository.
 
 The historical LAVIS copy in `temppp_donttouch/LAVIS/` is not part of this
 release.  Its project-specific COCO image routing was extracted into
-`unsafe2safe/blip2_captioning.py`; its hard-coded dataset paths, GPU/cache
+`unsafe2safe/adapters/lavis/blip2_captioning.py`; its hard-coded dataset paths, GPU/cache
 settings, and patched LAVIS internals were replaced by explicit arguments and
 the pinned external dependency.
 
 ## ImageMAE dataset boundary
 
 The project-specific downstream dataset definition is kept in
-[`unsafe2safe/image_mae_dataset.py`](unsafe2safe/image_mae_dataset.py). It is
+[`unsafe2safe/adapters/image_mae/dataset.py`](unsafe2safe/adapters/image_mae/dataset.py). It is
 separate from the diffusion dataset and contains no ImageMAE model code. The
 ImageMAE model/trainer remains external; the former local clone, notebooks,
 and experimental classifier code are not part of the public release.

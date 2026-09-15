@@ -1,6 +1,6 @@
 """Legacy single-root dataset used by the original editor experiments.
 
-The current Unsafe2Safe training loader is ``unsafe2safe_dataset.EditDataset``
+The current Unsafe2Safe training loader is ``data.EditDataset``
 because it reads separate unsafe and safe image roots.
 """
 
@@ -31,24 +31,38 @@ class EditDataset(Dataset):
         max_resize_res: int = 256,
         crop_res: int = 256,
         flip_prob: float = 0.0,
+        file_column: str = "priv_path",
+        caption_column: str = "priv_caption",
+        target_column: str = "best_pub_path",
     ):
-        assert split in ("train", "val", "test")
-        assert sum(splits) == 1
+        if split not in ("train", "val", "test"):
+            raise ValueError("split must be one of: train, val, test")
+        if not math.isclose(sum(splits), 1.0):
+            raise ValueError("splits must sum to 1")
+
+        self.file_column = file_column
+        self.caption_column = caption_column
+        self.target_column = target_column
 
         df = pd.read_csv(csv_path)
+        required = {file_column, caption_column, target_column}
+        missing = sorted(required - set(df.columns))
+        if missing:
+            raise ValueError(f"CSV is missing columns: {missing}")
 
         # Filter by filename.
-        train_df = df[df["priv_path"].str.contains("train2014", na=False)].reset_index(drop=True)
-        test_df = df[df["priv_path"].str.contains("val2014", na=False)].reset_index(drop=True)
+        train_df = df[df[file_column].astype(str).str.contains("train2014", na=False)].reset_index(drop=True)
+        test_df = df[df[file_column].astype(str).str.contains("val2014", na=False)].reset_index(drop=True)
 
         # Deterministic shuffle for train/val split
         train_df = train_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
-        val_cutoff = int(0.25 * len(train_df))
+        train_fraction = splits[0] / (splits[0] + splits[1])
+        train_cutoff = int(train_fraction * len(train_df))
 
         if split == "train":
-            selected_df = train_df[val_cutoff:]
+            selected_df = train_df[:train_cutoff]
         elif split == "val":
-            selected_df = train_df[:val_cutoff]
+            selected_df = train_df[train_cutoff:]
         elif split == "test":
             selected_df = test_df
 
@@ -66,8 +80,8 @@ class EditDataset(Dataset):
     def __getitem__(self, i: int) -> dict[str, Any]:
         entry = self.seeds[i]
         image_path = self.root_dir / entry["priv_path"]
-        caption_c1 = entry["priv_caption"]
-        target_image_path = self.root_dir / entry["best_pub_path"]
+        caption = str(entry[self.caption_column])
+        target_image_path = self.root_dir / entry[self.target_column]
 
         image_0 = Image.open(image_path).convert("RGB")
         image_1 = Image.open(target_image_path).convert("RGB")
@@ -82,7 +96,7 @@ class EditDataset(Dataset):
         flip = torchvision.transforms.RandomHorizontalFlip(float(self.flip_prob))
         image_0, image_1 = flip(crop(torch.cat((image_0, image_1)))).chunk(2)
 
-        return dict(edit_cond=dict(c_concat=image_0, c_crossattn=caption_c1), target_image=image_1)
+        return dict(edit_cond=dict(c_concat=image_0, c_crossattn=caption), target_image=image_1)
 
 
 class EditDatasetEval(Dataset):

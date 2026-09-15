@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-import math
-import random
 import sys
 from argparse import ArgumentParser
 
 import einops
 import k_diffusion as K
-import numpy as np
 import torch
 import torch.nn as nn
 from tqdm.auto import tqdm
-from einops import rearrange
 from omegaconf import OmegaConf
-from PIL import Image, ImageOps
 from torch import autocast
 
 import json
@@ -23,8 +18,8 @@ from pathlib import Path
 
 sys.path.append("./")
 
-from unsafe2safe.metrics.clip_similarity import ClipSimilarity
-from unsafe2safe.edit_dataset import EditDatasetEval
+from unsafe2safe.evaluation.clip_similarity import ClipSimilarity
+from unsafe2safe.legacy.edit_dataset import EditDatasetEval
 
 sys.path.append("./stable_diffusion")
 

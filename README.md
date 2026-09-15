@@ -41,11 +41,12 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 ```text
 prompts/                  Captioning, privacy, and edit-instruction prompts.
 vlm_captioning/           Stage 1 generation, parsing, and flag evaluation.
-unsafe2safe/dataset_creation/  Metadata and image-pair preparation utilities.
-unsafe2safe/metrics/            CLIP, image, privacy, caption, and utility scores.
-unsafe2safe/vqa/                Qwen3-VL OK-VQA fine-tuning and prediction scripts.
+unsafe2safe/data_prep/          Metadata and image-pair preparation utilities.
+unsafe2safe/evaluation/         CLIP, image, privacy, caption, and utility scores.
+unsafe2safe/adapters/           Optional FlowEdit, OminiControl, LAVIS, and VQA adapters.
 unsafe2safe/scripts/            Download, training, and batch-inference launchers.
-unsafe2safe/                    Editing adapters, datasets, Safe Attention, and demo.
+unsafe2safe/                    Core editor, data loader, Safe Attention, and external boundary.
+unsafe2safe/legacy/             Historical editors and optional prompt demo; not the core method.
 ```
 
 The code is released in practical research form. Paths, checkpoints, and model choices are explicit where possible, but the model-heavy stages still require compatible external installations and local data.
@@ -106,10 +107,10 @@ parsed = parse_structured_output(model_response)
 
 ## Dataset preparation
 
-The dataset helpers in `unsafe2safe/dataset_creation/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
+The dataset helpers in `unsafe2safe/data_prep/` prepare image and text inputs for the captioning and editing stages. To keep edited pairs semantically aligned, filter CLIP scores with the normalized threshold used by the project:
 
 ```bash
-python unsafe2safe/dataset_creation/filter_dataset.py \
+python unsafe2safe/data_prep/filter_dataset.py \
   scores.csv filtered_scores.csv \
   --threshold 0.7
 ```
@@ -139,10 +140,10 @@ Run batch editing from the repository root:
 
 The batch editor expects the external diffusion checkout at `stable_diffusion/` for its legacy runtime path, together with a compatible config and checkpoint. See `unsafe2safe/README.md` for the external checkout details and data columns used by the training loader.
 
-The project also contains an Unsafe2Safe-specific OminiControl adapter in [`unsafe2safe/ominicontrol/`](unsafe2safe/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
+The project also contains an Unsafe2Safe-specific OminiControl adapter in [`unsafe2safe/adapters/ominicontrol/`](unsafe2safe/adapters/ominicontrol/README.md). OminiControl and FLUX remain external dependencies; their upstream source is not copied or modified here.
 
 The project also contains a minimal FlowEdit adapter in
-[`unsafe2safe/flowedit/`](unsafe2safe/flowedit/README.md). FlowEdit remains an
+[`unsafe2safe/adapters/flowedit/`](unsafe2safe/adapters/flowedit/README.md). FlowEdit remains an
 external MIT-licensed dependency.
 
 See [`THIRD_PARTY.md`](THIRD_PARTY.md) for upstream revisions, installation
@@ -150,7 +151,7 @@ boundaries, attribution, and license status.
 
 ## Evaluation
 
-The reusable metric helpers in `unsafe2safe/metrics/` cover the project’s current public evaluation surface:
+The reusable metric helpers in `unsafe2safe/evaluation/` cover the project’s current public evaluation surface:
 
 - CLIP and directional CLIP similarity.
 - SSIM and LPIPS image similarity.
@@ -164,7 +165,7 @@ Keep downloaded datasets, checkpoints, generated images, and experiment outputs 
 
 ## Downstream VQA
 
-The Qwen3-VL OK-VQA training and prediction scripts are under [`unsafe2safe/vqa/`](unsafe2safe/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
+The Qwen3-VL OK-VQA training and prediction scripts are under [`unsafe2safe/adapters/vqa/`](unsafe2safe/adapters/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
 
 ## Links
 

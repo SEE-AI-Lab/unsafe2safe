@@ -6,13 +6,10 @@ not implement the two-context Unsafe2Safe training path.
 
 from __future__ import annotations
 
-import math
-import random
 import sys
 from argparse import ArgumentParser
 
 import einops
-import k_diffusion as K
 import numpy as np
 import torch
 import torch.nn as nn
@@ -84,11 +81,6 @@ def main():
     config = OmegaConf.load(args.config)
     model = load_model_from_config(config, args.ckpt, args.vae_ckpt)
     model.eval().cuda()
-    model_wrap = K.external.CompVisDenoiser(model)
-    model_wrap_cfg = CFGDenoiser(model_wrap)
-    null_token = model.get_learned_conditioning([""])
-
-    seed = random.randint(0, 100000) if args.seed is None else args.seed
     input_image = Image.open(args.input).convert("RGB")
     #width, height = input_image.size
     #factor = args.resolution / max(width, height)

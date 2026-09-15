@@ -11,7 +11,7 @@ import torch
 from torch import einsum, nn
 from einops import rearrange, repeat
 
-from .instruct_pix2pix import configure_external
+from .external import configure_external
 
 configure_external()
 

@@ -7,7 +7,7 @@ import gradio as gr
 import numpy as np
 import openai
 
-from unsafe2safe.dataset_creation.generate_txt_dataset import generate
+from unsafe2safe.data_prep.generate_txt_dataset import generate
 
 
 def main(openai_model: str):
