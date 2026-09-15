@@ -13,17 +13,17 @@ def extract_anonymization_score(text: str):
     return None
 
 
-def collect_scores(captions_dir, filename_suffix="_caption.json"):
+def collect_scores(captions_dir):
     """Return score records from JSON caption files under a directory."""
     root = Path(captions_dir)
     records = []
-    for caption_path in sorted(root.rglob(f"*{filename_suffix}")):
+    for caption_path in sorted(root.rglob("*_caption.json")):
         with caption_path.open(encoding="utf-8") as handle:
             caption = json.load(handle)["caption"]
         score = extract_anonymization_score(caption)
         if score is not None:
             relative = caption_path.relative_to(root)
-            image_name = relative.name[: -len(filename_suffix)] + ".jpg"
+            image_name = relative.name.removesuffix("_caption.json") + ".jpg"
             records.append({"file": str(relative.with_name(image_name)), "score": score})
     return records
 

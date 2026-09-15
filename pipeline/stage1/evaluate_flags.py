@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 
-def evaluate_flags(prediction_csv, annotation_root, flag_column="PRIVACY_FLAG"):
+def evaluate_flags(prediction_csv, annotation_root):
     """Return binary classification metrics for a prediction CSV."""
     annotation_root = Path(annotation_root)
     true_labels = []
@@ -19,7 +19,7 @@ def evaluate_flags(prediction_csv, annotation_root, flag_column="PRIVACY_FLAG"):
             with annotation_path.open(encoding="utf-8") as annotation_handle:
                 labels = json.load(annotation_handle)["labels"]
             true_labels.append(int("a0_safe" not in labels))
-            predicted_labels.append(int(row[flag_column].strip().upper() == "TRUE"))
+            predicted_labels.append(int(row["PRIVACY_FLAG"].strip().upper() == "TRUE"))
 
     true_positive = sum(actual == predicted == 1 for actual, predicted in zip(true_labels, predicted_labels))
     true_negative = sum(actual == predicted == 0 for actual, predicted in zip(true_labels, predicted_labels))
@@ -43,9 +43,8 @@ def main() -> None:
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("prediction_csv")
     parser.add_argument("annotation_root")
-    parser.add_argument("--flag-column", default="PRIVACY_FLAG")
     args = parser.parse_args()
-    metrics = evaluate_flags(args.prediction_csv, args.annotation_root, args.flag_column)
+    metrics = evaluate_flags(args.prediction_csv, args.annotation_root)
     print(json.dumps(metrics, indent=2))
 
 

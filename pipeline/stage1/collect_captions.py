@@ -7,17 +7,17 @@ import json
 from pathlib import Path
 
 
-def collect_captions(captions_dir, output_path, *, filename_suffix="_caption.json", image_suffix=".jpg", parse_structured=False, output_column="caption"):
+def collect_captions(captions_dir, output_path, *, parse_structured=False, output_column="caption"):
     """Read generated captions into a CSV; do not merge metadata."""
     root = Path(captions_dir)
     rows = []
-    for caption_path in sorted(root.rglob(f"*{filename_suffix}")):
+    for caption_path in sorted(root.rglob("*_caption.json")):
         with caption_path.open(encoding="utf-8") as handle:
             payload = json.load(handle)
         caption = payload["caption"]
 
         relative = caption_path.relative_to(root)
-        image_name = relative.name[: -len(filename_suffix)] + image_suffix
+        image_name = relative.name.removesuffix("_caption.json") + ".jpg"
         row = {"file": str(relative.with_name(image_name)), output_column: caption}
         if parse_structured:
             from pipeline.stage1.output_parser import parse_structured_output
