@@ -13,6 +13,14 @@ git -C /path/to/instruct-pix2pix checkout 0dffd1e
 
 `instruct_pix2pix.py` defines the external import boundary. `unsafe2safe_model.py` and `safe_attention.py` provide the project-specific model integration without modifying the external checkout.
 
+The training path is intentionally three small pieces:
+
+1. `unsafe2safe_dataset.py` returns an unsafe image, its public target, a public caption, and an edit instruction.
+2. `unsafe2safe_model.py` encodes the two texts and passes them to the UNet as `(public, edit)`.
+3. `safe_attention.py` keeps the upstream edit attention and adds the learned public-caption branch.
+
+Only the UNet adapter is project-specific; the VAE, CLIP encoder, trainer, and checkpoint still come from the external InstructPix2Pix checkout.
+
 Train with the released configuration:
 
 ```bash
