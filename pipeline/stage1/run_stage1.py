@@ -125,25 +125,10 @@ def resolve_runtime_paths(effective_cfg, config_dir):
     return cfg
 
 
-def _require_columns(df, columns, source_name):
-    missing = sorted(set(columns) - set(df.columns))
-    if missing:
-        raise ValueError(f"{source_name} is missing columns: {missing}")
-
-
-def _relative_path(value):
-    path = Path(str(value))
-    if path.is_absolute() or ".." in path.parts:
-        raise ValueError(f"CSV file paths must stay relative: {path}")
-    return path
-
-
 def _row_variables(row, source_cfg):
-    """Expose all row fields plus explicitly mapped prompt variables."""
+    """Expose row fields plus explicitly mapped prompt variables."""
     variables = row.to_dict()
     for variable, column in source_cfg.get("prompt_columns", {}).items():
-        if column not in row:
-            raise ValueError(f"Prompt variable {variable!r} refers to missing column {column!r}")
         variables[variable] = row[column]
     return variables
 
@@ -157,11 +142,10 @@ def build_samples(dataset_cfg, source_cfg):
         csv_path = source_cfg["csv_path"]
         image_col = source_cfg.get("image_col", "file")
         df = pd.read_csv(csv_path)
-        _require_columns(df, [image_col, *source_cfg.get("prompt_columns", {}).values()], csv_path)
 
         samples: list[Sample] = []
         for _, row in df.iterrows():
-            rel = _relative_path(row[image_col])
+            rel = Path(str(row[image_col]))
             image_path = Path(root_dir) / rel
             vars_dict = _row_variables(row, source_cfg)
             vars_dict["image_class"] = Path(rel).parent.name
@@ -191,13 +175,12 @@ def build_samples(dataset_cfg, source_cfg):
         right_root = source_cfg.get("right_root_dir", root_dir)
 
         df = pd.read_csv(csv_path)
-        _require_columns(df, [left_col, right_col, rel_col, *source_cfg.get("prompt_columns", {}).values()], csv_path)
 
         samples: list[Sample] = []
         for _, row in df.iterrows():
-            rel = _relative_path(row[rel_col])
-            left_rel = _relative_path(row[left_col])
-            right_rel = _relative_path(row[right_col])
+            rel = Path(str(row[rel_col]))
+            left_rel = Path(str(row[left_col]))
+            right_rel = Path(str(row[right_col]))
             left_path = Path(root_dir) / left_rel
             right_path = Path(right_root) / right_rel
             vars_dict = _row_variables(row, source_cfg)
@@ -212,8 +195,6 @@ def build_samples(dataset_cfg, source_cfg):
 def output_path_for(sample, output_dir, suffix="_caption.json"):
     # Preserve relative folder hierarchy in outputs.
     stem = Path(sample.rel_path).with_suffix("")
-    if stem.is_absolute() or ".." in stem.parts:
-        raise ValueError(f"Sample path must be relative and contained: {sample.rel_path}")
     return Path(output_dir) / f"{stem}{suffix}"
 
 
