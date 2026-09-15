@@ -1,7 +1,7 @@
 # Paper settings for the external FreePrompt paired-image baseline.
 freeprompt_root: /absolute/path/to/FreePromptEditing
 checkpoint: /absolute/path/to/stable-diffusion-checkpoint
-input_manifest: metadata/mscoco_with_captions.csv
+input_manifest: outputs/mscoco/generate_captions.csv
 output_root: outputs/freeprompt
 source_column: PRIVATE_CAPTION
 target_column: PUBLIC_CAPTION
