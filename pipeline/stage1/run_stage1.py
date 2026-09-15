@@ -54,10 +54,6 @@ def read_prompt(path):
     return Path(path).read_text(encoding="utf-8").strip()
 
 
-def ensure_parent(path):
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-
-
 def _row_variables(row, source_cfg):
     """Expose row fields plus explicitly mapped prompt variables."""
     variables = row.to_dict()
@@ -141,7 +137,7 @@ def run_job(effective_cfg, purpose, dataset_name):
     if backend == "qwen_text":
         generator = build_text_generator(
             run_cfg["model_id"],
-            hf_home=run_cfg.get("hf_home"),
+            hf_home=run_cfg.get("hf_home", ".cache/huggingface"),
             device_map=run_cfg.get("device_map", "cuda"),
             torch_dtype=run_cfg.get("torch_dtype", "auto"),
         )
@@ -178,10 +174,10 @@ def run_job(effective_cfg, purpose, dataset_name):
                 device=run_cfg.get("device", "cuda"),
             )
         for out_text, out_path in zip(outputs, save_paths):
-            ensure_parent(out_path)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
             write_caption_json(out_path, out_text)
 
-    collect_captions(output_dir, output_path=output_cfg.get("manifest_path"), filename_suffix=suffix, parse_structured=run_cfg.get("parse_structured", False), output_column=run_cfg.get("output_column", "caption"))
+    collect_captions(output_dir, output_cfg["manifest_path"], filename_suffix=suffix, parse_structured=run_cfg.get("parse_structured", False), output_column=run_cfg.get("output_column", "caption"))
 
 
 def main():
