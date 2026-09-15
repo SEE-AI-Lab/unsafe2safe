@@ -103,6 +103,7 @@ data:
       params:
         <<: *edit_dataset_params
         split: val
+        flip_prob: 0.0
 
 lightning:
   callbacks:
