@@ -28,7 +28,12 @@ def _candidate_roots(explicit_root: Optional[str] = None):
 
 
 def configure_external(explicit_root: Optional[str] = None) -> Path:
-    """Add the external checkout's import roots and return its repository root."""
+    """Add the external checkout's import roots and return its repository root.
+
+    The adapter accepts either the repository root or its ``stable_diffusion``
+    subdirectory so it works with both the upstream checkout and older local
+    layouts. No files in the checkout are edited.
+    """
 
     seen = set()
     for root in _candidate_roots(explicit_root):

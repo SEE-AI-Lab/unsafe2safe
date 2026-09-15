@@ -70,6 +70,8 @@ class Unsafe2Safe(LatentDiffusion):
         public_embed = torch.where(text_mask, null_embed, public_embed)
         edit_embed = torch.where(text_mask, null_embed, edit_embed)
 
+        # Safe attention receives the tuple as (public caption, edit text).
+        # The source image remains the image condition for the hybrid UNet.
         cond = {
             "c_concat": [image_mask * source_latent],
             "c_crossattn": [public_embed, edit_embed],
@@ -96,4 +98,6 @@ class Unsafe2Safe(LatentDiffusion):
         if len(contexts) != 2:
             raise ValueError("Unsafe2Safe requires [public_caption, edit_instruction]")
         x_input = torch.cat([x_noisy] + cond["c_concat"], dim=1)
+        # Call the UNet directly: the upstream wrapper assumes one context and
+        # would concatenate the two embeddings before SafeCrossAttention sees them.
         return self.model.diffusion_model(x_input, timestep, context=tuple(contexts))

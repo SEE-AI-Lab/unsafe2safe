@@ -47,6 +47,8 @@ class SafeCrossAttention(nn.Module):
             nn.GELU(),
             nn.Linear(16, 1),
         )
+        # Start from the upstream edit branch; the new public branch can then
+        # be learned without changing the initial checkpoint behavior.
         self.public_scale = nn.Parameter(torch.zeros(1))
 
     def _standard(self, x, context, mask=None):
@@ -93,6 +95,9 @@ class SafeCrossAttention(nn.Module):
 
         attn_edit = sim_edit.softmax(dim=-1)
         attn_public = sim_public.softmax(dim=-1)
+        # Let the two attention maps decide where the public caption is useful.
+        # ``amax`` keeps this a token-level map instead of collapsing the whole
+        # sequence to one pooled text feature.
         map_features = torch.stack(
             (attn_edit.amax(dim=-1), attn_public.amax(dim=-1)), dim=-1
         )
@@ -137,6 +142,8 @@ class SafeBasicTransformerBlock(nn.Module):
         if isinstance(context, (tuple, list)):
             if len(context) != 2:
                 raise ValueError("Safe attention context must be (public, edit)")
+            # Keep this order explicit: the public caption is the semantic
+            # anchor, while the edit instruction drives the normal branch.
             context_public, context_edit = context
             x = self.attn2(
                 self.norm2(x),

@@ -15,6 +15,8 @@ from torch.utils.data import Dataset
 
 
 class EditDataset(Dataset):
+    """Load aligned unsafe/public image pairs and their two text conditions."""
+
     def __init__(
         self,
         path: str,
@@ -100,6 +102,8 @@ class EditDataset(Dataset):
 
         crop = torchvision.transforms.RandomCrop(self.crop_res)
         flip = torchvision.transforms.RandomHorizontalFlip(float(self.flip_prob))
+        # Crop and flip the concatenated pair so both images keep identical
+        # geometry after augmentation.
         image_0, image_1 = flip(crop(torch.cat((image_0, image_1)))).chunk(2)
 
         return dict(

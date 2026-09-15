@@ -1,6 +1,7 @@
 # Unsafe2Safe Stage 2 training configuration.
 # Run it with pipeline/scripts/train_unsafe2safe.sh and an external
 # InstructPix2Pix checkout. Keep data and checkpoints outside Git.
+# The model passes c_crossattn as (public caption, edit instruction).
 
 model:
   base_learning_rate: 1.0e-05
