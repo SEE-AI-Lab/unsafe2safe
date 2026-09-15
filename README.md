@@ -53,7 +53,7 @@ The code is released in practical research form. Paths, checkpoints, and model c
 
 Paper-aligned handoff configs are kept beside the code they configure:
 
-- `pipeline/stage1/configs/`: InternVL/Qwen captioning, flagging, and comparison jobs.
+- `pipeline/stage1/config.yaml`: InternVL/Qwen captioning, flagging, and comparison jobs.
 - `pipeline/stage2/configs/`: SafeAttention/InstructPix2Pix training.
 - `pipeline/adapters/*/config.example.yaml`: FreePrompt, FlowEdit, OminiControl,
   ImageMAE, BLIP-2, and Qwen3-VL recipes.
@@ -77,7 +77,7 @@ Generate privacy-aware captions:
 
 ```bash
 python pipeline/stage1/run_stage1.py \
-  --config pipeline/stage1/configs/stage1.yaml \
+  --config pipeline/stage1/config.yaml \
   --purpose generate_captions \
   --dataset mscoco
 ```
@@ -86,7 +86,7 @@ Compare original and anonymized images:
 
 ```bash
 python pipeline/stage1/run_stage1.py \
-  --config pipeline/stage1/configs/eval.yaml \
+  --config pipeline/stage1/config.yaml \
   --purpose compare_anonymization \
   --dataset mscoco
 ```
