@@ -57,15 +57,6 @@ def _set_seed(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
 
 
-def _resolve_device(name: str) -> torch.device:
-    device = torch.device(name)
-    # The upstream sampler uses CUDA autocast around VAE operations, so a CPU
-    # fallback would appear portable but fail after model loading.
-    if device.type != "cuda" or not torch.cuda.is_available():
-        raise RuntimeError("FlowEdit inference requires an available CUDA device")
-    return device
-
-
 def _dtype(name: str) -> torch.dtype:
     values = {
         "float16": torch.float16,
@@ -105,13 +96,6 @@ def _prepare_image(image: Image.Image, max_resolution: int) -> Image.Image:
         height = max(16, int(image.height * scale) // 16 * 16)
         image = image.resize((width, height), Image.Resampling.BICUBIC)
     return image
-
-
-def _relative_path(value: Any) -> Path:
-    path = Path(str(value))
-    if path.is_absolute() or ".." in path.parts:
-        raise ValueError(f"CSV file paths must be relative and contained: {path}")
-    return path
 
 
 def _encode_source(pipe, image: Image.Image, device: torch.device) -> torch.Tensor:
@@ -206,7 +190,7 @@ def main() -> None:
         if value is not None:
             config[key] = value
 
-    device = _resolve_device(str(config.get("device", "cuda")))
+    device = torch.device(str(config.get("device", "cuda")))
     model_type = str(config.get("model_type", "SD3")).upper()
     _, flowedit_sd3, flowedit_flux = _configure_external(args.flowedit_root)
     pipe = _load_pipeline(
@@ -250,7 +234,7 @@ def main() -> None:
         skipped = 0
 
         for row in frame.to_dict(orient="records"):
-            relative = _relative_path(row[file_column])
+            relative = Path(str(row[file_column]))
             input_path = image_root / relative
             output_path = condition_dir / relative
             output_path.parent.mkdir(parents=True, exist_ok=True)
