@@ -292,8 +292,7 @@ external trainer.
 
 ## External dependencies
 
-See [`THIRD_PARTY.md`](THIRD_PARTY.md) for the external repositories used by
-the optional workflows. They are not included in this repository.
+External repositories are not included here. The adapter READMEs list the pinned revisions and setup commands for InstructPix2Pix, OminiControl, FlowEdit, LAVIS, and other optional workflows.
 
 ## Links
 
