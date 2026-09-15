@@ -60,8 +60,7 @@ def build_samples(dataset_cfg, source_cfg):
             rel = Path(str(row["file"]))
             image_path = Path(root_dir) / rel
             vars_dict = _row_variables(row, source_cfg)
-            vars_dict["image_class"] = Path(rel).parent.name
-            vars_dict["class_name"] = Path(rel).parent.name
+            vars_dict["image_class"] = rel.parent.name
             samples.append(Sample(rel_path=rel, image_path=image_path, vars=vars_dict))
         return samples
 
@@ -72,7 +71,7 @@ def build_samples(dataset_cfg, source_cfg):
         samples = []
         for p in files:
             rel = p.relative_to(root_dir)
-            vars_dict = {"image_class": p.parent.name, "class_name": p.parent.name, "file": rel}
+            vars_dict = {"image_class": p.parent.name, "file": rel}
             samples.append(Sample(rel_path=rel, image_path=p, vars=vars_dict))
         return samples
 

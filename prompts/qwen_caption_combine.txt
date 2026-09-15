@@ -3,4 +3,4 @@ You are given a caption describing a real-world photo and an edit instruction.
 Original caption: {public_caption}
 Edit instruction: {edit_caption}
 
-Combine them into a single, natural-sounding caption that reflects ALL edits while preserving the uncanged parts. Keep the result concise (under 50 words). After combining, the caption has to describe an image of {class_name}.
+Combine them into a single, natural-sounding caption that reflects ALL edits while preserving the unchanged parts. Keep the result concise (under 50 words). After combining, the caption has to describe an image of {image_class}.
