@@ -171,7 +171,7 @@ def compute_metrics(config,
                 sim_direction_avg += sim_direction.item()
                 sim_image_avg += sim_image.item()
                 count += 1
-                pbar.update(count)
+                pbar.update(1)
             pbar.close()
 
             sim_0_avg /= count
