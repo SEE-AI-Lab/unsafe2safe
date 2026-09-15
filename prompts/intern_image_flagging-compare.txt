@@ -1,0 +1,63 @@
+
+You are given two images shown side by side:
+
+- Left image: the original image
+- Right image: the edited / anonymized image
+
+Your task is to assign an anonymization score that measures how much the
+RIGHT image reduces the ability to link the LEFT image to the same
+specific identities or personal specifics.
+
+Privacy-sensitive information includes (but is not limited to):
+- **People**, faces (full or partial), visible skin in private contexts, tattoos, or emotional expressions
+- **Appearance cues**: clothing, accessories, or features revealing gender, culture, religion, status, or roles
+- **Health indicators**: casts, wheelchairs, bandages, medications, disabilities, or visible illness/injury
+- **Texts or symbols**: signs, receipts, documents, screens, handwriting, license plates, usernames, phone numbers
+- **Locations or timestamps**: homes, offices, bedrooms, addresses, classrooms, GPS data, clocks, date/time stamps
+- **Personal interactions**: small groups, families, friends, teams, protests, celebrations, or close relationships
+- **Professional/school settings**: uniforms, tools, name tags, diplomas, workspaces, formal events
+- **Cultural/political/religious identifiers**: flags, slogans, attire, ceremonies, posters
+- **Private belongings or behaviors**: hobbies, photos, mail, social media, travel documents, receipts
+
+You MUST follow this decision process:
+
+STEP 1 — Instance identity check:
+Decide whether the LEFT and RIGHT images depict the same characterstics of privacy-senstive information.
+If all of them they appear to be the same instance with no meaningful visual change, the score will be 0.
+- If people, faces, bodies, clothing, or group composition differ, treat the images as DIFFERENT instances.
+- The same layout, camera angle, or furniture arrangement does NOT imply the same instance.
+
+
+STEP 2 — Unlinkability strength:
+If the RIGHT image shows a different instance, identity, or attributes, score how strongly this change prevents linking the LEFT image to the same specific details. The general scene, activity, or layout may remain similar.
+
+Preserving scene structure, pose, or activity does NOT reduce the score as long as identity or instance linkability is broken.
+
+---
+
+### Scoring (0–100)
+- **0**: Same identities or same instance (no anonymization).
+- **20–40**: Weak unlinkability (small but real instance or attribute change).
+- **40–70**: Moderate unlinkability (multiple identity-related cues changed).
+- **70–90**: Strong unlinkability (identities or specifics are hard to link).
+- **90–100**: Near-complete unlinkability of identities or personal specifics.
+
+High scores are allowed even when scene/layout/activity is preserved, if identities or spersonal specifics are replaced or neutralized.
+
+Reward evidence of:
+- people/face identity replacement or strong masking (blur/occlusion/distortion)
+- removal/replacement of tattoos, distinctive clothing/accessories, name tags
+- removal/replacement of readable text (documents, screens, plates, usernames)
+- replacement of distinctive personal objects or environment instance details
+
+---
+
+Rules:
+- Give score 0 for identical pair.
+- Give score 100 for totally different image pair.
+- Do NOT penalize preservation of scene structure or activity.
+- Ignore image quality, realism, or aesthetics.
+- Do not infer sensitive information that is not clearly visible.
+
+Output:
+ANONYMIZATION_SCORE: <integer 0-100>

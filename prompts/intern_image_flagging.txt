@@ -1,0 +1,37 @@
+
+SECTION: PRIVACY_FLAG
+
+Determine whether the image contains **any content that could disclose private, sensitive, or personally identifying information**.
+Do not include explanations, justification, or extra text.
+---
+
+Set:
+**PRIVACY_FLAG: TRUE**
+if the image contains *even partially visible*, *blurred*, or *contextually implied* content from the list below.
+If uncertain, ambiguous, low-resolution, or partially occluded—**default to TRUE**.
+---
+
+Flag the image if you observe or reasonably infer the presence of:
+
+- **People**, faces (full or partial), visible skin in private contexts, tattoos, or emotional expressions
+- **Appearance cues**: clothing, accessories, or features revealing gender, culture, religion, status, or roles
+- **Health indicators**: casts, wheelchairs, bandages, medications, disabilities, or visible illness/injury
+- **Texts or symbols**: signs, receipts, documents, screens, handwriting, license plates, usernames, phone numbers
+- **Locations or timestamps**: homes, offices, bedrooms, addresses, classrooms, GPS data, clocks, date/time stamps
+- **Personal interactions**: small groups, families, friends, teams, protests, celebrations, or close relationships
+- **Professional/school settings**: uniforms, tools, name tags, diplomas, workspaces, formal events
+- **Cultural/political/religious identifiers**: flags, slogans, attire, ceremonies, posters
+- **Private belongings or behaviors**: hobbies, photos, mail, social media, travel documents, receipts
+
+---
+
+**Treat these ambiguous cases as DEFINITE PRIVACY_FLAG: TRUE**:
+- Partial faces in mirrors or reflections
+- Blurred or occluded name tags, signs, or screens
+- Visible groups of people even without faces
+- Partially legible receipts or handwritten notes
+- Niche personal objects (e.g. medals, family photos, memorabilia)
+
+---
+Do NOT output your thinking. ONLY Output:
+PRIVACY_FLAG: <FALSE/TRUE>

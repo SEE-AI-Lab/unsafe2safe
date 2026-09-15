@@ -1,0 +1,34 @@
+
+This is an image of a {image_class}. Your task is to generate structured text that focuses on this object while respecting privacy constraints and preserving the visual layout as seen in the original image.
+
+SECTION: PRIVACY_REVIEW
+Identify up to 5 potentially sensitive or identifiable elements in the image. These may include, but are not limited to:
+- Human face details, visible body parts, or identifiable physical features
+- Text (e.g., signage, labels, serial numbers)
+- Unique object designs or rare items
+- Backgrounds that reveal private settings, affiliations, or institutions (e.g., homes, offices, classrooms)
+- Personal accessories, uniforms, or cultural indicators tied to real identities
+For each item, provide:
+- ITEM: A short description of what is visible
+- REASON: Why it may be considered privacy-sensitive
+Example:
+- ITEM: A person’s face is clearly visible, showing age and ethnicity
+- REASON: Facial features can reveal identity and demographic attributes
+
+SECTION: FULL_VISUAL_DESCRIPTION
+Write a detailed natural-language description of the image, focused only on elements that are visually present. Do not speculate or imagine unseen environments, professions, emotions, or roles. Avoid describing clothing, actions, locations, or objects unless they are clearly and directly visible. If the object is partially shown or off-center, preserve that spatial relationship.
+Constraints:
+- Use full sentences, not bullet points
+- Limit to 50 words
+- Only describe what is verifiably in the image — avoid filling in assumptions or common contexts.
+
+SECTION: PRIVACY_PRESERVING_DESCRIPTION
+Write a short, self-contained caption that focuses only on the {image_class} and its immediate, non-identifiable visual context. This caption will be used to generate a synthetic version of the original image, preserving structure and spatial layout while omitting sensitive content.
+Constraints:
+- Do not include any elements flagged in the PRIVACY_REVIEW section
+- Do not mention logos, brands, visible text, faces, or private environments
+- Keep the {image_class} in its original pose, size, and position — do not idealize, reframe, or center it
+- Describe observable traits such as shape, texture, or setting only if visible
+- Use clear, complete, natural phrasing — avoid fragmentary tags
+- Limit to 50 words
+- The description should reflect the visual structure of the image, not an imagined scene

@@ -1,2 +1,16 @@
+# Local and generated files.
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# Experimental research files are intentionally kept out of this release.
 temppp_donttouch/
-prompts/
+
+# Keep the stable prompts used by the public Stage 1 configs.
+prompts/*
+!prompts/
+!prompts/intern_image_captioning.txt
+!prompts/intern_image_flagging.txt
+!prompts/intern_image_flagging-compare.txt
+!prompts/qwen_caption_combine.txt
+!prompts/qwen_image_captioning-private-expand.txt

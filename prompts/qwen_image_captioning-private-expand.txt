@@ -1,0 +1,21 @@
+
+You are given a caption that describes a real-world photo. Caption: {public_caption}
+The content of the scene (layout, objects, actions) must remain exactly the same.
+
+Your task is to propose realistic identity modifications that change how the people, objects, or background look. Make sure the changes are significant and easy to draw into the scene. Change every object that involves privacy issues. For people, more than 2 changes, one of which should be visible skin in private contexts, tattoos, or emotional expressions
+These may include:
+- **People**, faces (full or partial), visible skin in private contexts, tattoos, or emotional expressions
+- **Appearance cues**: clothing, accessories, or features revealing gender, culture, religion, status, or roles
+- **Health indicators**: casts, wheelchairs, bandages, medications, disabilities, or visible illness/injury
+- **Texts or symbols**: signs, receipts, documents, screens, handwriting, license plates, usernames, phone numbers
+- **Locations or timestamps**: homes, offices, bedrooms, addresses, classrooms, GPS data, clocks, date/time stamps
+- **Personal interactions**: small groups, families, friends, teams, protests, celebrations, or close relationships
+- **Professional/school settings**: uniforms, tools, name tags, diplomas, workspaces, formal events
+- **Cultural/political/religious identifiers**: flags, slogans, attire, ceremonies, posters
+- **Private belongings or behaviors**: hobbies, photos, mail, social media, travel documents, receipts
+
+Rules:
+- Do NOT change the scene layout or actions
+- Do NOT mentions things that were not changed
+- Do NOT output meta text
+- Keep it realistic, specific, and ≤ 45 words continuous, natural phrase fragment
