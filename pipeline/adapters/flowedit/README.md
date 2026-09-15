@@ -61,13 +61,12 @@ written to `output-dir/file` for one condition or `output-dir/COLUMN/file` for
 multiple conditions. Existing outputs are skipped unless
 `--overwrite` is supplied.
 
-## Provenance and license boundary
+## External dependency
 
 `FlowEdit_utils.py`, upstream configs, demo assets, datasets, checkpoints, and
 the historical scripts are intentionally not copied into this repository.
-FlowEdit is MIT licensed; retain the upstream [`LICENSE`](https://github.com/fallenshock/FlowEdit/blob/main/LICENSE)
-when obtaining that dependency. The Unsafe2Safe project code has no top-level
-license decision yet; see [`THIRD_PARTY.md`](../../../THIRD_PARTY.md).
+Follow the upstream [license](https://github.com/fallenshock/FlowEdit/blob/main/LICENSE)
+when obtaining that dependency.
 
 Full GPU/model execution was not run in this workspace because it requires the
 external model dependencies, Hugging Face access, and a CUDA-capable runtime.
