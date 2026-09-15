@@ -1,4 +1,0 @@
-# Dependencies for the official ImageMAE checkout and its classifier adapter.
-# Clone ImageMAE separately; its source is intentionally not vendored here.
--r requirements.txt
-timm==0.3.2
