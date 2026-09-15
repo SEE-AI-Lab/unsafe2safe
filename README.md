@@ -1,8 +1,28 @@
 # Unsafe2Safe
 
+[![Paper](https://img.shields.io/badge/arXiv-2603.28605-b31b1b.svg)](https://arxiv.org/abs/2603.28605)
+[![Project Page](https://img.shields.io/badge/Project%20Page-online-0a7ea4.svg)](https://see-ai-lab.github.io/unsafe2safe/)
+[![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-ffcc4d.svg)](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe)
+
 Unsafe2Safe creates privacy-preserving image edits while preserving the useful visual content of the source image.
 
 This repository contains the project-owned captioning, dataset preparation, editing, training adapters, evaluation helpers, and prompt assets used by the project. Large third-party model repositories, checkpoints, datasets, and generated outputs stay outside the repository.
+
+> [!NOTE]
+> This is a practical research release. The public files cover the project-owned pipeline pieces; model-heavy stages still require external checkouts, local datasets, and checkpoints.
+
+## Pipeline at a glance
+
+```mermaid
+flowchart LR
+    A[Images and metadata] --> B[Stage 1: privacy review]
+    B --> C[Private/public captions and edit instructions]
+    C --> D[Edited pairs and CLIP filtering]
+    D --> E[Stage 2: diffusion editing]
+    E --> F[Quality, privacy, and utility evaluation]
+```
+
+Stage 2 can use the released project adapters for InstructPix2Pix, OminiControl, and FlowEdit while their upstream model repositories remain external.
 
 ## Installation
 
@@ -21,8 +41,9 @@ Install a PyTorch build that matches the target CPU or CUDA platform when the de
 ```text
 prompts/                  Captioning, privacy, and edit-instruction prompts.
 vlm_captioning/           Stage 1 generation, parsing, and flag evaluation.
-pipeline/dataset_creation/Metadata and image-pair preparation utilities.
+pipeline/dataset_creation/  Metadata and image-pair preparation utilities.
 pipeline/metrics/         CLIP, image, privacy, caption, and utility scores.
+pipeline/vqa/             Qwen3-VL OK-VQA fine-tuning and prediction scripts.
 pipeline/scripts/          Download, training, and batch-inference launchers.
 pipeline/                 Editing adapters, datasets, Safe Attention, and demo.
 ```
@@ -140,6 +161,10 @@ The reusable metric helpers in `pipeline/metrics/` cover the project’s current
 - Downstream top-1 classification accuracy.
 
 Keep downloaded datasets, checkpoints, generated images, and experiment outputs outside version control. The repository ignores common `outputs/` and `runs/` directories.
+
+## Downstream VQA
+
+The Qwen3-VL OK-VQA training and prediction scripts are under [`pipeline/vqa/`](pipeline/vqa/README.md). They accept dataset roots, safe/private manifests, adapter paths, and output paths as command-line arguments.
 
 ## Links
 
