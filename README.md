@@ -3,6 +3,8 @@
 [![Paper](https://img.shields.io/badge/arXiv-2603.28605-b31b1b.svg)](https://arxiv.org/abs/2603.28605)
 [![Project Page](https://img.shields.io/badge/Project%20Page-online-0a7ea4.svg)](https://see-ai-lab.github.io/unsafe2safe/)
 [![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-ffcc4d.svg)](https://huggingface.co/datasets/minhdinh2/Unsafe2Safe)
+[![GitHub stars](https://img.shields.io/github/stars/SEE-AI-Lab/unsafe2safe?style=flat)](https://github.com/SEE-AI-Lab/unsafe2safe/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/SEE-AI-Lab/unsafe2safe?style=flat)](https://github.com/SEE-AI-Lab/unsafe2safe/forks)
 
 Unsafe2Safe creates privacy-preserving image edits while preserving the useful visual content of the source image.
 
