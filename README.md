@@ -12,6 +12,10 @@ This repository contains the project-specific code for both paper stages,
 prompt assets, evaluation helpers, and adapters for the downstream experiments.
 Model weights and external trainers are installed separately.
 
+![Unsafe2Safe two-stage method overview](docs/figures/unsafe2safe_pipeline.png)
+
+*Unsafe2Safe first creates privacy-safe text conditions, then uses them to generate an edited image.*
+
 > [!NOTE]
 > The commands below use example paths. Replace them with the locations of your
 > local datasets, checkpoints, and external model repositories.
@@ -215,6 +219,10 @@ is an optional external baseline.
 
 The [baseline config](pipeline/adapters/baselines.example.yaml) records the
 settings used for the external FreePrompt and DeepPrivacy2 baselines.
+
+![Qualitative comparison from the paper](docs/figures/qualitative_results.jpg)
+
+*Qualitative comparison across editing methods and text conditions.*
 
 ## Evaluation
 
