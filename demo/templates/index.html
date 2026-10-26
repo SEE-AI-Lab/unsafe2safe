@@ -80,20 +80,16 @@
     .button:disabled { border-color:#aeb7c3; background:#aeb7c3; cursor:not-allowed; transform:none }
     .privacy-note { margin:9px 0 0; color:var(--muted); font-size:12px }
     .stage-one { margin-top:15px; padding-top:13px; border-top:1px solid var(--line) }
-    .stage-one[hidden], .caption-results[hidden] { display:none }
     .stage-one-title, .mode-title { display:flex; align-items:center; gap:8px; margin:0 0 9px; font-size:14px }
     .mode-title { margin:20px 0 9px }
     .caption-status { margin:0 0 10px; color:var(--muted); font-size:13px }
     .caption-status.error { color:#a51e24 }
     .caption-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
-    .caption-legend { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:12px; margin:0 0 2px; font-size:11px; font-weight:700 }
-    .caption-legend .private-key { color:#b3261e }
-    .caption-legend .public-key { color:#327542 }
     mark.caption-highlight { padding:0 .08em; border-radius:2px; font-weight:700 }
     mark.caption-highlight.is-private { background:#fff0ee; color:#b3261e }
     mark.caption-highlight.is-public { background:#e9f4ea; color:#327542 }
     .caption-block h3 { margin:0 0 4px; color:var(--navy); font-size:12px }
-    .caption-block p, .privacy-review p { margin:0; color:var(--muted); font-size:12px; line-height:1.5 }
+    .caption-block p { margin:0; color:var(--muted); font-size:12px; line-height:1.5 }
     .caption-block p[hidden] { display:none }
     .caption-skeleton { display:grid; gap:7px; padding:4px 0 }
     .caption-skeleton[hidden] { display:none }
@@ -248,14 +244,13 @@
         <p class="camera-error" id="cameraError" role="status" aria-live="polite" hidden>Couldn’t open the camera. Upload a photo instead.</p>
         <input class="file-input" id="photo" type="file" accept="image/*">
         <p class="privacy-note">Photo goes to Gemini for captions and editing. Not saved here.</p>
-        <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle" hidden>
+        <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle">
           <h2 class="stage-one-title" id="stageOneTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>Stage 1 · Captions</h2>
           <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
           <button class="button secondary" id="retryCaptions" type="button" hidden>Retry captions</button>
-          <div class="caption-grid caption-results" id="captionResults" hidden>
-            <p class="caption-legend"><span class="private-key">Private detail</span><span class="public-key">Generalized in public caption</span></p>
-            <div class="caption-block"><h3>Private caption</h3><div class="caption-skeleton" id="privateCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="fullCaption" hidden></p></div>
-            <div class="caption-block"><h3>Privacy-safe public caption</h3><div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="publicCaption" hidden></p></div>
+          <div class="caption-grid">
+            <div class="caption-block"><h3>Private caption</h3><div class="caption-skeleton" id="privateCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="fullCaption">Upload or take a photo to generate its full visual description.</p></div>
+            <div class="caption-block"><h3>Privacy-safe public caption</h3><div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="publicCaption">A privacy-safe caption will appear here.</p></div>
           </div>
         </section>
         <h2 class="mode-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Edit instruction</h2>
@@ -296,7 +291,6 @@
     const cameraButton = document.getElementById('cameraButton');
     const stageOne = document.getElementById('stageOne');
     const captionStatus = document.getElementById('captionStatus');
-    const captionResults = document.getElementById('captionResults');
     const privacyMarkers = document.getElementById('privacyMarkers');
     const editInstruction = document.getElementById('editInstruction');
     const instructionLoading = document.getElementById('instructionLoading');
@@ -498,8 +492,6 @@
       placeholder.innerHTML = '<strong>Your result appears here</strong>Your edited photo will appear here.';
       resultStage.classList.remove('processing');
       document.getElementById('download').style.display = 'none';
-      stageOne.hidden = false;
-      captionResults.hidden = false;
       document.getElementById('privateCaptionSkeleton').hidden = false;
       document.getElementById('publicCaptionSkeleton').hidden = false;
       document.getElementById('fullCaption').hidden = true;
@@ -512,7 +504,6 @@
       captionStatus.hidden = false;
       captionStatus.className = 'caption-status';
       captionStatus.textContent = 'Generating captions and privacy review…';
-      captionResults.hidden = false;
       document.getElementById('privateCaptionSkeleton').hidden = false;
       document.getElementById('publicCaptionSkeleton').hidden = false;
       document.getElementById('fullCaption').hidden = true;
@@ -551,9 +542,12 @@
       } catch (error) {
         captionStatus.textContent = error.message;
         captionStatus.classList.add('error');
-        captionResults.hidden = true;
         document.getElementById('privateCaptionSkeleton').hidden = true;
         document.getElementById('publicCaptionSkeleton').hidden = true;
+        document.getElementById('fullCaption').hidden = false;
+        document.getElementById('publicCaption').hidden = false;
+        document.getElementById('fullCaption').textContent = 'Captions could not be generated. Retry to try again.';
+        document.getElementById('publicCaption').textContent = 'Your privacy-safe caption will appear after a successful retry.';
         document.getElementById('retryCaptions').hidden = false;
         setPipelineState([
           ['complete', 'Photo ready'],
