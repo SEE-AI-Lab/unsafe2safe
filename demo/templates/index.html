@@ -257,7 +257,7 @@
       qrDialog.showModal();
     }));
     qrDialog.addEventListener('click', (event) => {
-      if (event.target === qrDialog) qrDialog.close();
+      if (!event.target.closest('.qr-dialog-layout > div, .qr-dialog-layout > img')) qrDialog.close();
     });
 
     uploadButton.addEventListener('click', () => input.click());
