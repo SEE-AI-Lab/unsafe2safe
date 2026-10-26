@@ -33,20 +33,30 @@
     .resource-link { position:relative; display:inline-flex; align-items:center; gap:7px; padding:7px 0; border-bottom:1px solid transparent; color:var(--navy); font-size:13px; font-weight:600; text-decoration:none }
     .resource-link .ui-icon { width:15px; height:15px }
     .resource-link:hover, .resource-link:focus-visible, .authors a:hover, .authors a:focus-visible { border-color:var(--red) }
-    .pipeline-progress { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:24px; padding:17px 0 18px; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
+    .pipeline-progress { position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px; padding:17px 0 18px; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
     .pipeline-progress::before { content:""; position:absolute; top:32px; left:24px; right:24px; height:1px; background:var(--line) }
     .progress-step { position:relative; display:grid; grid-template-columns:30px minmax(0,1fr); align-items:start; gap:10px; min-width:0 }
-    .progress-marker { display:grid; place-items:center; width:29px; height:29px; border:1px solid #aeb8c5; border-radius:50%; background:var(--paper); color:var(--muted); font-size:12px; font-weight:700 }
+    .progress-marker { position:relative; display:grid; place-items:center; width:29px; height:29px; border:1px solid #aeb8c5; border-radius:50%; background:var(--paper); color:var(--muted); font-size:12px; font-weight:700 }
     .progress-marker svg { display:none; width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round }
     .progress-copy { padding-top:1px }
     .progress-copy strong { display:block; color:var(--muted); font-size:13px; line-height:1.25 }
     .progress-copy small { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.35 }
+    .progress-state { display:block; margin-top:4px; color:var(--muted); font-size:11px; font-weight:700; line-height:1.25 }
     .progress-step.is-current .progress-marker { border-color:var(--red); background:var(--red); color:#fff }
     .progress-step.is-current .progress-copy strong { color:var(--navy) }
     .progress-step.is-complete .progress-marker { border-color:var(--navy); background:var(--navy); color:#fff }
     .progress-step.is-complete .progress-marker span { display:none }
     .progress-step.is-complete .progress-marker svg { display:block }
     .progress-step.is-complete .progress-copy strong { color:var(--navy) }
+    .progress-step[data-state="running"] .progress-marker span { color:transparent }
+    .progress-step[data-state="running"] .progress-marker::after { content:""; position:absolute; inset:0; margin:auto; width:19px; height:19px; border:2px solid #ffffff70; border-top-color:#fff; border-radius:50%; animation:progress-spin .8s linear infinite }
+    .progress-step[data-state="running"] .progress-state { color:var(--purple) }
+    .progress-step[data-state="complete"] .progress-state { color:var(--navy) }
+    .progress-step[data-state="error"] .progress-marker { border-color:#a51e24; background:#a51e24; color:#fff }
+    .progress-step[data-state="error"] .progress-marker span { display:none }
+    .progress-step[data-state="error"] .progress-marker::after { content:"!"; font-size:15px; font-weight:700 }
+    .progress-step[data-state="error"] .progress-copy strong, .progress-step[data-state="error"] .progress-state { color:#a51e24 }
+    @keyframes progress-spin { to { transform:rotate(360deg) } }
     .workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:stretch }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
@@ -62,6 +72,7 @@
     .camera-error { margin:8px 0 0; color:#a51e24; font-size:13px }
     .button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; border:1px solid var(--red); border-radius:3px; background:var(--red); color:#fff; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s,transform .15s }
     .button .ui-icon { width:16px; height:16px }
+    .button[hidden] { display:none }
     .button:hover { background:#b91f26; transform:translateY(-1px) }
     .button.secondary { border-color:var(--line); background:#fff; color:var(--navy) }
     .button.secondary:hover { border-color:var(--navy); background:#f6f7f8 }
@@ -124,12 +135,14 @@
       .dartmouth-link img { width:56px; height:30px }
       .project-links { grid-column:auto; gap:7px 16px; padding-top:8px; margin-top:3px }
       .resource-link { font-size:12px }
-      .pipeline-progress { gap:12px; padding:13px 0 }
-      .pipeline-progress::before { top:25px; left:16px; right:16px }
-      .progress-step { grid-template-columns:24px minmax(0,1fr); gap:7px }
-      .progress-marker { width:23px; height:23px; font-size:11px }
+      .pipeline-progress { grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 10px; padding:13px 0 }
+      .pipeline-progress::before { display:none }
+      .progress-step { grid-template-columns:20px minmax(0,1fr); gap:6px }
+      .progress-marker { width:20px; height:20px; font-size:10px }
+      .progress-step[data-state="running"] .progress-marker::after { width:14px; height:14px }
       .progress-copy strong { font-size:12px }
       .progress-copy small { font-size:11px }
+      .progress-state { font-size:10px }
       .qr-dialog { padding:20px }
       .qr-dialog-layout { gap:18px }
       .qr-dialog h2 { font-size:32px }
@@ -179,9 +192,11 @@
       </a>
     </nav>
     </header>
-    <ol class="pipeline-progress" id="pipelineProgress" data-stage="photo" aria-label="Pipeline progress">
-      <li class="progress-step is-current" id="progressPhoto" aria-current="step"><span class="progress-marker"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Privacy review &amp; captions</strong><small>Full description + privacy-safe caption</small></span></li>
-      <li class="progress-step" id="progressEdit"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Caption-guided edit</strong><small>Choose an instruction and create the image</small></span></li>
+    <ol class="pipeline-progress" id="pipelineProgress" aria-label="Pipeline progress">
+      <li class="progress-step is-current" id="progressUpload" data-state="idle" aria-current="step"><span class="progress-marker"><span>0</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Upload unsafe image</strong><small>Choose a photo to make safer to share</small><span class="progress-state" aria-live="polite">Waiting for photo</span></span></li>
+      <li class="progress-step" id="progressPhoto" data-state="idle"><span class="progress-marker"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Review &amp; captions</strong><small>Describe the image and protect private details</small><span class="progress-state" aria-live="polite">Waiting for upload</span></span></li>
+      <li class="progress-step" id="progressChoose" data-state="idle"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Choose an edit</strong><small>Select a caption-guided instruction</small><span class="progress-state" aria-live="polite">Waiting for captions</span></span></li>
+      <li class="progress-step" id="progressEdit" data-state="idle"><span class="progress-marker"><span>3</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Generate safe image</strong><small>Create and preview your edited photo</small><span class="progress-state" aria-live="polite">Waiting for edit</span></span></li>
     </ol>
     <section class="workspace" aria-label="Photo editor">
       <article class="panel">
@@ -205,6 +220,7 @@
         <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle" hidden>
           <h2 class="stage-one-title" id="stageOneTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>Stage 1 · Captions</h2>
           <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
+          <button class="button secondary" id="retryCaptions" type="button" hidden>Retry captions</button>
           <div class="caption-grid caption-results" id="captionResults" hidden>
             <div class="caption-block"><h3>Full visual description</h3><p id="fullCaption"></p></div>
             <div class="caption-block"><h3>Privacy-safe public caption</h3><p id="publicCaption"></p></div>
@@ -263,18 +279,33 @@
     const qrDialogImage = document.getElementById('qrDialogImage');
     const qrDialogLink = document.getElementById('qrDialogLink');
     const pipelineProgress = document.getElementById('pipelineProgress');
+    const progressUpload = document.getElementById('progressUpload');
     const progressPhoto = document.getElementById('progressPhoto');
+    const progressChoose = document.getElementById('progressChoose');
     const progressEdit = document.getElementById('progressEdit');
+    const progressSteps = [progressUpload, progressPhoto, progressChoose, progressEdit];
 
-    function setPipelineStage(stage) {
-      pipelineProgress.dataset.stage = stage;
-      progressPhoto.classList.toggle('is-current', stage === 'photo');
-      progressPhoto.classList.toggle('is-complete', stage === 'edit' || stage === 'complete');
-      progressEdit.classList.toggle('is-current', stage === 'edit');
-      progressEdit.classList.toggle('is-complete', stage === 'complete');
-      progressPhoto.toggleAttribute('aria-current', stage === 'photo');
-      progressEdit.toggleAttribute('aria-current', stage === 'edit');
-      pipelineProgress.setAttribute('aria-label', stage === 'complete' ? 'Pipeline complete' : 'Pipeline progress');
+    function setPipelineState(states) {
+      let currentStep = states.findIndex(([state]) => state === 'running' || state === 'error');
+      if (currentStep < 0) currentStep = states.findIndex(([state]) => state === 'idle');
+      progressSteps.forEach((step, index) => {
+        const [state, label] = states[index];
+        step.dataset.state = state;
+        step.classList.toggle('is-current', index === currentStep);
+        step.classList.toggle('is-complete', state === 'complete');
+        step.querySelector('.progress-state').textContent = label;
+        step.toggleAttribute('aria-current', index === currentStep);
+      });
+      pipelineProgress.setAttribute('aria-label', currentStep < 0 ? 'Pipeline complete' : `Pipeline: ${progressSteps[currentStep].querySelector('strong').textContent}`);
+    }
+
+    function resetPipeline() {
+      setPipelineState([
+        ['idle', 'Waiting for photo'],
+        ['idle', 'Waiting for upload'],
+        ['idle', 'Waiting for captions'],
+        ['idle', 'Waiting for edit']
+      ]);
     }
 
     document.querySelectorAll('[data-qr-id]').forEach((link) => link.addEventListener('click', (event) => {
@@ -309,7 +340,6 @@
 
     async function selectPhoto(file) {
       if (!file) return;
-      setPipelineStage('photo');
       stopCamera();
       if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
       selectedFile = file;
@@ -324,9 +354,21 @@
       stageOne.hidden = false;
       captionResults.hidden = true;
       privacyReviewDetails.hidden = true;
+      document.getElementById('retryCaptions').hidden = true;
+      await generateCaptions(file);
+    }
+
+    async function generateCaptions(file) {
       captionStatus.hidden = false;
       captionStatus.className = 'caption-status';
       captionStatus.textContent = 'Generating Stage 1 captions…';
+      document.getElementById('retryCaptions').hidden = true;
+      setPipelineState([
+        ['complete', 'Photo ready'],
+        ['running', 'Generating description & privacy-safe caption'],
+        ['idle', 'Waiting for captions'],
+        ['idle', 'Waiting for edit']
+      ]);
       uploadButton.disabled = true;
       cameraButton.disabled = true;
       const form = new FormData();
@@ -343,10 +385,22 @@
         captionResults.hidden = false;
         captionStatus.hidden = true;
         edit.disabled = false;
-        setPipelineStage('edit');
+        setPipelineState([
+          ['complete', 'Photo ready'],
+          ['complete', 'Captions ready'],
+          ['idle', 'Choose an edit'],
+          ['idle', 'Waiting for edit']
+        ]);
       } catch (error) {
         captionStatus.textContent = error.message;
         captionStatus.classList.add('error');
+        document.getElementById('retryCaptions').hidden = false;
+        setPipelineState([
+          ['complete', 'Photo ready'],
+          ['error', 'Captioning failed'],
+          ['idle', 'Waiting for captions'],
+          ['idle', 'Waiting for edit']
+        ]);
       } finally {
         uploadButton.disabled = false;
         cameraButton.disabled = false;
@@ -380,6 +434,8 @@
       input.value = '';
     });
 
+    document.getElementById('retryCaptions').addEventListener('click', () => generateCaptions(selectedFile));
+
     document.getElementById('captureButton').addEventListener('click', () => {
       const canvas = document.createElement('canvas');
       canvas.width = cameraPreview.videoWidth;
@@ -396,6 +452,12 @@
       if (!selectedFile) return;
       edit.disabled = true;
       edit.textContent = 'Creating your edit…';
+      setPipelineState([
+        ['complete', 'Photo ready'],
+        ['complete', 'Captions ready'],
+        ['complete', 'Edit selected'],
+        ['running', 'Generating edited image']
+      ]);
       placeholder.innerHTML = '<strong>Working on your edit</strong>Your photo is being edited.';
       placeholder.style.display = 'block';
       resultImage.style.display = 'none';
@@ -416,18 +478,31 @@
         const download = document.getElementById('download');
         download.href = url;
         download.style.display = 'inline';
-        setPipelineStage('complete');
+        setPipelineState([
+          ['complete', 'Photo ready'],
+          ['complete', 'Captions ready'],
+          ['complete', 'Edit selected'],
+          ['complete', 'Image ready']
+        ]);
       } catch (error) {
         placeholder.replaceChildren();
         const title = document.createElement('strong');
         title.textContent = 'Edit failed';
         placeholder.append(title, document.createTextNode(error.message));
         resultStage.classList.remove('processing');
+        setPipelineState([
+          ['complete', 'Photo ready'],
+          ['complete', 'Captions ready'],
+          ['complete', 'Edit selected'],
+          ['error', 'Image generation failed']
+        ]);
       } finally {
         edit.disabled = false;
         edit.textContent = 'Create this edit';
       }
     });
+
+    resetPipeline();
   </script>
 </body>
 </html>
