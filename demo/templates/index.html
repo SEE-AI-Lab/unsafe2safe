@@ -15,30 +15,37 @@
     button, input { font:inherit }
     button:focus-visible, a:focus-visible { outline:3px solid #b676d1; outline-offset:3px }
     main { max-width:1440px; margin:auto; padding:28px max(24px,calc((100vw - 1316px)/2)) 40px }
-    .project-summary { display:grid; grid-template-columns:1.05fr .95fr; align-items:start; gap:34px; padding:22px 0 20px; border-bottom:1px solid var(--line) }
+    .project-summary { padding:14px 0 12px; border-bottom:1px solid var(--line) }
     .project-identity { min-width:0 }
-    .project-venue { display:flex; align-items:center; gap:7px; margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase }
+    .project-title-line { display:flex; align-items:center; flex-wrap:wrap; gap:13px }
+    .project-venue { display:flex; align-items:center; gap:6px; margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.04em }
     .project-venue svg { width:16px; height:16px; flex:none; fill:currentColor }
     .ui-icon { width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round }
     .dartmouth-link { position:relative; display:inline-flex; flex:none; align-items:center }
     .dartmouth-link img { display:block; width:62px; height:34px; object-fit:contain }
-    .project-identity h1 { margin:0; color:var(--navy); font:700 40px/1 'Barlow Condensed',sans-serif; letter-spacing:.01em }
-    .paper-title { margin:5px 0 9px; color:var(--ink); font-size:15px }
+    .project-identity h1 { margin:0; color:var(--navy); font:700 38px/1 'Barlow Condensed',sans-serif; letter-spacing:.01em }
+    .paper-title { margin:4px 0 7px; color:var(--ink); font-size:14px }
     .authors { display:flex; align-items:center; flex-wrap:wrap; gap:9px; color:var(--muted); font-size:13px }
     .authors a { position:relative; color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px }
-    .method-summary { display:grid; grid-template-columns:1fr 1fr; background:#fff; border:1px solid var(--line); padding:17px 18px }
-    .method-step { min-width:0 }
-    .method-step + .method-step { border-left:1px solid var(--line); padding-left:18px; margin-left:18px }
-    .method-step span { display:flex; align-items:center; gap:6px; color:var(--purple); font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase }
-    .method-step span .ui-icon { width:15px; height:15px }
-    .method-step strong { display:block; margin-top:4px; color:var(--navy); font-size:14px }
-    .method-step p { margin:4px 0 0; color:var(--muted); font-size:12px }
-    .project-links { display:flex; align-items:center; gap:22px; min-height:46px; border-bottom:1px solid var(--line) }
+    .project-links { display:flex; align-items:center; gap:22px; min-height:40px }
     .project-links .dartmouth-link { margin-left:auto }
     .resource-link { position:relative; display:inline-flex; align-items:center; gap:7px; padding:7px 0; border-bottom:1px solid transparent; color:var(--navy); font-size:13px; font-weight:600; text-decoration:none }
     .resource-link .ui-icon { width:15px; height:15px }
     .resource-link:hover, .resource-link:focus-visible, .authors a:hover, .authors a:focus-visible { border-color:var(--red) }
-    .demo-heading { margin:19px 0 13px; color:var(--navy); font:700 25px/1 'Barlow Condensed',sans-serif }
+    .pipeline-progress { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:24px; padding:17px 0 18px; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
+    .pipeline-progress::before { content:""; position:absolute; top:32px; left:24px; right:24px; height:1px; background:var(--line) }
+    .progress-step { position:relative; display:grid; grid-template-columns:30px minmax(0,1fr); align-items:start; gap:10px; min-width:0 }
+    .progress-marker { display:grid; place-items:center; width:29px; height:29px; border:1px solid #aeb8c5; border-radius:50%; background:var(--paper); color:var(--muted); font-size:12px; font-weight:700 }
+    .progress-marker svg { display:none; width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round }
+    .progress-copy { padding-top:1px }
+    .progress-copy strong { display:block; color:var(--muted); font-size:13px; line-height:1.25 }
+    .progress-copy small { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.35 }
+    .progress-step.is-current .progress-marker { border-color:var(--red); background:var(--red); color:#fff }
+    .progress-step.is-current .progress-copy strong { color:var(--navy) }
+    .progress-step.is-complete .progress-marker { border-color:var(--navy); background:var(--navy); color:#fff }
+    .progress-step.is-complete .progress-marker span { display:none }
+    .progress-step.is-complete .progress-marker svg { display:block }
+    .progress-step.is-complete .progress-copy strong { color:var(--navy) }
     .workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:stretch }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
@@ -102,8 +109,6 @@
     #download { display:none; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
     @media (max-width:850px) {
       main { padding-top:25px }
-      .project-summary { grid-template-columns:1fr; gap:16px }
-      .method-summary { max-width:none }
       .project-links { gap:17px; flex-wrap:wrap; padding:8px 0 }
       .qr-dialog-layout { grid-template-columns:1fr; gap:20px; justify-items:center; align-content:center; text-align:center }
       .qr-dialog img { width:min(56vw,45vh,420px) }
@@ -111,17 +116,18 @@
       .workspace { grid-template-columns:1fr } .result-stage { min-height:300px } }
     @media (max-width:560px) {
       main { padding:22px 14px 30px }
-      .project-summary { padding:18px 0 16px }
+      .project-summary { padding:12px 0 9px }
       .project-identity h1 { font-size:34px }
       .paper-title { max-width:32ch; font-size:13px }
       .dartmouth-link img { width:56px; height:30px }
-      .method-summary { padding:12px; gap:10px }
-      .method-step + .method-step { margin-left:0; padding-left:10px }
-      .method-step strong { font-size:12px }
-      .method-step p { font-size:11px }
       .project-links { gap:7px 16px }
       .resource-link { font-size:12px }
-      .demo-heading { margin:16px 0 11px; font-size:23px }
+      .pipeline-progress { gap:12px; padding:13px 0 }
+      .pipeline-progress::before { top:25px; left:16px; right:16px }
+      .progress-step { grid-template-columns:24px minmax(0,1fr); gap:7px }
+      .progress-marker { width:23px; height:23px; font-size:11px }
+      .progress-copy strong { font-size:12px }
+      .progress-copy small { font-size:11px }
       .qr-dialog { padding:20px }
       .qr-dialog-layout { gap:18px }
       .qr-dialog h2 { font-size:32px }
@@ -143,10 +149,9 @@
 </head>
 <body>
   <main>
-    <section class="project-summary" aria-label="Unsafe2Safe paper and method">
+    <header class="project-summary" aria-label="Unsafe2Safe paper information">
       <div class="project-identity">
-        <p class="project-venue"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 0.8 10.6 6.1 15.8 4.2 11.8 8.1 17.2 9.2 11.8 10.1 15.8 14.1 10.6 12.2 9 17.5 7.4 12.2 2.2 14.1 6.2 10.1 .8 9.2 6.2 8.1 2.2 4.2 7.4 6.1z"/></svg>CVPR 2026</p>
-        <h1>Unsafe2Safe</h1>
+        <div class="project-title-line"><h1>Unsafe2Safe</h1><p class="project-venue"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 0.8 10.6 6.1 15.8 4.2 11.8 8.1 17.2 9.2 11.8 10.1 15.8 14.1 10.6 12.2 9 17.5 7.4 12.2 2.2 14.1 6.2 10.1 .8 9.2 6.2 8.1 2.2 4.2 7.4 6.1z"/></svg>CVPR 2026</p></div>
         <p class="paper-title">Controllable Image Anonymization for Downstream Utility</p>
         <div class="authors">
           <a data-qr-id="minh" data-qr-title="Minh Dinh Trong’s page" href="{{ links_by_id.minh.url }}">Minh Dinh Trong<span class="qr-popover"><img src="{{ url_for('static', filename='qr/minh.svg') }}" alt=""><span>Click to expand QR</span></span></a>
@@ -154,11 +159,7 @@
           <a data-qr-id="souyoung" data-qr-title="SouYoung Jin’s page" href="{{ links_by_id.souyoung.url }}">SouYoung Jin<span class="qr-popover"><img src="{{ url_for('static', filename='qr/souyoung.svg') }}" alt=""><span>Click to expand QR</span></span></a>
         </div>
       </div>
-      <div class="method-summary" aria-label="Two-stage method">
-        <div class="method-step"><span><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>Stage 1</span><strong>Privacy review + captions</strong><p>Full visual description and privacy-safe public caption</p></div>
-        <div class="method-step"><span><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2</span><strong>Caption-guided edit</strong><p>Public caption plus the selected edit instruction</p></div>
-      </div>
-    </section>
+    </header>
     <nav class="project-links" aria-label="Project resources">
       {% for link in project_links if link.id in ['paper', 'project', 'github', 'dataset'] %}
       <a class="resource-link" data-qr-id="{{ link.id }}" data-qr-title="{{ link.title }}" href="{{ link.url }}">
@@ -174,7 +175,10 @@
         <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
       </a>
     </nav>
-    <h2 class="demo-heading">Try the pipeline</h2>
+    <ol class="pipeline-progress" id="pipelineProgress" data-stage="photo" aria-label="Pipeline progress">
+      <li class="progress-step is-current" id="progressPhoto" aria-current="step"><span class="progress-marker"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Privacy review &amp; captions</strong><small>Full description + privacy-safe caption</small></span></li>
+      <li class="progress-step" id="progressEdit"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Caption-guided edit</strong><small>Choose an instruction and create the image</small></span></li>
+    </ol>
     <section class="workspace" aria-label="Photo editor">
       <article class="panel">
         <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg>Your photo</h2>
@@ -254,6 +258,20 @@
     const qrDialogTitle = document.getElementById('qrDialogTitle');
     const qrDialogImage = document.getElementById('qrDialogImage');
     const qrDialogLink = document.getElementById('qrDialogLink');
+    const pipelineProgress = document.getElementById('pipelineProgress');
+    const progressPhoto = document.getElementById('progressPhoto');
+    const progressEdit = document.getElementById('progressEdit');
+
+    function setPipelineStage(stage) {
+      pipelineProgress.dataset.stage = stage;
+      progressPhoto.classList.toggle('is-current', stage === 'photo');
+      progressPhoto.classList.toggle('is-complete', stage === 'edit' || stage === 'complete');
+      progressEdit.classList.toggle('is-current', stage === 'edit');
+      progressEdit.classList.toggle('is-complete', stage === 'complete');
+      progressPhoto.toggleAttribute('aria-current', stage === 'photo');
+      progressEdit.toggleAttribute('aria-current', stage === 'edit');
+      pipelineProgress.setAttribute('aria-label', stage === 'complete' ? 'Pipeline complete' : 'Pipeline progress');
+    }
 
     document.querySelectorAll('[data-qr-id]').forEach((link) => link.addEventListener('click', (event) => {
       event.preventDefault();
@@ -287,6 +305,7 @@
 
     async function selectPhoto(file) {
       if (!file) return;
+      setPipelineStage('photo');
       stopCamera();
       if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
       selectedFile = file;
@@ -320,6 +339,7 @@
         captionResults.hidden = false;
         captionStatus.hidden = true;
         edit.disabled = false;
+        setPipelineStage('edit');
       } catch (error) {
         captionStatus.textContent = error.message;
         captionStatus.classList.add('error');
@@ -392,6 +412,7 @@
         const download = document.getElementById('download');
         download.href = url;
         download.style.display = 'inline';
+        setPipelineStage('complete');
       } catch (error) {
         placeholder.replaceChildren();
         const title = document.createElement('strong');
