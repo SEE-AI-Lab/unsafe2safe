@@ -19,7 +19,7 @@ OWN-WORLD: Use carrier navy `#0D1B3D`, jet red `#D7262D`, coupon white `#FFFFFF`
 
 STORY: The visitor knows which photo is being edited, sees three distinct options, understands when generation is running, then sees and downloads the edited image beside the source.
 
-FIRST VIEWPORT: A navy top bar names SafeFrame. At desktop, the source photo and compact mode-and-action controls share the left pane, while the result pane stays visible at right from the start. This matches the approved Ticket Wallet sketch. A horizontal red journey marker labels Choose, Edit, and Ready. On mobile, the source image leads, the three modes stack below it, the action follows, and the result appears after completion. No flight details or travel facts are invented.
+FIRST VIEWPORT: A navy top bar names SafeFrame. At desktop, the source photo and compact mode-and-action controls share the left pane, while the result pane stays visible at right from the start. This matches the approved Ticket Wallet sketch. Keep the flow clear through the order of the photo, edit choices, and result; omit progress labels and extra taglines. On mobile, the source image leads, the three modes stack below it, the action follows, and the result appears after completion. No flight details or travel facts are invented.
 
 FORM: User-selected catalog challenger `vernacular-ephemera-jet-age-ticket-wallet`, Repertory Playbill seed assignment rerouted by the user's explicit choice. Seed reference: `seed:6747d346422ced75`. Approved code-led sketch: `.impeccable/mocks/decision/ticket-wallet.html`.
 
