@@ -59,7 +59,7 @@
     @keyframes progress-spin { to { transform:rotate(360deg) } }
     @keyframes progress-check { to { stroke-dashoffset:0 } }
     .workspace { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; align-items:start }
-    .workflow-panel { grid-column:1/-1; display:grid; grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr); gap:28px; align-items:start }
+    .workflow-panel { grid-column:1/-1; display:grid; grid-template-columns:minmax(0,2fr) minmax(320px,1fr); gap:32px; align-items:start }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
     .photo { position:relative; aspect-ratio:var(--image-ratio, 16 / 9); display:grid; place-items:center; background:var(--wash); color:var(--navy); border:1px dashed #aeb8c5 }
@@ -117,7 +117,7 @@
     .qr-dialog p { max-width:44ch; color:#d8dfeb; font-size:15px }
     .qr-dialog img { display:block; width:min(48vw,56vh,560px); height:auto; padding:14px; background:white }
     .qr-dialog-link { display:inline-block; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
-    .choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px }
+    .choices { display:grid; grid-template-columns:1fr; gap:8px }
     .choice { width:100%; min-height:61px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:9px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) 18px; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
     .choice:hover { border-color:#8796ac; background:#fafbfc }
     .choice[aria-pressed="true"] { border:2px solid var(--red); padding:8px 10px; background:#fffafa }
@@ -155,6 +155,9 @@
       .qr-dialog img { width:min(56vw,45vh,420px) }
       .qr-dialog p { margin-left:auto; margin-right:auto }
       .workspace, .workflow-panel { grid-template-columns:1fr } .workflow-panel { grid-column:1 } }
+    @media (max-width:1000px) {
+      .workflow-panel { grid-template-columns:1fr }
+    }
     @media (max-width:560px) {
       main { padding:22px 14px 30px }
       .project-summary { grid-template-columns:1fr; gap:6px; padding:12px 0 9px }
@@ -177,7 +180,6 @@
       .panel { padding:13px }
       .photo-actions .button { flex:1 }
       .caption-grid { grid-template-columns:1fr }
-      .choices { grid-template-columns:1fr }
       .footer-inner { min-height:0; padding:16px 18px; flex-direction:column; gap:12px }
       .resources { justify-content:center; gap:4px 18px }
       .resource-link { font-size:12px }
