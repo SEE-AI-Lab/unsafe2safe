@@ -1,26 +1,40 @@
 from __future__ import annotations
 
 import base64
+import json
 import os
 from io import BytesIO
 from pathlib import Path
-import sys
 
 from flask import Flask, jsonify, render_template, request
 from PIL import Image
 from google import genai
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from pipeline.stage1.output_parser import parse_structured_output
-
 
 app = Flask(__name__)
 CAPTION_MODEL = os.environ.get("GEMINI_CAPTION_MODEL", "gemini-3.5-flash-lite")
 IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-lite-image")
 STAGE1_PROMPT = (Path(__file__).resolve().parents[1] / "prompts/intern_image_captioning.txt").read_text(encoding="utf-8")
 STAGE1_SYSTEM = "You are a vision-language assistant that generates privacy-aware, structured descriptions of real-world images."
+STAGE1_RESPONSE_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {
+        "PRIVACY_REVIEW": {"type": "STRING"},
+        "FULL_VISUAL_DESCRIPTION": {"type": "STRING"},
+        "PRIVACY_PRESERVING_DESCRIPTION": {"type": "STRING"},
+        "PRIVACY_CHANGES": {
+            "type": "ARRAY",
+            "items": {
+                "type": "OBJECT",
+                "properties": {
+                    "PRIVATE_PHRASE": {"type": "STRING"},
+                    "PUBLIC_PHRASE": {"type": "STRING"},
+                },
+                "required": ["PRIVATE_PHRASE", "PUBLIC_PHRASE"],
+            },
+        },
+    },
+    "required": ["PRIVACY_REVIEW", "FULL_VISUAL_DESCRIPTION", "PRIVACY_PRESERVING_DESCRIPTION", "PRIVACY_CHANGES"],
+}
 PROJECT_LINKS = [
     {"id": "paper", "label": "Paper", "title": "Unsafe2Safe paper", "url": "https://arxiv.org/abs/2603.28605"},
     {"id": "project", "label": "Project page", "title": "Unsafe2Safe project page", "url": "https://see-ai-lab.github.io/unsafe2safe/"},
@@ -70,22 +84,33 @@ def caption_photo():
         return jsonify(error="Set GEMINI_API_KEY in the terminal, then restart the app."), 503
 
     image = Image.open(BytesIO(photo.read())).convert("RGB")
-    prompt = f"{STAGE1_SYSTEM}\n\n{STAGE1_PROMPT.format(image_class='photo')}"
+    prompt = (
+        f"{STAGE1_SYSTEM}\n\n{STAGE1_PROMPT.format(image_class='photo')}\n\n"
+        "Return the requested paper sections using the supplied JSON schema. Also return PRIVACY_CHANGES "
+        "as pairs of exact phrases: PRIVATE_PHRASE must appear in FULL_VISUAL_DESCRIPTION, and "
+        "PUBLIC_PHRASE must appear in PRIVACY_PRESERVING_DESCRIPTION. Use an empty PUBLIC_PHRASE "
+        "when the detail was omitted. Order pairs by appearance; return an empty array if nothing changed."
+    )
     client = genai.Client(api_key=api_key())
     try:
         response = client.models.generate_content(
             model=CAPTION_MODEL,
             contents=[prompt, image],
-            config={"max_output_tokens": 1024},
+            config={
+                "max_output_tokens": 1024,
+                "response_mime_type": "application/json",
+                "response_schema": STAGE1_RESPONSE_SCHEMA,
+            },
         )
     except Exception as exc:
         return jsonify(error=f"Gemini could not caption this photo: {exc}"), 502
 
-    captions = parse_structured_output(response.text or "")
+    captions = json.loads(response.text)
     return jsonify(
-        full_caption=captions.get("PRIVATE_CAPTION", ""),
-        public_caption=captions.get("PUBLIC_CAPTION", ""),
-        privacy_review=captions.get("PRIVACY_REVIEW", ""),
+        full_caption=captions["FULL_VISUAL_DESCRIPTION"],
+        public_caption=captions["PRIVACY_PRESERVING_DESCRIPTION"],
+        privacy_review=captions["PRIVACY_REVIEW"],
+        privacy_changes=captions["PRIVACY_CHANGES"],
     )
 
 

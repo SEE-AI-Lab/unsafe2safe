@@ -86,6 +86,12 @@
     .caption-status { margin:0 0 10px; color:var(--muted); font-size:13px }
     .caption-status.error { color:#a51e24 }
     .caption-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
+    .caption-legend { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:12px; margin:0 0 2px; font-size:11px; font-weight:700 }
+    .caption-legend .private-key { color:#b3261e }
+    .caption-legend .public-key { color:#327542 }
+    mark.caption-highlight { padding:0 .08em; border-radius:2px; font-weight:700 }
+    mark.caption-highlight.is-private { background:#fff0ee; color:#b3261e }
+    mark.caption-highlight.is-public { background:#e9f4ea; color:#327542 }
     .caption-block h3 { margin:0 0 4px; color:var(--navy); font-size:12px }
     .caption-block p, .privacy-review p { margin:0; color:var(--muted); font-size:12px; line-height:1.5 }
     .privacy-review { margin-top:9px; font-size:12px }
@@ -227,7 +233,8 @@
           <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
           <button class="button secondary" id="retryCaptions" type="button" hidden>Retry captions</button>
           <div class="caption-grid caption-results" id="captionResults" hidden>
-            <div class="caption-block"><h3>Full visual description</h3><p id="fullCaption"></p></div>
+            <p class="caption-legend"><span class="private-key">Private detail</span><span class="public-key">Generalized in public caption</span></p>
+            <div class="caption-block"><h3>Private caption</h3><p id="fullCaption"></p></div>
             <div class="caption-block"><h3>Privacy-safe public caption</h3><p id="publicCaption"></p></div>
           </div>
           <details class="privacy-review" id="privacyReviewDetails" hidden><summary>Privacy review</summary><p id="privacyReview"></p></details>
@@ -313,6 +320,28 @@
       ]);
     }
 
+    function renderCaption(element, text, changes, phraseKey, highlightClass) {
+      const caption = text || '';
+      const phrases = (changes || [])
+        .map((change) => change[phraseKey])
+        .filter(Boolean)
+        .map((phrase) => ({ phrase, index: caption.indexOf(phrase) }))
+        .filter((match) => match.index >= 0)
+        .sort((a, b) => a.index - b.index);
+      element.replaceChildren();
+      let cursor = 0;
+      phrases.forEach(({ phrase, index }) => {
+        if (index < cursor) return;
+        element.append(document.createTextNode(caption.slice(cursor, index)));
+        const mark = document.createElement('mark');
+        mark.className = `caption-highlight ${highlightClass}`;
+        mark.textContent = phrase;
+        element.append(mark);
+        cursor = index + phrase.length;
+      });
+      element.append(document.createTextNode(caption.slice(cursor)));
+    }
+
     document.querySelectorAll('[data-qr-id]').forEach((link) => link.addEventListener('click', (event) => {
       event.preventDefault();
       qrDialogTitle.textContent = link.dataset.qrTitle;
@@ -382,8 +411,8 @@
         const response = await fetch('/caption', { method: 'POST', body: form });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'The captions could not be generated.');
-        document.getElementById('fullCaption').textContent = data.full_caption;
-        document.getElementById('publicCaption').textContent = data.public_caption;
+        renderCaption(document.getElementById('fullCaption'), data.full_caption, data.privacy_changes, 'PRIVATE_PHRASE', 'is-private');
+        renderCaption(document.getElementById('publicCaption'), data.public_caption, data.privacy_changes, 'PUBLIC_PHRASE', 'is-public');
         if (!data.public_caption) throw new Error('Stage 1 did not return a privacy-safe caption. Try another photo.');
         document.getElementById('privacyReview').textContent = data.privacy_review;
         privacyReviewDetails.hidden = false;
