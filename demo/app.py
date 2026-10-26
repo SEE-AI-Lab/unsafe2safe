@@ -48,11 +48,13 @@ PROJECT_LINKS_BY_ID = {link["id"]: link for link in PROJECT_LINKS}
 
 PRESETS = {
     "spooky_private": (
-        "Turn the person into a tasteful Halloween character and change their face enough that they are "
-        "no longer recognizable as the same person. Change the face shape and visible features, including "
-        "the eyes, nose, and jaw; do not just cover the unchanged face with a mask. Add fitting makeup, "
-        "a mask, or costume details. Preserve the pose, framing, setting, and useful non-identifying content. "
-        "Keep it photorealistic and avoid gore."
+        "Create a clearly transformed, photorealistic Halloween version of this photo. Replace the subject's "
+        "face with a different fictional face: change its shape and features, including the eyes, nose, and jaw. "
+        "Do not keep the original face beneath a mask or merely add makeup over it. Change the hairstyle and "
+        "replace branded or identifying clothing details with a distinctive Halloween costume. Add a cohesive "
+        "spooky atmosphere with costume makeup and subtle seasonal lighting. Keep the original pose, camera "
+        "framing, and background layout, and avoid gore. The result should read as a new character, not the "
+        "same person wearing a costume."
     ),
     "diverse_cast": (
         "Reimagine the people in this photo as a group with as much variety as possible in age, "
@@ -134,9 +136,11 @@ def edit_photo():
     image_buffer = BytesIO()
     image.save(image_buffer, format="JPEG", quality=92)
     prompt = (
-        "Edit the supplied photo to match this privacy-preserving scene description and edit instruction. "
-        "Preserve the original framing, useful non-sensitive content, and photorealistic style. "
-        "Do not add identifying personal details.\n"
+        "Edit the supplied photo to match the privacy-preserving scene description and follow the selected "
+        "edit instruction visibly. Treat the public description as the privacy boundary: do not restore details "
+        "it omits. Preserve the original framing and useful non-sensitive content unless the edit instruction "
+        "asks to change them. Make requested changes clear in the image, keep the result photorealistic, and "
+        "do not add identifying personal details.\n"
         f"Public description: {public_caption}\nEdit instruction: {PRESETS[mode]}"
     )
     client = genai.Client(api_key=api_key())
