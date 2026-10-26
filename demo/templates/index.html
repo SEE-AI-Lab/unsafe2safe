@@ -99,11 +99,12 @@
     .caption-skeleton span:nth-child(3) { width:70% }
     @keyframes skeleton-shimmer { to { background-position:-220% 0 } }
     .privacy-markers { position:absolute; inset:0; pointer-events:none }
-    .privacy-pin { position:absolute; display:grid; place-items:center; width:26px; height:26px; padding:0; transform:translate(-50%,-50%); border:2px solid #fff; border-radius:50%; background:var(--red); color:#fff; box-shadow:0 2px 8px #0d1b3d55; cursor:pointer; pointer-events:auto }
+    .privacy-pin { position:absolute; display:grid; place-items:center; width:26px; height:26px; padding:0; transform:translate(-50%,-50%); border:2px solid #fff; border-radius:50%; background:var(--red); color:#fff; opacity:.42; box-shadow:0 2px 8px #0d1b3d55; cursor:pointer; pointer-events:auto; transition:opacity .18s,transform .18s }
     .privacy-pin::after { content:""; width:6px; height:6px; border-radius:50%; background:#fff }
     .privacy-tooltip { position:absolute; z-index:3; left:50%; bottom:calc(100% + 9px); display:none; width:min(250px,65vw); padding:10px 12px; transform:translateX(-50%); border:1px solid var(--line); background:#fff; box-shadow:0 8px 22px #0d1b3d30; color:var(--ink); text-align:left; pointer-events:none }
     .privacy-tooltip strong { display:block; margin-bottom:3px; font-size:12px }
     .privacy-tooltip span { display:block; color:var(--muted); font-size:11px; line-height:1.4 }
+    .privacy-pin:hover, .privacy-pin:focus-visible, .privacy-pin.is-open { opacity:1; transform:translate(-50%,-50%) scale(1.12) }
     .privacy-pin:hover .privacy-tooltip, .privacy-pin:focus-visible .privacy-tooltip, .privacy-pin.is-open .privacy-tooltip { display:block }
     .qr-popover { position:absolute; z-index:20; left:50%; top:calc(100% + 8px); width:156px; padding:10px; background:#fff; border:1px solid var(--line); box-shadow:0 6px 20px #0d1b3d22; color:var(--ink); text-align:center; opacity:0; visibility:hidden; transform:translate(-50%,-4px); transition:opacity .15s,transform .15s,visibility .15s }
     .qr-popover img { display:block; width:126px; height:126px; margin:auto }
