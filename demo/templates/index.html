@@ -58,10 +58,11 @@
     .progress-step[data-state="error"] .progress-copy strong, .progress-step[data-state="error"] .progress-state { color:#a51e24 }
     @keyframes progress-spin { to { transform:rotate(360deg) } }
     @keyframes progress-check { to { stroke-dashoffset:0 } }
-    .workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:stretch }
+    .workspace { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; align-items:start }
+    .workflow-panel { grid-column:1/-1; display:grid; grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr); gap:28px; align-items:start }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
-    .photo { position:relative; aspect-ratio:var(--image-ratio, 4 / 3); display:grid; place-items:center; background:var(--wash); color:var(--navy); border:1px dashed #aeb8c5 }
+    .photo { position:relative; aspect-ratio:var(--image-ratio, 16 / 9); display:grid; place-items:center; background:var(--wash); color:var(--navy); border:1px dashed #aeb8c5 }
     .photo img, .photo video { display:none; width:100%; height:100%; object-fit:contain; background:#111 }
     .photo.has-image img, .photo.camera-on video { display:block }
     .photo.has-image .upload-prompt, .photo.camera-on .upload-prompt { display:none }
@@ -79,9 +80,9 @@
     .button.secondary:hover { border-color:var(--navy); background:#f6f7f8 }
     .button:disabled { border-color:#aeb7c3; background:#aeb7c3; cursor:not-allowed; transform:none }
     .privacy-note { margin:9px 0 0; color:var(--muted); font-size:12px }
-    .stage-one { margin-top:15px; padding-top:13px; border-top:1px solid var(--line) }
+    .stage-one { min-width:0 }
     .stage-one-title, .mode-title { display:flex; align-items:center; gap:8px; margin:0 0 9px; font-size:14px }
-    .mode-title { margin:20px 0 9px }
+    .mode-title { margin:0 0 9px }
     .caption-status { margin:0 0 10px; color:var(--muted); font-size:13px }
     .caption-status.error { color:#a51e24 }
     .caption-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
@@ -115,7 +116,7 @@
     .qr-dialog p { max-width:44ch; color:#d8dfeb; font-size:15px }
     .qr-dialog img { display:block; width:min(48vw,56vh,560px); height:auto; padding:14px; background:white }
     .qr-dialog-link { display:inline-block; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
-    .choices { display:grid; gap:7px }
+    .choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px }
     .choice { width:100%; min-height:61px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:9px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) 18px; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
     .choice:hover { border-color:#8796ac; background:#fafbfc }
     .choice[aria-pressed="true"] { border:2px solid var(--red); padding:8px 10px; background:#fffafa }
@@ -134,7 +135,7 @@
     .choice:disabled { cursor:wait; opacity:.72 }
     .actions { display:flex; justify-content:flex-end; margin-top:13px }
     .result-panel { display:block }
-    .result-stage { width:100%; aspect-ratio:var(--image-ratio, 4 / 3); display:grid; place-items:center; overflow:hidden; background:var(--wash); border:1px solid #e1e5e9 }
+    .result-stage { width:100%; aspect-ratio:var(--image-ratio, 16 / 9); display:grid; place-items:center; overflow:hidden; background:var(--wash); border:1px solid #e1e5e9 }
     .result-stage img { display:none; width:100%; height:100%; object-fit:contain }
     .result-stage img[src^="data:"] { animation:result-arrive .35s ease-out both }
     @keyframes result-arrive { from { opacity:0; transform:scale(.985) } to { opacity:1; transform:scale(1) } }
@@ -152,7 +153,7 @@
       .qr-dialog-layout { grid-template-columns:1fr; gap:20px; justify-items:center; align-content:center; text-align:center }
       .qr-dialog img { width:min(56vw,45vh,420px) }
       .qr-dialog p { margin-left:auto; margin-right:auto }
-      .workspace { grid-template-columns:1fr } }
+      .workspace, .workflow-panel { grid-template-columns:1fr } .workflow-panel { grid-column:1 } }
     @media (max-width:560px) {
       main { padding:22px 14px 30px }
       .project-summary { grid-template-columns:1fr; gap:6px; padding:12px 0 9px }
@@ -175,6 +176,7 @@
       .panel { padding:13px }
       .photo-actions .button { flex:1 }
       .caption-grid { grid-template-columns:1fr }
+      .choices { grid-template-columns:1fr }
       .footer-inner { min-height:0; padding:16px 18px; flex-direction:column; gap:12px }
       .resources { justify-content:center; gap:4px 18px }
       .resource-link { font-size:12px }
@@ -244,6 +246,13 @@
         <p class="camera-error" id="cameraError" role="status" aria-live="polite" hidden>Couldn’t open the camera. Upload a photo instead.</p>
         <input class="file-input" id="photo" type="file" accept="image/*">
         <p class="privacy-note">Photo goes to Gemini for captions and editing. Not saved here.</p>
+      </article>
+      <article class="panel result-panel">
+        <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>Edited photo</h2>
+        <div class="result-stage" id="resultStage"><div class="result-empty" id="placeholder" role="status" aria-live="polite"><strong>Your result appears here</strong>Your edited photo will appear here.</div><img id="resultImage" alt="Gemini edited photo"></div>
+        <div class="result-caption"><a id="download" download="safeframe-edited.png">Download edited photo</a></div>
+      </article>
+      <article class="panel workflow-panel">
         <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle">
           <h2 class="stage-one-title" id="stageOneTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>Stage 1 · Captions</h2>
           <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
@@ -253,7 +262,8 @@
             <div class="caption-block"><h3>Privacy-safe public caption</h3><div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="publicCaption">A privacy-safe caption will appear here.</p></div>
           </div>
         </section>
-        <h2 class="mode-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Edit instruction</h2>
+        <section class="stage-two" aria-labelledby="stageTwoTitle">
+          <h2 class="mode-title" id="stageTwoTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Edit instruction</h2>
         <div class="choices" role="radiogroup" aria-label="Edit mode">
           <button class="choice" type="button" data-mode="spooky_private" aria-pressed="true">
             <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Spooky, still private</strong><small>Become a new Halloween character: new face, hair, and costume.</small></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.7A9.5 9.5 0 0 1 14.5 3.5Z"/><path d="m18.5 3 .5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5.5-1.5Z"/></svg>
@@ -271,11 +281,7 @@
           <p id="editInstruction" hidden></p>
         </section>
         <div class="actions"><button class="button" id="edit" disabled>Create this edit</button></div>
-      </article>
-      <article class="panel result-panel">
-        <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>Edited photo</h2>
-        <div class="result-stage" id="resultStage"><div class="result-empty" id="placeholder" role="status" aria-live="polite"><strong>Your result appears here</strong>Your edited photo will appear here.</div><img id="resultImage" alt="Gemini edited photo"></div>
-        <div class="result-caption"><a id="download" download="safeframe-edited.png">Download edited photo</a></div>
+        </section>
       </article>
     </section>
   </main>
@@ -289,7 +295,6 @@
     const input = document.getElementById('photo');
     const uploadButton = document.getElementById('uploadButton');
     const cameraButton = document.getElementById('cameraButton');
-    const stageOne = document.getElementById('stageOne');
     const captionStatus = document.getElementById('captionStatus');
     const privacyMarkers = document.getElementById('privacyMarkers');
     const editInstruction = document.getElementById('editInstruction');
