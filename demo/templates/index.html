@@ -15,7 +15,7 @@
     button, input { font:inherit }
     button:focus-visible, a:focus-visible { outline:3px solid #b676d1; outline-offset:3px }
     main { max-width:1440px; margin:auto; padding:28px max(24px,calc((100vw - 1316px)/2)) 40px }
-    .project-summary { padding:14px 0 12px; border-bottom:1px solid var(--line) }
+    .project-summary { display:grid; grid-template-columns:max-content minmax(250px,1fr) auto; align-items:center; gap:8px 26px; padding:10px 0; border-bottom:1px solid var(--line) }
     .project-identity { min-width:0 }
     .project-title-line { display:flex; align-items:center; flex-wrap:wrap; gap:13px }
     .project-venue { display:flex; align-items:center; gap:6px; margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.04em }
@@ -24,11 +24,12 @@
     .dartmouth-link { position:relative; display:inline-flex; flex:none; align-items:center }
     .dartmouth-link img { display:block; width:62px; height:34px; object-fit:contain }
     .project-identity h1 { margin:0; color:var(--navy); font:700 38px/1 'Barlow Condensed',sans-serif; letter-spacing:.01em }
-    .paper-title { margin:4px 0 7px; color:var(--ink); font-size:14px }
-    .authors { display:flex; align-items:center; flex-wrap:wrap; gap:9px; color:var(--muted); font-size:13px }
+    .project-details { min-width:0 }
+    .paper-title { margin:0 0 4px; color:var(--ink); font-size:13px }
+    .authors { display:flex; align-items:center; flex-wrap:wrap; gap:8px; color:var(--muted); font-size:12px }
     .authors a { position:relative; color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px }
-    .project-links { display:flex; align-items:center; gap:22px; min-height:40px }
-    .project-links .dartmouth-link { margin-left:auto }
+    .project-links { display:flex; align-items:center; justify-content:flex-end; gap:16px; flex-wrap:wrap; min-height:40px }
+    .project-links .dartmouth-link { margin-left:4px }
     .resource-link { position:relative; display:inline-flex; align-items:center; gap:7px; padding:7px 0; border-bottom:1px solid transparent; color:var(--navy); font-size:13px; font-weight:600; text-decoration:none }
     .resource-link .ui-icon { width:15px; height:15px }
     .resource-link:hover, .resource-link:focus-visible, .authors a:hover, .authors a:focus-visible { border-color:var(--red) }
@@ -109,18 +110,19 @@
     #download { display:none; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
     @media (max-width:850px) {
       main { padding-top:25px }
-      .project-links { gap:17px; flex-wrap:wrap; padding:8px 0 }
+      .project-summary { grid-template-columns:max-content minmax(0,1fr); gap:9px 20px }
+      .project-links { grid-column:1/-1; justify-content:flex-start; gap:17px; padding-top:7px; border-top:1px solid var(--line) }
       .qr-dialog-layout { grid-template-columns:1fr; gap:20px; justify-items:center; align-content:center; text-align:center }
       .qr-dialog img { width:min(56vw,45vh,420px) }
       .qr-dialog p { margin-left:auto; margin-right:auto }
       .workspace { grid-template-columns:1fr } .result-stage { min-height:300px } }
     @media (max-width:560px) {
       main { padding:22px 14px 30px }
-      .project-summary { padding:12px 0 9px }
+      .project-summary { grid-template-columns:1fr; gap:6px; padding:12px 0 9px }
       .project-identity h1 { font-size:34px }
       .paper-title { max-width:32ch; font-size:13px }
       .dartmouth-link img { width:56px; height:30px }
-      .project-links { gap:7px 16px }
+      .project-links { grid-column:auto; gap:7px 16px; padding-top:8px; margin-top:3px }
       .resource-link { font-size:12px }
       .pipeline-progress { gap:12px; padding:13px 0 }
       .pipeline-progress::before { top:25px; left:16px; right:16px }
@@ -152,6 +154,8 @@
     <header class="project-summary" aria-label="Unsafe2Safe paper information">
       <div class="project-identity">
         <div class="project-title-line"><h1>Unsafe2Safe</h1><p class="project-venue"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 0.8 10.6 6.1 15.8 4.2 11.8 8.1 17.2 9.2 11.8 10.1 15.8 14.1 10.6 12.2 9 17.5 7.4 12.2 2.2 14.1 6.2 10.1 .8 9.2 6.2 8.1 2.2 4.2 7.4 6.1z"/></svg>CVPR 2026</p></div>
+      </div>
+      <div class="project-details">
         <p class="paper-title">Controllable Image Anonymization for Downstream Utility</p>
         <div class="authors">
           <a data-qr-id="minh" data-qr-title="Minh Dinh Trong’s page" href="{{ links_by_id.minh.url }}">Minh Dinh Trong<span class="qr-popover"><img src="{{ url_for('static', filename='qr/minh.svg') }}" alt=""><span>Click to expand QR</span></span></a>
@@ -159,7 +163,6 @@
           <a data-qr-id="souyoung" data-qr-title="SouYoung Jin’s page" href="{{ links_by_id.souyoung.url }}">SouYoung Jin<span class="qr-popover"><img src="{{ url_for('static', filename='qr/souyoung.svg') }}" alt=""><span>Click to expand QR</span></span></a>
         </div>
       </div>
-    </header>
     <nav class="project-links" aria-label="Project resources">
       {% for link in project_links if link.id in ['paper', 'project', 'github', 'dataset'] %}
       <a class="resource-link" data-qr-id="{{ link.id }}" data-qr-title="{{ link.title }}" href="{{ link.url }}">
@@ -175,6 +178,7 @@
         <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
       </a>
     </nav>
+    </header>
     <ol class="pipeline-progress" id="pipelineProgress" data-stage="photo" aria-label="Pipeline progress">
       <li class="progress-step is-current" id="progressPhoto" aria-current="step"><span class="progress-marker"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Privacy review &amp; captions</strong><small>Full description + privacy-safe caption</small></span></li>
       <li class="progress-step" id="progressEdit"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Caption-guided edit</strong><small>Choose an instruction and create the image</small></span></li>
