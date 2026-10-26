@@ -34,9 +34,11 @@ PROJECT_LINKS_BY_ID = {link["id"]: link for link in PROJECT_LINKS}
 
 PRESETS = {
     "spooky_private": (
-        "Give this photo a tasteful Halloween atmosphere while hiding identifying details. "
-        "Use natural costume details, masks, or soft shadows to obscure recognizable features. "
-        "Keep the scene and non-identifying content intact; avoid horror or gore."
+        "Turn the person into a tasteful Halloween character and change their face enough that they are "
+        "no longer recognizable as the same person. Change the face shape and visible features, including "
+        "the eyes, nose, and jaw; do not just cover the unchanged face with a mask. Add fitting makeup, "
+        "a mask, or costume details. Preserve the pose, framing, setting, and useful non-identifying content. "
+        "Keep it photorealistic and avoid gore."
     ),
     "diverse_cast": (
         "Reimagine the people in this photo as a group with as much variety as possible in age, "
