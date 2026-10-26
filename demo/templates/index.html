@@ -79,7 +79,6 @@
     .qr-dialog p { max-width:44ch; color:#d8dfeb; font-size:15px }
     .qr-dialog img { display:block; width:min(48vw,56vh,560px); height:auto; padding:14px; background:white }
     .qr-dialog-link { display:inline-block; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
-    .qr-close { position:absolute; top:24px; right:28px; min-height:40px; border:1px solid #ffffff66; background:transparent; color:#fff; padding:8px 13px; cursor:pointer }
     .mode-title { margin:20px 0 9px; font-size:14px }
     .choices { display:grid; gap:7px }
     .choice { width:100%; min-height:61px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:9px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) auto; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
@@ -126,7 +125,6 @@
       .qr-dialog-layout { gap:18px }
       .qr-dialog h2 { font-size:32px }
       .qr-dialog img { width:min(72vw,42vh,340px) }
-      .qr-close { top:14px; right:14px }
       .panel { padding:13px }
       .photo { height:230px }
       .photo-actions .button { flex:1 }
@@ -223,7 +221,6 @@
     </section>
   </main>
   <dialog class="qr-dialog" id="qrDialog" aria-labelledby="qrDialogTitle">
-    <form method="dialog"><button class="qr-close" aria-label="Close QR code">Close</button></form>
     <div class="qr-dialog-layout">
       <div><h2 id="qrDialogTitle"></h2><p>Scan this code to open the page, or use the button to open it in a new tab.</p><a class="qr-dialog-link" id="qrDialogLink" href="#" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
       <img id="qrDialogImage" alt="QR code">
@@ -262,6 +259,9 @@
       qrDialogLink.href = link.href;
       qrDialog.showModal();
     }));
+    qrDialog.addEventListener('click', (event) => {
+      if (event.target === qrDialog) qrDialog.close();
+    });
 
     uploadButton.addEventListener('click', () => input.click());
     cameraButton.addEventListener('click', startCamera);
