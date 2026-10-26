@@ -85,6 +85,8 @@ Example configuration files are stored next to the code they configure:
 
 ## Stage 1: captioning and privacy instructions
 
+For a simple upload/camera-to-edited-image demo, see [`demo/README.md`](demo/README.md).
+
 The default configuration uses Gemini 3.5 Flash-Lite for image captioning, privacy flags, edit instructions, and caption combination. Set `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) in your shell before running Stage 1. Install `google-genai` with the project requirements.
 
 Expected local layout:
