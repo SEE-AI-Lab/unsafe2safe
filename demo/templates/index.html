@@ -17,8 +17,27 @@
     header { min-height:68px; background:var(--navy); color:white; display:flex; align-items:center; padding:0 max(24px,calc((100vw - 1316px)/2)) }
     .brand { font-size:20px; font-weight:700; letter-spacing:-.03em }
     .brand-mark { color:#ef5449; margin-right:4px }
-    main { max-width:1440px; margin:auto; padding:32px max(24px,calc((100vw - 1316px)/2)) 40px }
-    h1 { margin:0 0 16px; color:var(--navy); font:700 36px/1 'Barlow Condensed',sans-serif; letter-spacing:.015em }
+    main { max-width:1440px; margin:auto; padding:28px max(24px,calc((100vw - 1316px)/2)) 40px }
+    .project-summary { display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:34px; padding:22px 0 20px; border-bottom:1px solid var(--line) }
+    .project-identity { min-width:0 }
+    .project-topline { display:flex; align-items:center; justify-content:space-between; gap:20px }
+    .project-venue { margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase }
+    .dartmouth-link { position:relative; display:block; flex:none }
+    .dartmouth-link img { display:block; width:76px; height:60px; object-fit:contain }
+    .project-identity h1 { margin:0; color:var(--navy); font:700 40px/1 'Barlow Condensed',sans-serif; letter-spacing:.01em }
+    .paper-title { margin:5px 0 9px; color:var(--ink); font-size:15px }
+    .authors { display:flex; align-items:center; flex-wrap:wrap; gap:9px; color:var(--muted); font-size:13px }
+    .authors a { position:relative; color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px }
+    .method-summary { display:grid; grid-template-columns:1fr 1fr; background:#fff; border:1px solid var(--line); padding:17px 18px }
+    .method-step { min-width:0 }
+    .method-step + .method-step { border-left:1px solid var(--line); padding-left:18px; margin-left:18px }
+    .method-step span { color:var(--purple); font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase }
+    .method-step strong { display:block; margin-top:4px; color:var(--navy); font-size:14px }
+    .method-step p { margin:4px 0 0; color:var(--muted); font-size:12px }
+    .project-links { display:flex; align-items:center; gap:22px; min-height:46px; border-bottom:1px solid var(--line) }
+    .resource-link { position:relative; padding:7px 0; border-bottom:1px solid transparent; color:var(--navy); font-size:13px; font-weight:600; text-decoration:none }
+    .resource-link:hover, .resource-link:focus-visible, .authors a:hover, .authors a:focus-visible { border-color:var(--red) }
+    .demo-heading { margin:19px 0 13px; color:var(--navy); font:700 25px/1 'Barlow Condensed',sans-serif }
     .workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:stretch }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { margin:0 0 13px; font-size:14px; font-weight:700 }
@@ -38,6 +57,29 @@
     .button.secondary:hover { border-color:var(--navy); background:#f6f7f8 }
     .button:disabled { border-color:#aeb7c3; background:#aeb7c3; cursor:not-allowed; transform:none }
     .privacy-note { margin:9px 0 0; color:var(--muted); font-size:12px }
+    .stage-one { margin-top:15px; padding-top:13px; border-top:1px solid var(--line) }
+    .stage-one[hidden], .caption-results[hidden] { display:none }
+    .stage-one-title { margin:0 0 9px; font-size:14px }
+    .caption-status { margin:0 0 10px; color:var(--muted); font-size:13px }
+    .caption-status.error { color:#a51e24 }
+    .caption-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
+    .caption-block h3 { margin:0 0 4px; color:var(--navy); font-size:12px }
+    .caption-block p, .privacy-review p { margin:0; color:var(--muted); font-size:12px; line-height:1.5 }
+    .privacy-review { margin-top:9px; font-size:12px }
+    .privacy-review summary { color:var(--navy); cursor:pointer; font-weight:600 }
+    .privacy-review p { margin-top:7px }
+    .qr-popover { position:absolute; z-index:10; left:50%; bottom:calc(100% + 8px); width:156px; padding:10px; background:#fff; border:1px solid var(--line); box-shadow:0 6px 20px #0d1b3d22; color:var(--ink); text-align:center; opacity:0; visibility:hidden; transform:translate(-50%,6px); transition:opacity .15s,transform .15s,visibility .15s }
+    .qr-popover img { display:block; width:126px; height:126px; margin:auto }
+    .qr-popover span { display:block; margin-top:6px; font-size:11px; font-weight:500 }
+    .resource-link:hover .qr-popover, .resource-link:focus-visible .qr-popover, .authors a:hover .qr-popover, .authors a:focus-visible .qr-popover, .dartmouth-link:hover .qr-popover, .dartmouth-link:focus-visible .qr-popover { opacity:1; visibility:visible; transform:translate(-50%,0) }
+    .qr-dialog { position:fixed; inset:0; width:100vw; height:100dvh; max-width:none; max-height:none; margin:0; padding:32px; border:0; background:var(--navy); color:white }
+    .qr-dialog::backdrop { background:#0d1b3dee }
+    .qr-dialog-layout { display:grid; grid-template-columns:1fr min(48vw,56vh); align-items:center; gap:48px; max-width:1100px; min-height:100%; margin:auto }
+    .qr-dialog h2 { margin:0 0 8px; font:700 38px/1.05 'Barlow Condensed',sans-serif }
+    .qr-dialog p { max-width:44ch; color:#d8dfeb; font-size:15px }
+    .qr-dialog img { display:block; width:min(48vw,56vh,560px); height:auto; padding:14px; background:white }
+    .qr-dialog-link { display:inline-block; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
+    .qr-close { position:absolute; top:24px; right:28px; min-height:40px; border:1px solid #ffffff66; background:transparent; color:#fff; padding:8px 13px; cursor:pointer }
     .mode-title { margin:20px 0 9px; font-size:14px }
     .choices { display:grid; gap:7px }
     .choice { width:100%; min-height:61px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:9px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) auto; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
@@ -56,14 +98,42 @@
     .result-stage.processing .result-empty strong { color:var(--purple) }
     .result-caption { display:flex; justify-content:space-between; gap:12px; margin-top:11px; color:var(--muted); font-size:12px }
     #download { display:none; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
-    @media (max-width:850px) { main { padding-top:25px } .workspace { grid-template-columns:1fr } .result-stage { min-height:300px } }
+    @media (max-width:850px) {
+      main { padding-top:25px }
+      .project-summary { grid-template-columns:1fr; gap:16px }
+      .method-summary { max-width:none }
+      .project-links { gap:17px; flex-wrap:wrap; padding:8px 0 }
+      .qr-dialog-layout { grid-template-columns:1fr; gap:20px; justify-items:center; align-content:center; text-align:center }
+      .qr-dialog img { width:min(56vw,45vh,420px) }
+      .qr-dialog p { margin-left:auto; margin-right:auto }
+      .workspace { grid-template-columns:1fr } .result-stage { min-height:300px } }
     @media (max-width:560px) {
       header { min-height:58px; padding:0 18px }
       main { padding:22px 14px 30px }
-      h1 { font-size:32px }
+      .project-summary { padding:18px 0 16px }
+      .project-identity h1 { font-size:34px }
+      .paper-title { max-width:32ch; font-size:13px }
+      .project-topline { align-items:flex-start }
+      .dartmouth-link img { width:64px; height:52px }
+      .method-summary { padding:12px; gap:10px }
+      .method-step + .method-step { margin-left:0; padding-left:10px }
+      .method-step strong { font-size:12px }
+      .method-step p { font-size:11px }
+      .project-links { gap:7px 16px }
+      .resource-link { font-size:12px }
+      .demo-heading { margin:16px 0 11px; font-size:23px }
+      .qr-dialog { padding:20px }
+      .qr-dialog-layout { gap:18px }
+      .qr-dialog h2 { font-size:32px }
+      .qr-dialog img { width:min(72vw,42vh,340px) }
+      .qr-close { top:14px; right:14px }
       .panel { padding:13px }
       .photo { height:230px }
       .photo-actions .button { flex:1 }
+      .caption-grid { grid-template-columns:1fr }
+      .footer-inner { min-height:0; padding:16px 18px; flex-direction:column; gap:12px }
+      .resources { justify-content:center; gap:4px 18px }
+      .resource-link { font-size:12px }
       .choice { grid-template-columns:17px minmax(0,1fr) auto; gap:7px; padding:8px }
       .choice[aria-pressed="true"] { padding:7px }
       .actions .button { width:100% }
@@ -75,7 +145,34 @@
 <body>
   <header><div class="brand"><span class="brand-mark">S</span>SafeFrame</div></header>
   <main>
-    <h1>Choose your edit</h1>
+    <section class="project-summary" aria-label="Unsafe2Safe paper and method">
+      <div class="project-identity">
+        <div class="project-topline">
+          <p class="project-venue">CVPR 2026</p>
+          <a class="dartmouth-link" data-qr-id="dartmouth" data-qr-title="Dartmouth College" href="{{ links_by_id.dartmouth.url }}" target="_blank" rel="noopener noreferrer" aria-label="Dartmouth College">
+            <img src="{{ url_for('static', filename='dartmouth-d-pine-wordmark.png') }}" alt="Dartmouth College D-Pine wordmark">
+            <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
+          </a>
+        </div>
+        <h1>Unsafe2Safe</h1>
+        <p class="paper-title">Controllable Image Anonymization for Downstream Utility</p>
+        <div class="authors">
+          <a data-qr-id="minh" data-qr-title="Minh Dinh Trong’s page" href="{{ links_by_id.minh.url }}" target="_blank" rel="noopener noreferrer">Minh Dinh Trong<span class="qr-popover"><img src="{{ url_for('static', filename='qr/minh.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+          <span aria-hidden="true">/</span>
+          <a data-qr-id="souyoung" data-qr-title="SouYoung Jin’s page" href="{{ links_by_id.souyoung.url }}" target="_blank" rel="noopener noreferrer">SouYoung Jin<span class="qr-popover"><img src="{{ url_for('static', filename='qr/souyoung.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+        </div>
+      </div>
+      <div class="method-summary" aria-label="Two-stage method">
+        <div class="method-step"><span>Stage 1</span><strong>Privacy review + captions</strong><p>Full visual description and privacy-safe public caption</p></div>
+        <div class="method-step"><span>Stage 2</span><strong>Caption-guided edit</strong><p>Public caption plus the selected edit instruction</p></div>
+      </div>
+    </section>
+    <nav class="project-links" aria-label="Project resources">
+      {% for link in project_links if link.id in ['paper', 'project', 'github', 'dataset'] %}
+      <a class="resource-link" data-qr-id="{{ link.id }}" data-qr-title="{{ link.title }}" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}<span class="qr-popover"><img src="{{ url_for('static', filename='qr/' ~ link.id ~ '.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+      {% endfor %}
+    </nav>
+    <h2 class="demo-heading">Try the pipeline</h2>
     <section class="workspace" aria-label="Photo editor">
       <article class="panel">
         <h2 class="panel-heading">Your photo</h2>
@@ -94,8 +191,17 @@
         </div>
         <p class="camera-error" id="cameraError" role="status" aria-live="polite" hidden>Couldn’t open the camera. Upload a photo instead.</p>
         <input class="file-input" id="photo" type="file" accept="image/*">
-        <p class="privacy-note">Sent to Gemini for editing. Not saved on this server.</p>
-        <h2 class="mode-title">What should change?</h2>
+        <p class="privacy-note">Photo goes to Gemini for captions and editing. Not saved here.</p>
+        <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle" hidden>
+          <h2 class="stage-one-title" id="stageOneTitle">Stage 1 · Captions</h2>
+          <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
+          <div class="caption-grid caption-results" id="captionResults" hidden>
+            <div class="caption-block"><h3>Full visual description</h3><p id="fullCaption"></p></div>
+            <div class="caption-block"><h3>Privacy-safe public caption</h3><p id="publicCaption"></p></div>
+          </div>
+          <details class="privacy-review" id="privacyReviewDetails" hidden><summary>Privacy review</summary><p id="privacyReview"></p></details>
+        </section>
+        <h2 class="mode-title">Stage 2 · Edit instruction</h2>
         <div class="choices" role="radiogroup" aria-label="Edit mode">
           <button class="choice" type="button" data-mode="spooky_private" aria-pressed="true">
             <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Spooky, still private</strong><small>Give it a Halloween look and hide identifying details.</small></span>
@@ -116,14 +222,26 @@
       </article>
     </section>
   </main>
+  <dialog class="qr-dialog" id="qrDialog" aria-labelledby="qrDialogTitle">
+    <form method="dialog"><button class="qr-close" aria-label="Close QR code">Close</button></form>
+    <div class="qr-dialog-layout">
+      <div><h2 id="qrDialogTitle"></h2><p>Scan this code to open the page, or use the button to open it in a new tab.</p><a class="qr-dialog-link" id="qrDialogLink" href="#" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+      <img id="qrDialogImage" alt="QR code">
+    </div>
+  </dialog>
   <script>
     const input = document.getElementById('photo');
+    const uploadButton = document.getElementById('uploadButton');
+    const cameraButton = document.getElementById('cameraButton');
+    const stageOne = document.getElementById('stageOne');
+    const captionStatus = document.getElementById('captionStatus');
+    const captionResults = document.getElementById('captionResults');
+    const privacyReviewDetails = document.getElementById('privacyReviewDetails');
     const preview = document.getElementById('preview');
     const cameraPreview = document.getElementById('cameraPreview');
     const photoActions = document.getElementById('photoActions');
     const cameraControls = document.getElementById('cameraControls');
     const cameraError = document.getElementById('cameraError');
-    const cameraButton = document.getElementById('cameraButton');
     const edit = document.getElementById('edit');
     const resultImage = document.getElementById('resultImage');
     const resultStage = document.getElementById('resultStage');
@@ -131,8 +249,21 @@
     let selectedFile;
     let cameraStream;
     let selectedMode = 'spooky_private';
+    const qrDialog = document.getElementById('qrDialog');
+    const qrDialogTitle = document.getElementById('qrDialogTitle');
+    const qrDialogImage = document.getElementById('qrDialogImage');
+    const qrDialogLink = document.getElementById('qrDialogLink');
 
-    document.getElementById('uploadButton').addEventListener('click', () => input.click());
+    document.querySelectorAll('[data-qr-id]').forEach((link) => link.addEventListener('click', (event) => {
+      if (event.target.closest('.qr-popover')) event.preventDefault();
+      qrDialogTitle.textContent = link.dataset.qrTitle;
+      qrDialogImage.src = `/static/qr/${link.dataset.qrId}.svg`;
+      qrDialogImage.alt = `QR code for ${link.dataset.qrTitle}`;
+      qrDialogLink.href = link.href;
+      qrDialog.showModal();
+    }));
+
+    uploadButton.addEventListener('click', () => input.click());
     cameraButton.addEventListener('click', startCamera);
 
     document.querySelectorAll('.choice').forEach((choice) => choice.addEventListener('click', () => {
@@ -150,19 +281,48 @@
       cameraControls.hidden = true;
     }
 
-    function selectPhoto(file) {
+    async function selectPhoto(file) {
       if (!file) return;
       stopCamera();
       if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
       selectedFile = file;
       preview.src = URL.createObjectURL(file);
       document.getElementById('drop').classList.add('has-image');
-      edit.disabled = false;
+      edit.disabled = true;
       resultImage.style.display = 'none';
       placeholder.style.display = 'block';
       placeholder.innerHTML = '<strong>Your result appears here</strong>Your edited photo will appear here.';
       resultStage.classList.remove('processing');
       document.getElementById('download').style.display = 'none';
+      stageOne.hidden = false;
+      captionResults.hidden = true;
+      privacyReviewDetails.hidden = true;
+      captionStatus.hidden = false;
+      captionStatus.className = 'caption-status';
+      captionStatus.textContent = 'Generating Stage 1 captions…';
+      uploadButton.disabled = true;
+      cameraButton.disabled = true;
+      const form = new FormData();
+      form.append('photo', file);
+      try {
+        const response = await fetch('/caption', { method: 'POST', body: form });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'The captions could not be generated.');
+        document.getElementById('fullCaption').textContent = data.full_caption;
+        document.getElementById('publicCaption').textContent = data.public_caption;
+        if (!data.public_caption) throw new Error('Stage 1 did not return a privacy-safe caption. Try another photo.');
+        document.getElementById('privacyReview').textContent = data.privacy_review;
+        privacyReviewDetails.hidden = false;
+        captionResults.hidden = false;
+        captionStatus.hidden = true;
+        edit.disabled = false;
+      } catch (error) {
+        captionStatus.textContent = error.message;
+        captionStatus.classList.add('error');
+      } finally {
+        uploadButton.disabled = false;
+        cameraButton.disabled = false;
+      }
     }
 
     async function startCamera() {
@@ -215,6 +375,7 @@
       const form = new FormData();
       form.append('photo', selectedFile);
       form.append('mode', selectedMode);
+      form.append('public_caption', document.getElementById('publicCaption').textContent);
       try {
         const response = await fetch('/edit', { method: 'POST', body: form });
         const data = await response.json();
