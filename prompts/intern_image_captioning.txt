@@ -11,6 +11,7 @@ Identify up to 5 potentially sensitive or identifiable elements in the image. Th
 For each item, provide:
 - ITEM: A short description of what is visible
 - REASON: Why it may be considered privacy-sensitive
+- X and Y: The approximate location of the item in the image, as percentages from the top-left corner (0 to 100)
 Example:
 - ITEM: A person’s face is clearly visible, showing age and ethnicity
 - REASON: Facial features can reveal identity and demographic attributes

@@ -18,7 +18,19 @@ STAGE1_SYSTEM = "You are a vision-language assistant that generates privacy-awar
 STAGE1_RESPONSE_SCHEMA = {
     "type": "OBJECT",
     "properties": {
-        "PRIVACY_REVIEW": {"type": "STRING"},
+        "PRIVACY_REVIEW": {
+            "type": "ARRAY",
+            "items": {
+                "type": "OBJECT",
+                "properties": {
+                    "ITEM": {"type": "STRING"},
+                    "REASON": {"type": "STRING"},
+                    "X": {"type": "NUMBER"},
+                    "Y": {"type": "NUMBER"},
+                },
+                "required": ["ITEM", "REASON", "X", "Y"],
+            },
+        },
         "FULL_VISUAL_DESCRIPTION": {"type": "STRING"},
         "PRIVACY_PRESERVING_DESCRIPTION": {"type": "STRING"},
         "PRIVACY_CHANGES": {
@@ -46,26 +58,12 @@ PROJECT_LINKS = [
 ]
 PROJECT_LINKS_BY_ID = {link["id"]: link for link in PROJECT_LINKS}
 
-PRESETS = {
-    "spooky_private": (
-        "Create a clearly transformed, photorealistic Halloween version of this photo. Replace the subject's "
-        "face with a different fictional face: change its shape and features, including the eyes, nose, and jaw. "
-        "Do not keep the original face beneath a mask or merely add makeup over it. Change the hairstyle and "
-        "replace branded or identifying clothing details with a distinctive Halloween costume. Add a cohesive "
-        "spooky atmosphere with costume makeup and subtle seasonal lighting. Keep the original pose, camera "
-        "framing, and background layout, and avoid gore. The result should read as a new character, not the "
-        "same person wearing a costume."
-    ),
-    "diverse_cast": (
-        "Reimagine the people in this photo as a group with as much variety as possible in age, "
-        "skin tone, gender expression, and visible abilities. Keep their activity and setting intact. "
-        "Make the result natural and respectful, without stereotypes."
-    ),
-    "new_setting": (
-        "Keep the people and the moment in this photo, but move them to an unexpected, vivid new setting. "
-        "Make the new place feel believable and preserve the people’s pose and activity."
-    ),
+EDIT_THEMES = {
+    "spooky_private": "Give the privacy changes a tasteful Halloween character: a clearly different fictional face, hairstyle, unbranded costume, and subtle spooky atmosphere. No gore.",
+    "diverse_cast": "Where people are changed, favor a natural, respectful mix of ages, skin tones, gender expressions, and visible abilities. Avoid stereotypes.",
+    "new_setting": "Express any background or location privacy change as a vivid but believable alternative setting while keeping the scene layout and actions intact.",
 }
+EDIT_IDEA_PROMPT = (Path(__file__).resolve().parents[1] / "prompts/qwen_image_captioning-private-expand.txt").read_text(encoding="utf-8")
 
 
 def api_key():
@@ -88,7 +86,9 @@ def caption_photo():
     image = Image.open(BytesIO(photo.read())).convert("RGB")
     prompt = (
         f"{STAGE1_SYSTEM}\n\n{STAGE1_PROMPT.format(image_class='photo')}\n\n"
-        "Return the requested paper sections using the supplied JSON schema. Also return PRIVACY_CHANGES "
+        "Return the requested paper sections using the supplied JSON schema. In PRIVACY_REVIEW, return up to "
+        "5 objects with ITEM, REASON, and approximate X/Y coordinates as percentages from the top-left of the "
+        "image (0 to 100). Place each point on the visible detail it describes. Also return PRIVACY_CHANGES "
         "as pairs of exact phrases: PRIVATE_PHRASE must appear in FULL_VISUAL_DESCRIPTION, and "
         "PUBLIC_PHRASE must appear in PRIVACY_PRESERVING_DESCRIPTION. Use an empty PUBLIC_PHRASE "
         "when the detail was omitted. Order pairs by appearance; return an empty array if nothing changed."
@@ -116,17 +116,49 @@ def caption_photo():
     )
 
 
+@app.post("/edit-instruction")
+def generate_edit_instruction():
+    public_caption = request.form.get("public_caption", "").strip()
+    mode = request.form.get("mode")
+    if not public_caption:
+        return jsonify(error="Generate Stage 1 captions before choosing an edit."), 400
+    if mode not in EDIT_THEMES:
+        return jsonify(error="Choose one of the three edit modes."), 400
+    if not api_key():
+        return jsonify(error="Set GEMINI_API_KEY in the terminal, then restart the app."), 503
+
+    prompt = (
+        f"{EDIT_IDEA_PROMPT.format(public_caption=public_caption)}\n\n"
+        f"Selected theme: {EDIT_THEMES[mode]}\n"
+        "Apply the theme only to the proposed identity/privacy modifications. Follow all rules in the prompt, "
+        "especially preserving scene layout and actions. Return only the generated edit instruction."
+    )
+    client = genai.Client(api_key=api_key())
+    try:
+        response = client.models.generate_content(
+            model=CAPTION_MODEL,
+            contents=prompt,
+            config={"max_output_tokens": 160},
+        )
+    except Exception as exc:
+        return jsonify(error=f"Gemini could not generate an edit instruction: {exc}"), 502
+    instruction = (response.text or "").strip()
+    if not instruction:
+        return jsonify(error="Gemini returned no edit instruction. Try again."), 502
+    return jsonify(edit_instruction=instruction)
+
+
 @app.post("/edit")
 def edit_photo():
     photo = request.files.get("photo")
-    mode = request.form.get("mode")
     public_caption = request.form.get("public_caption", "").strip()
+    edit_instruction = request.form.get("edit_instruction", "").strip()
     if photo is None:
         return jsonify(error="Choose a photo first."), 400
-    if mode not in PRESETS:
-        return jsonify(error="Choose one of the three edit modes."), 400
     if not public_caption:
         return jsonify(error="Generate Stage 1 captions before editing."), 400
+    if not edit_instruction:
+        return jsonify(error="Generate an edit instruction before editing."), 400
     if not photo.mimetype or not photo.mimetype.startswith("image/"):
         return jsonify(error="Please choose an image file."), 400
     if not api_key():
@@ -141,7 +173,7 @@ def edit_photo():
         "it omits. Preserve the original framing and useful non-sensitive content unless the edit instruction "
         "asks to change them. Make requested changes clear in the image, keep the result photorealistic, and "
         "do not add identifying personal details.\n"
-        f"Public description: {public_caption}\nEdit instruction: {PRESETS[mode]}"
+        f"Public description: {public_caption}\nEdit instruction: {edit_instruction}"
     )
     client = genai.Client(api_key=api_key())
     try:

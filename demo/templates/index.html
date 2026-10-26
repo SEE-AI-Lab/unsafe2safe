@@ -61,8 +61,8 @@
     .workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:stretch }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
-    .photo { height:270px; display:grid; place-items:center; overflow:hidden; background:var(--wash); color:var(--navy); border:1px dashed #aeb8c5 }
-    .photo img, .photo video { display:none; width:100%; height:100%; max-height:360px; object-fit:contain; background:#111 }
+    .photo { position:relative; aspect-ratio:var(--image-ratio, 4 / 3); display:grid; place-items:center; background:var(--wash); color:var(--navy); border:1px dashed #aeb8c5 }
+    .photo img, .photo video { display:none; width:100%; height:100%; object-fit:contain; background:#111 }
     .photo.has-image img, .photo.camera-on video { display:block }
     .photo.has-image .upload-prompt, .photo.camera-on .upload-prompt { display:none }
     .upload-prompt { padding:20px; text-align:center; font-weight:600 }
@@ -94,9 +94,20 @@
     mark.caption-highlight.is-public { background:#e9f4ea; color:#327542 }
     .caption-block h3 { margin:0 0 4px; color:var(--navy); font-size:12px }
     .caption-block p, .privacy-review p { margin:0; color:var(--muted); font-size:12px; line-height:1.5 }
-    .privacy-review { margin-top:9px; font-size:12px }
-    .privacy-review summary { color:var(--navy); cursor:pointer; font-weight:600 }
-    .privacy-review p { margin-top:7px }
+    .caption-block p[hidden] { display:none }
+    .caption-skeleton { display:grid; gap:7px; padding:4px 0 }
+    .caption-skeleton[hidden] { display:none }
+    .caption-skeleton span { display:block; height:10px; border-radius:3px; background:linear-gradient(90deg,#e8edf2 20%,#f7f8fa 45%,#e8edf2 70%); background-size:220% 100%; animation:skeleton-shimmer 1.25s ease-in-out infinite }
+    .caption-skeleton span:nth-child(2) { width:88% }
+    .caption-skeleton span:nth-child(3) { width:70% }
+    @keyframes skeleton-shimmer { to { background-position:-220% 0 } }
+    .privacy-markers { position:absolute; inset:0; pointer-events:none }
+    .privacy-pin { position:absolute; display:grid; place-items:center; width:26px; height:26px; padding:0; transform:translate(-50%,-50%); border:2px solid #fff; border-radius:50%; background:var(--red); color:#fff; box-shadow:0 2px 8px #0d1b3d55; cursor:pointer; pointer-events:auto }
+    .privacy-pin::after { content:""; width:6px; height:6px; border-radius:50%; background:#fff }
+    .privacy-tooltip { position:absolute; z-index:3; left:50%; bottom:calc(100% + 9px); display:none; width:min(250px,65vw); padding:10px 12px; transform:translateX(-50%); border:1px solid var(--line); background:#fff; box-shadow:0 8px 22px #0d1b3d30; color:var(--ink); text-align:left; pointer-events:none }
+    .privacy-tooltip strong { display:block; margin-bottom:3px; font-size:12px }
+    .privacy-tooltip span { display:block; color:var(--muted); font-size:11px; line-height:1.4 }
+    .privacy-pin:hover .privacy-tooltip, .privacy-pin:focus-visible .privacy-tooltip, .privacy-pin.is-open .privacy-tooltip { display:block }
     .qr-popover { position:absolute; z-index:20; left:50%; top:calc(100% + 8px); width:156px; padding:10px; background:#fff; border:1px solid var(--line); box-shadow:0 6px 20px #0d1b3d22; color:var(--ink); text-align:center; opacity:0; visibility:hidden; transform:translate(-50%,-4px); transition:opacity .15s,transform .15s,visibility .15s }
     .qr-popover img { display:block; width:126px; height:126px; margin:auto }
     .qr-popover span { display:block; margin-top:6px; font-size:11px; font-weight:500 }
@@ -117,15 +128,25 @@
     .choice-copy strong { display:block; color:var(--navy); font-size:13px }
     .choice-copy small { display:block; margin-top:2px; color:var(--muted); font-size:12px; line-height:1.35 }
     .choice-icon { color:var(--purple) }
+    .generated-instruction { margin-top:10px; padding:10px 12px; border:1px solid var(--line); background:#f8f9fb }
+    .generated-instruction h3 { margin:0 0 4px; color:var(--purple); font-size:11px; font-weight:700 }
+    .generated-instruction p { margin:0; color:var(--ink); font-size:12px; line-height:1.45 }
+    .generated-instruction [hidden] { display:none }
+    .instruction-loading { display:flex; align-items:center; gap:9px; color:var(--muted); font-size:12px }
+    .instruction-loading::before { content:""; display:none; width:14px; height:14px; flex:none; border:2px solid #d5dbe3; border-top-color:var(--purple); border-radius:50%; animation:progress-spin .8s linear infinite }
+    .instruction-loading[data-state="running"]::before { display:block }
+    .choice:disabled { cursor:wait; opacity:.72 }
     .actions { display:flex; justify-content:flex-end; margin-top:13px }
-    .result-panel { display:flex; flex-direction:column }
-    .result-stage { min-height:400px; flex:1; display:grid; place-items:center; overflow:hidden; background:var(--wash); border:1px solid #e1e5e9 }
-    .result-stage img { display:none; width:100%; max-height:520px; object-fit:contain }
+    .result-panel { display:block }
+    .result-stage { width:100%; aspect-ratio:var(--image-ratio, 4 / 3); display:grid; place-items:center; overflow:hidden; background:var(--wash); border:1px solid #e1e5e9 }
+    .result-stage img { display:none; width:100%; height:100%; object-fit:contain }
     .result-stage img[src^="data:"] { animation:result-arrive .35s ease-out both }
     @keyframes result-arrive { from { opacity:0; transform:scale(.985) } to { opacity:1; transform:scale(1) } }
     .result-empty { max-width:260px; padding:20px; color:var(--muted); font-size:14px; text-align:center }
     .result-empty strong { display:block; margin-bottom:4px; color:var(--navy) }
     .result-stage.processing .result-empty strong { color:var(--purple) }
+    .result-stage.processing { background:linear-gradient(100deg,#e8edf2 25%,#f7f8fa 45%,#e8edf2 65%); background-size:220% 100%; animation:skeleton-shimmer 1.3s ease-in-out infinite }
+    .result-stage.processing .result-empty::before { content:""; display:block; width:30px; height:30px; margin:0 auto 12px; border:3px solid #c9c3dc; border-top-color:var(--purple); border-radius:50%; animation:progress-spin .8s linear infinite }
     .result-caption { display:flex; justify-content:space-between; gap:12px; margin-top:11px; color:var(--muted); font-size:12px }
     #download { display:none; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
     @media (max-width:850px) {
@@ -135,7 +156,7 @@
       .qr-dialog-layout { grid-template-columns:1fr; gap:20px; justify-items:center; align-content:center; text-align:center }
       .qr-dialog img { width:min(56vw,45vh,420px) }
       .qr-dialog p { margin-left:auto; margin-right:auto }
-      .workspace { grid-template-columns:1fr } .result-stage { min-height:300px } }
+      .workspace { grid-template-columns:1fr } }
     @media (max-width:560px) {
       main { padding:22px 14px 30px }
       .project-summary { grid-template-columns:1fr; gap:6px; padding:12px 0 9px }
@@ -156,7 +177,6 @@
       .qr-dialog h2 { font-size:32px }
       .qr-dialog img { width:min(72vw,42vh,340px) }
       .panel { padding:13px }
-      .photo { height:230px }
       .photo-actions .button { flex:1 }
       .caption-grid { grid-template-columns:1fr }
       .footer-inner { min-height:0; padding:16px 18px; flex-direction:column; gap:12px }
@@ -165,7 +185,6 @@
       .choice { grid-template-columns:17px minmax(0,1fr) 18px; gap:7px; padding:8px }
       .choice[aria-pressed="true"] { padding:7px }
       .actions .button { width:100% }
-      .result-stage { min-height:270px }
     }
     @media (prefers-reduced-motion:reduce) {
       *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important }
@@ -206,7 +225,7 @@
     <ol class="pipeline-progress" id="pipelineProgress" aria-label="Pipeline progress">
       <li class="progress-step is-current" id="progressUpload" data-state="idle" aria-current="step"><span class="progress-marker"><span>0</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Upload unsafe image</strong><small>Choose a photo to make safer to share</small><span class="progress-state" aria-live="polite">Waiting for photo</span></span></li>
       <li class="progress-step" id="progressPhoto" data-state="idle"><span class="progress-marker"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Review &amp; captions</strong><small>Describe the image and protect private details</small><span class="progress-state" aria-live="polite">Waiting for upload</span></span></li>
-      <li class="progress-step" id="progressChoose" data-state="idle"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Choose an edit</strong><small>Select a caption-guided instruction</small><span class="progress-state" aria-live="polite">Waiting for captions</span></span></li>
+      <li class="progress-step" id="progressChoose" data-state="idle"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Choose an edit</strong><small>Gemini writes a paper-guided instruction</small><span class="progress-state" aria-live="polite">Waiting for captions</span></span></li>
       <li class="progress-step" id="progressEdit" data-state="idle"><span class="progress-marker"><span>3</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Generate safe image</strong><small>Create and preview your edited photo</small><span class="progress-state" aria-live="polite">Waiting for edit</span></span></li>
     </ol>
     <section class="workspace" aria-label="Photo editor">
@@ -216,6 +235,7 @@
           <div class="upload-prompt">Your photo will appear here</div>
           <img id="preview" alt="Selected original photo">
           <video id="cameraPreview" playsinline muted hidden aria-label="Live camera preview"></video>
+          <div class="privacy-markers" id="privacyMarkers" aria-label="Privacy review markers"></div>
         </div>
         <div class="photo-actions" id="photoActions">
           <button class="button secondary" id="uploadButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5M4 15v5h16v-5"/></svg>Upload a photo</button>
@@ -234,10 +254,9 @@
           <button class="button secondary" id="retryCaptions" type="button" hidden>Retry captions</button>
           <div class="caption-grid caption-results" id="captionResults" hidden>
             <p class="caption-legend"><span class="private-key">Private detail</span><span class="public-key">Generalized in public caption</span></p>
-            <div class="caption-block"><h3>Private caption</h3><p id="fullCaption"></p></div>
-            <div class="caption-block"><h3>Privacy-safe public caption</h3><p id="publicCaption"></p></div>
+            <div class="caption-block"><h3>Private caption</h3><div class="caption-skeleton" id="privateCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="fullCaption" hidden></p></div>
+            <div class="caption-block"><h3>Privacy-safe public caption</h3><div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="publicCaption" hidden></p></div>
           </div>
-          <details class="privacy-review" id="privacyReviewDetails" hidden><summary>Privacy review</summary><p id="privacyReview"></p></details>
         </section>
         <h2 class="mode-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Edit instruction</h2>
         <div class="choices" role="radiogroup" aria-label="Edit mode">
@@ -251,6 +270,11 @@
             <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Take it somewhere else</strong><small>Keep the moment, move it to an unexpected setting.</small></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="6" r="2"/><path d="m3 20 6-8 4 5 3-4 5 7H3Z"/></svg>
           </button>
         </div>
+        <section class="generated-instruction" aria-live="polite" aria-label="Generated edit instruction">
+          <h3>Gemini-generated edit instruction</h3>
+          <div class="instruction-loading" id="instructionLoading" data-state="waiting">Waiting for captions</div>
+          <p id="editInstruction" hidden></p>
+        </section>
         <div class="actions"><button class="button" id="edit" disabled>Create this edit</button></div>
       </article>
       <article class="panel result-panel">
@@ -273,7 +297,9 @@
     const stageOne = document.getElementById('stageOne');
     const captionStatus = document.getElementById('captionStatus');
     const captionResults = document.getElementById('captionResults');
-    const privacyReviewDetails = document.getElementById('privacyReviewDetails');
+    const privacyMarkers = document.getElementById('privacyMarkers');
+    const editInstruction = document.getElementById('editInstruction');
+    const instructionLoading = document.getElementById('instructionLoading');
     const preview = document.getElementById('preview');
     const cameraPreview = document.getElementById('cameraPreview');
     const photoActions = document.getElementById('photoActions');
@@ -342,6 +368,86 @@
       element.append(document.createTextNode(caption.slice(cursor)));
     }
 
+    function renderPrivacyMarkers(items) {
+      privacyMarkers.replaceChildren();
+      (items || []).forEach((item, index) => {
+        const pin = document.createElement('button');
+        pin.type = 'button';
+        pin.className = 'privacy-pin';
+        pin.style.left = `${Math.min(96, Math.max(4, Number(item.X) || 50))}%`;
+        pin.style.top = `${Math.min(96, Math.max(4, Number(item.Y) || 50))}%`;
+        pin.setAttribute('aria-expanded', 'false');
+        pin.setAttribute('aria-label', `Privacy detail ${index + 1}: ${item.ITEM}. ${item.REASON}`);
+        const tooltip = document.createElement('span');
+        tooltip.className = 'privacy-tooltip';
+        const title = document.createElement('strong');
+        title.textContent = item.ITEM;
+        const reason = document.createElement('span');
+        reason.textContent = item.REASON;
+        tooltip.append(title, reason);
+        pin.append(tooltip);
+        pin.addEventListener('click', () => {
+          const open = pin.classList.toggle('is-open');
+          pin.setAttribute('aria-expanded', String(open));
+        });
+        privacyMarkers.append(pin);
+      });
+    }
+
+    function setImageRatio(width, height) {
+      if (!width || !height) return;
+      const ratio = `${width} / ${height}`;
+      document.getElementById('drop').style.setProperty('--image-ratio', ratio);
+      resultStage.style.setProperty('--image-ratio', ratio);
+    }
+
+    async function generateEditInstruction() {
+      const publicCaption = document.getElementById('publicCaption').textContent;
+      if (!selectedFile || !publicCaption) return;
+      edit.disabled = true;
+      editInstruction.hidden = true;
+      instructionLoading.hidden = false;
+      instructionLoading.dataset.state = 'running';
+      instructionLoading.textContent = 'Gemini is generating a paper-guided instruction…';
+      document.querySelectorAll('.choice').forEach((choice) => { choice.disabled = true; });
+      setPipelineState([
+        ['complete', 'Photo ready'],
+        ['complete', 'Captions ready'],
+        ['running', 'Generating edit instruction'],
+        ['idle', 'Waiting for edit']
+      ]);
+      const form = new FormData();
+      form.append('public_caption', publicCaption);
+      form.append('mode', selectedMode);
+      try {
+        const response = await fetch('/edit-instruction', { method: 'POST', body: form });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'The edit instruction could not be generated.');
+        editInstruction.textContent = data.edit_instruction;
+        editInstruction.hidden = false;
+        instructionLoading.hidden = true;
+        instructionLoading.dataset.state = 'ready';
+        edit.disabled = false;
+        setPipelineState([
+          ['complete', 'Photo ready'],
+          ['complete', 'Captions ready'],
+          ['complete', 'Edit instruction ready'],
+          ['idle', 'Waiting for edit']
+        ]);
+      } catch (error) {
+        instructionLoading.dataset.state = 'error';
+        instructionLoading.textContent = `${error.message} Choose a mode again to retry.`;
+        setPipelineState([
+          ['complete', 'Photo ready'],
+          ['complete', 'Captions ready'],
+          ['error', 'Instruction generation failed'],
+          ['idle', 'Waiting for edit']
+        ]);
+      } finally {
+        document.querySelectorAll('.choice').forEach((choice) => { choice.disabled = false; });
+      }
+    }
+
     document.querySelectorAll('[data-qr-id]').forEach((link) => link.addEventListener('click', (event) => {
       event.preventDefault();
       qrDialogTitle.textContent = link.dataset.qrTitle;
@@ -360,6 +466,7 @@
     document.querySelectorAll('.choice').forEach((choice) => choice.addEventListener('click', () => {
       selectedMode = choice.dataset.mode;
       document.querySelectorAll('.choice').forEach((item) => item.setAttribute('aria-pressed', String(item === choice)));
+      generateEditInstruction();
     }));
 
     function stopCamera() {
@@ -378,7 +485,13 @@
       if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
       selectedFile = file;
       preview.src = URL.createObjectURL(file);
+      preview.onload = () => setImageRatio(preview.naturalWidth, preview.naturalHeight);
       document.getElementById('drop').classList.add('has-image');
+      privacyMarkers.replaceChildren();
+      editInstruction.textContent = '';
+      instructionLoading.hidden = false;
+      instructionLoading.dataset.state = 'waiting';
+      instructionLoading.textContent = 'Waiting for captions';
       edit.disabled = true;
       resultImage.style.display = 'none';
       placeholder.style.display = 'block';
@@ -386,8 +499,11 @@
       resultStage.classList.remove('processing');
       document.getElementById('download').style.display = 'none';
       stageOne.hidden = false;
-      captionResults.hidden = true;
-      privacyReviewDetails.hidden = true;
+      captionResults.hidden = false;
+      document.getElementById('privateCaptionSkeleton').hidden = false;
+      document.getElementById('publicCaptionSkeleton').hidden = false;
+      document.getElementById('fullCaption').hidden = true;
+      document.getElementById('publicCaption').hidden = true;
       document.getElementById('retryCaptions').hidden = true;
       await generateCaptions(file);
     }
@@ -395,7 +511,12 @@
     async function generateCaptions(file) {
       captionStatus.hidden = false;
       captionStatus.className = 'caption-status';
-      captionStatus.textContent = 'Generating Stage 1 captions…';
+      captionStatus.textContent = 'Generating captions and privacy review…';
+      captionResults.hidden = false;
+      document.getElementById('privateCaptionSkeleton').hidden = false;
+      document.getElementById('publicCaptionSkeleton').hidden = false;
+      document.getElementById('fullCaption').hidden = true;
+      document.getElementById('publicCaption').hidden = true;
       document.getElementById('retryCaptions').hidden = true;
       setPipelineState([
         ['complete', 'Photo ready'],
@@ -414,20 +535,25 @@
         renderCaption(document.getElementById('fullCaption'), data.full_caption, data.privacy_changes, 'PRIVATE_PHRASE', 'is-private');
         renderCaption(document.getElementById('publicCaption'), data.public_caption, data.privacy_changes, 'PUBLIC_PHRASE', 'is-public');
         if (!data.public_caption) throw new Error('Stage 1 did not return a privacy-safe caption. Try another photo.');
-        document.getElementById('privacyReview').textContent = data.privacy_review;
-        privacyReviewDetails.hidden = false;
-        captionResults.hidden = false;
+        renderPrivacyMarkers(data.privacy_review);
+        document.getElementById('privateCaptionSkeleton').hidden = true;
+        document.getElementById('publicCaptionSkeleton').hidden = true;
+        document.getElementById('fullCaption').hidden = false;
+        document.getElementById('publicCaption').hidden = false;
         captionStatus.hidden = true;
-        edit.disabled = false;
         setPipelineState([
           ['complete', 'Photo ready'],
           ['complete', 'Captions ready'],
           ['idle', 'Choose an edit'],
           ['idle', 'Waiting for edit']
         ]);
+        generateEditInstruction();
       } catch (error) {
         captionStatus.textContent = error.message;
         captionStatus.classList.add('error');
+        captionResults.hidden = true;
+        document.getElementById('privateCaptionSkeleton').hidden = true;
+        document.getElementById('publicCaptionSkeleton').hidden = true;
         document.getElementById('retryCaptions').hidden = false;
         setPipelineState([
           ['complete', 'Photo ready'],
@@ -455,6 +581,7 @@
         photoActions.hidden = true;
         cameraControls.hidden = false;
         await cameraPreview.play();
+        setImageRatio(cameraPreview.videoWidth, cameraPreview.videoHeight);
       } catch {
         stopCamera();
         cameraError.hidden = false;
@@ -498,8 +625,8 @@
       resultStage.classList.add('processing');
       const form = new FormData();
       form.append('photo', selectedFile);
-      form.append('mode', selectedMode);
       form.append('public_caption', document.getElementById('publicCaption').textContent);
+      form.append('edit_instruction', editInstruction.textContent);
       try {
         const response = await fetch('/edit', { method: 'POST', body: form });
         const data = await response.json();
