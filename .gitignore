@@ -20,3 +20,5 @@ prompts/*
 !prompts/intern_image_flagging-custom.txt
 !prompts/intern_text_extraction.txt
 !prompts/intern_demographic_analysis.txt
+.venv-demo/
+.impeccable/references/

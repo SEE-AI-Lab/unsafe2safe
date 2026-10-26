@@ -1,6 +1,6 @@
 # SafeFrame photo demo
 
-A small local web app for uploading or taking a photo, requesting a privacy edit, and downloading the result. The Gemini key stays on the server.
+A small local app for taking or uploading a photo, choosing one of three edits, and downloading the Gemini result. The API key stays on the server.
 
 From the repository root:
 
@@ -12,4 +12,6 @@ export GEMINI_API_KEY="your-key"
 python demo/app.py
 ```
 
-Open [http://127.0.0.1:7860](http://127.0.0.1:7860) on a computer or phone on the same device. On mobile, tap the photo area to use the camera or choose an existing image. The default editor is `gemini-3.1-flash-lite-image`; change it with `GEMINI_IMAGE_MODEL` if needed.
+Open [http://127.0.0.1:7860](http://127.0.0.1:7860). On mobile, tap the photo area to take a picture or choose one. Pick a Halloween privacy edit, broaden the cast, or move the moment to a new setting.
+
+The default model is `gemini-3.1-flash-lite-image`. Set `GEMINI_IMAGE_MODEL` to use another model.

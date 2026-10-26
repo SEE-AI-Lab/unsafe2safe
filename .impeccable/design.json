@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T15:00:00Z",
+  "title": "Design System: SafeFrame",
+  "extensions": {
+    "colorMeta": {
+      "carrier-navy": { "role": "primary", "displayName": "Carrier Navy", "canonical": "#0d1b3d" },
+      "jet-red": { "role": "primary", "displayName": "Jet Red", "canonical": "#d7262d" },
+      "stock-white": { "role": "neutral", "displayName": "Stock White", "canonical": "#f2f2f0" },
+      "coupon-white": { "role": "neutral", "displayName": "Coupon White", "canonical": "#ffffff" },
+      "carbon-purple": { "role": "secondary", "displayName": "Carbon Purple", "canonical": "#4b2e83" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#152442" },
+      "muted": { "role": "neutral", "displayName": "Muted Slate", "canonical": "#58677d" },
+      "rule": { "role": "neutral", "displayName": "Rule Gray", "canonical": "#d5dbe3" },
+      "photo-wash": { "role": "neutral", "displayName": "Photo Wash", "canonical": "#e8edf2" },
+      "success-green": { "role": "tertiary", "displayName": "Success Green", "canonical": "#27634c" },
+      "focus-lilac": { "role": "tertiary", "displayName": "Focus Lilac", "canonical": "#b676d1" },
+      "brand-coral": { "role": "tertiary", "displayName": "Brand Coral", "canonical": "#ef5449" },
+      "step-rule": { "role": "neutral", "displayName": "Step Rule", "canonical": "#cbd2db" },
+      "step-outline": { "role": "neutral", "displayName": "Step Outline", "canonical": "#aab6c5" },
+      "selected-wash": { "role": "neutral", "displayName": "Selected Wash", "canonical": "#fffafa" },
+      "image-matte": { "role": "neutral", "displayName": "Image Matte", "canonical": "#e1e5e9" },
+      "photo-hover-wash": { "role": "neutral", "displayName": "Photo Hover Wash", "canonical": "#edf0f3" },
+      "choice-hover-rule": { "role": "neutral", "displayName": "Choice Hover Rule", "canonical": "#8796ac" },
+      "button-hover": { "role": "primary", "displayName": "Button Hover", "canonical": "#b91f26" },
+      "disabled-gray": { "role": "neutral", "displayName": "Disabled Gray", "canonical": "#aeb7c3" },
+      "error-red": { "role": "tertiary", "displayName": "Error Red", "canonical": "#a51e24" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Condensed display", "purpose": "Main editor heading; reduces in size on narrow phones." },
+      "body": { "displayName": "Interface body", "purpose": "Instructions, choices, and controls." },
+      "label": { "displayName": "State label", "purpose": "Compact progress and status labels." }
+    },
+    "motion": [
+      { "name": "control-state", "value": "150ms", "purpose": "Border, background, and transform feedback on controls." },
+      { "name": "reduced-motion", "value": "prefers-reduced-motion: reduce", "purpose": "Disable transitions and smooth scrolling when requested." }
+    ],
+    "breakpoints": [
+      { "name": "workspace-stack", "value": "850px", "purpose": "Stack the two workspace panels." },
+      { "name": "compact-mobile", "value": "560px", "purpose": "Tighten gutters and controls; make the primary action full width." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Starts generation after a photo is selected.",
+      "html": "<button class=\"button\" type=\"button\">Create this edit</button>",
+      "css": ".button { min-height:42px; border:0; border-radius:3px; background:#d7262d; color:#fff; padding:11px 17px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s,transform .15s } .button:hover { background:#b91f26; transform:translateY(-1px) } .button:disabled { background:#aeb7c3; cursor:not-allowed; transform:none }"
+    },
+    {
+      "name": "Edit choice",
+      "kind": "custom",
+      "refersTo": "edit-choice-selected",
+      "description": "A single selectable photo treatment with a compact category tag.",
+      "html": "<button class=\"choice\" type=\"button\" aria-pressed=\"true\"><span class=\"radio\" aria-hidden=\"true\"></span><span class=\"choice-copy\"><strong>Spooky, still private</strong><small>Give it a Halloween look and hide identifying details.</small></span><span class=\"fare\">Mask</span></button>",
+      "css": ".choice { width:100%; min-height:61px; border:1px solid #d5dbe3; background:#fff; color:#152442; border-radius:3px; padding:9px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) auto; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s } .choice[aria-pressed=\"true\"] { border:2px solid #d7262d; padding:8px 10px; background:#fffafa } .choice[aria-pressed=\"true\"] .radio { border:4px solid #d7262d } .fare { color:#4b2e83; font:700 12px 'Barlow Condensed',sans-serif; letter-spacing:.08em; text-transform:uppercase }"
+    },
+    {
+      "name": "Workspace panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Flat white container for the source and controls or the edited result.",
+      "html": "<article class=\"panel\">…</article>",
+      "css": ".panel { min-width:0; background:#fff; border:1px solid #d5dbe3; padding:19px; border-radius:4px }"
+    },
+    {
+      "name": "Journey progress",
+      "kind": "nav",
+      "description": "Three numbered steps show photo, edit, and result progress.",
+      "html": "<nav class=\"steps\" aria-label=\"Edit progress\"><div class=\"step current\" aria-current=\"step\"><span class=\"step-number\">1</span> Add photo</div><div class=\"step\"><span class=\"step-number\">2</span> Choose edit</div><div class=\"step\"><span class=\"step-number\">3</span> Get result</div></nav>",
+      "css": ".steps { min-height:72px; background:#fff; border-bottom:1px solid #d5dbe3; display:flex; align-items:center } .step { display:flex; align-items:center; flex:1; gap:10px; color:#59677d; font-size:13px } .step-number { width:25px; height:25px; display:grid; place-items:center; border:1px solid #aab6c5; border-radius:50%; font-size:11px } .step.current .step-number, .step.complete .step-number { background:#d7262d; border-color:#d7262d; color:#fff }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Ticket Wallet",
+    "overview": "SafeFrame turns one photo edit into a short, legible trip: choose a source, select one treatment, and collect the finished image. The ticket-wallet reference contributes its navy and red identity, condensed display type, tab-like labels, crisp dividers, and a single three-step progress signature. The interface stays an ordinary photo tool; travel language is an organizing cue, not a layer of invented travel facts.\n\nThe two-panel workspace keeps the source and its compact edit controls together on the left while the result remains visible on the right from the first desktop view. The same hierarchy collapses into one mobile column, with the source and edit choices before the result. Privacy and creative modes share the same clear selection and action pattern.",
+    "keyCharacteristics": [
+      "A short, ordered Choose → Edit → Ready journey.",
+      "A restrained carrier palette with red reserved for active progress and primary action.",
+      "Standard, legible photo controls inside a crisp, low-depth layout."
+    ],
+    "rules": [
+      { "name": "The Two-Panel First View Rule", "body": "Keep the source and compact edit controls together on the left, with the result pane visible on the right from the first desktop view.", "section": "layout" },
+      { "name": "The Ticket Cue Rule", "body": "Use travel language to organize the short edit journey; do not invent flight facts or let decorative travel details obscure photo controls.", "section": "components" }
+    ],
+    "dos": [
+      "Do keep the desktop source-and-controls panel beside a visible result panel from the first view.",
+      "Do keep the three edit modes distinct and selectable before generation.",
+      "Do retain the visible focus treatment and reduced-motion behavior."
+    ],
+    "donts": [
+      "Don't turn the editor into a feed, gallery, or stack of decorative upload cards.",
+      "Don't add invented flight information or travel facts to the ticket-wallet metaphor.",
+      "Don't obscure the selected photo, edit choice, generation state, or result download behind decorative travel details."
+    ]
+  }
+}
