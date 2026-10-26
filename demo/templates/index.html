@@ -19,7 +19,7 @@
     .project-identity { min-width:0 }
     .project-title-line { display:flex; align-items:center; flex-wrap:wrap; gap:13px }
     .project-venue { display:flex; align-items:center; gap:6px; margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.04em }
-    .project-venue svg { width:16px; height:16px; flex:none; fill:currentColor }
+    .project-venue svg { width:18px; height:18px; flex:none; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round }
     .ui-icon { width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round }
     .dartmouth-link { position:relative; display:inline-flex; flex:none; align-items:center }
     .dartmouth-link img { display:block; width:62px; height:34px; object-fit:contain }
@@ -33,11 +33,11 @@
     .resource-link { position:relative; display:inline-flex; align-items:center; gap:7px; padding:7px 0; border-bottom:1px solid transparent; color:var(--navy); font-size:13px; font-weight:600; text-decoration:none }
     .resource-link .ui-icon { width:15px; height:15px }
     .resource-link:hover, .resource-link:focus-visible, .authors a:hover, .authors a:focus-visible { border-color:var(--red) }
-    .pipeline-progress { position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px; padding:17px 0 18px; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
-    .pipeline-progress::before { content:""; position:absolute; top:32px; left:24px; right:24px; height:1px; background:var(--line) }
+    .pipeline-progress { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px; padding:16px 0 20px }
     .progress-step { position:relative; display:grid; grid-template-columns:30px minmax(0,1fr); align-items:start; gap:10px; min-width:0 }
-    .progress-marker { position:relative; display:grid; place-items:center; width:29px; height:29px; border:1px solid #aeb8c5; border-radius:50%; background:var(--paper); color:var(--muted); font-size:12px; font-weight:700 }
+    .progress-marker { position:relative; display:grid; place-items:center; width:29px; height:29px; border:1px solid #aeb8c5; border-radius:50%; background:var(--paper); color:var(--muted); font-size:12px; font-weight:700; transition:background .2s,border-color .2s,color .2s }
     .progress-marker svg { display:none; width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round }
+    .progress-marker svg path { stroke-dasharray:24; stroke-dashoffset:24 }
     .progress-copy { padding-top:1px }
     .progress-copy strong { display:block; color:var(--muted); font-size:13px; line-height:1.25 }
     .progress-copy small { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.35 }
@@ -46,7 +46,7 @@
     .progress-step.is-current .progress-copy strong { color:var(--navy) }
     .progress-step.is-complete .progress-marker { border-color:var(--navy); background:var(--navy); color:#fff }
     .progress-step.is-complete .progress-marker span { display:none }
-    .progress-step.is-complete .progress-marker svg { display:block }
+    .progress-step.is-complete .progress-marker svg { display:block; animation:progress-check .32s ease-out forwards }
     .progress-step.is-complete .progress-copy strong { color:var(--navy) }
     .progress-step[data-state="running"] .progress-marker span { color:transparent }
     .progress-step[data-state="running"] .progress-marker::after { content:""; position:absolute; inset:0; margin:auto; width:19px; height:19px; border:2px solid #ffffff70; border-top-color:#fff; border-radius:50%; animation:progress-spin .8s linear infinite }
@@ -57,6 +57,7 @@
     .progress-step[data-state="error"] .progress-marker::after { content:"!"; font-size:15px; font-weight:700 }
     .progress-step[data-state="error"] .progress-copy strong, .progress-step[data-state="error"] .progress-state { color:#a51e24 }
     @keyframes progress-spin { to { transform:rotate(360deg) } }
+    @keyframes progress-check { to { stroke-dashoffset:0 } }
     .workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:stretch }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
@@ -90,7 +91,7 @@
     .privacy-review { margin-top:9px; font-size:12px }
     .privacy-review summary { color:var(--navy); cursor:pointer; font-weight:600 }
     .privacy-review p { margin-top:7px }
-    .qr-popover { position:absolute; z-index:10; left:50%; bottom:calc(100% + 8px); width:156px; padding:10px; background:#fff; border:1px solid var(--line); box-shadow:0 6px 20px #0d1b3d22; color:var(--ink); text-align:center; opacity:0; visibility:hidden; transform:translate(-50%,6px); transition:opacity .15s,transform .15s,visibility .15s }
+    .qr-popover { position:absolute; z-index:20; left:50%; top:calc(100% + 8px); width:156px; padding:10px; background:#fff; border:1px solid var(--line); box-shadow:0 6px 20px #0d1b3d22; color:var(--ink); text-align:center; opacity:0; visibility:hidden; transform:translate(-50%,-4px); transition:opacity .15s,transform .15s,visibility .15s }
     .qr-popover img { display:block; width:126px; height:126px; margin:auto }
     .qr-popover span { display:block; margin-top:6px; font-size:11px; font-weight:500 }
     .resource-link:hover .qr-popover, .resource-link:focus-visible .qr-popover, .authors a:hover .qr-popover, .authors a:focus-visible .qr-popover, .dartmouth-link:hover .qr-popover, .dartmouth-link:focus-visible .qr-popover { opacity:1; visibility:visible; transform:translate(-50%,0) }
@@ -114,6 +115,8 @@
     .result-panel { display:flex; flex-direction:column }
     .result-stage { min-height:400px; flex:1; display:grid; place-items:center; overflow:hidden; background:var(--wash); border:1px solid #e1e5e9 }
     .result-stage img { display:none; width:100%; max-height:520px; object-fit:contain }
+    .result-stage img[src^="data:"] { animation:result-arrive .35s ease-out both }
+    @keyframes result-arrive { from { opacity:0; transform:scale(.985) } to { opacity:1; transform:scale(1) } }
     .result-empty { max-width:260px; padding:20px; color:var(--muted); font-size:14px; text-align:center }
     .result-empty strong { display:block; margin-bottom:4px; color:var(--navy) }
     .result-stage.processing .result-empty strong { color:var(--purple) }
@@ -136,7 +139,6 @@
       .project-links { grid-column:auto; gap:7px 16px; padding-top:8px; margin-top:3px }
       .resource-link { font-size:12px }
       .pipeline-progress { grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 10px; padding:13px 0 }
-      .pipeline-progress::before { display:none }
       .progress-step { grid-template-columns:20px minmax(0,1fr); gap:6px }
       .progress-marker { width:20px; height:20px; font-size:10px }
       .progress-step[data-state="running"] .progress-marker::after { width:14px; height:14px }
@@ -159,14 +161,17 @@
       .actions .button { width:100% }
       .result-stage { min-height:270px }
     }
-    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; scroll-behavior:auto !important } }
+    @media (prefers-reduced-motion:reduce) {
+      *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important }
+      .progress-marker svg path { stroke-dashoffset:0 }
+    }
   </style>
 </head>
 <body>
   <main>
     <header class="project-summary" aria-label="Unsafe2Safe paper information">
       <div class="project-identity">
-        <div class="project-title-line"><h1>Unsafe2Safe</h1><p class="project-venue"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 0.8 10.6 6.1 15.8 4.2 11.8 8.1 17.2 9.2 11.8 10.1 15.8 14.1 10.6 12.2 9 17.5 7.4 12.2 2.2 14.1 6.2 10.1 .8 9.2 6.2 8.1 2.2 4.2 7.4 6.1z"/></svg>CVPR 2026</p></div>
+        <div class="project-title-line"><h1>Unsafe2Safe</h1><p class="project-venue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21C7 17 5 11 5 4M13 21c4-4 6-10 6-17M6 9C2 9 2 6 3 4c3 0 5 2 3 5ZM8 14c-4 1-5-2-5-4 3-1 6 0 5 4ZM10 18c-4 1-5-2-5-4 3-1 6 0 5 4ZM18 9c4 0 4-3 3-5-3 0-5 2-3 5ZM16 14c4 1 5-2 5-4-3-1-6 0-5 4ZM14 18c4 1 5-2 5-4-3-1-6 0-5 4Z"/></svg>CVPR 2026 · HIGHLIGHT PAPER</p></div>
       </div>
       <div class="project-details">
         <p class="paper-title">Controllable Image Anonymization for Downstream Utility</p>
