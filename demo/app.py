@@ -107,11 +107,10 @@ def edit_photo():
     image_buffer = BytesIO()
     image.save(image_buffer, format="JPEG", quality=92)
     prompt = (
-        "You are the image editor in Stage 2 of Unsafe2Safe. Use the Stage 1 privacy-safe public caption "
-        "as scene context, preserving composition and useful visual details except where the selected "
-        "edit instruction asks for a change.\n\n"
-        f"Stage 1 public caption: {public_caption}\n\n"
-        f"Stage 2 edit instruction: {PRESETS[mode]}"
+        "Edit the supplied photo to match this privacy-preserving scene description and edit instruction. "
+        "Preserve the original framing, useful non-sensitive content, and photorealistic style. "
+        "Do not add identifying personal details.\n"
+        f"Public description: {public_caption}\nEdit instruction: {PRESETS[mode]}"
     )
     client = genai.Client(api_key=api_key())
     try:
