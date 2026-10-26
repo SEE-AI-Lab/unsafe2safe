@@ -18,15 +18,15 @@
     .brand { font-size:20px; font-weight:700; letter-spacing:-.03em }
     .brand-mark { color:#ef5449; margin-right:4px }
     main { max-width:1440px; margin:auto; padding:28px max(24px,calc((100vw - 1316px)/2)) 40px }
-    .project-summary { display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:34px; padding:22px 0 20px; border-bottom:1px solid var(--line) }
+    .project-summary { display:grid; grid-template-columns:1.05fr .95fr; align-items:start; gap:34px; padding:22px 0 20px; border-bottom:1px solid var(--line) }
     .project-identity { min-width:0 }
-    .project-topline { display:flex; align-items:center; justify-content:space-between; gap:20px }
     .project-venue { margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase }
-    .dartmouth-link { position:relative; display:block; flex:none }
-    .dartmouth-link img { display:block; width:76px; height:60px; object-fit:contain }
+    .dartmouth-link { position:relative; display:inline-flex; flex:none; align-items:center }
+    .dartmouth-link img { display:block; width:96px; height:44px; object-fit:contain }
     .project-identity h1 { margin:0; color:var(--navy); font:700 40px/1 'Barlow Condensed',sans-serif; letter-spacing:.01em }
     .paper-title { margin:5px 0 9px; color:var(--ink); font-size:15px }
     .authors { display:flex; align-items:center; flex-wrap:wrap; gap:9px; color:var(--muted); font-size:13px }
+    .authors .dartmouth-link { margin-left:10px }
     .authors a { position:relative; color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px }
     .method-summary { display:grid; grid-template-columns:1fr 1fr; background:#fff; border:1px solid var(--line); padding:17px 18px }
     .method-step { min-width:0 }
@@ -112,8 +112,7 @@
       .project-summary { padding:18px 0 16px }
       .project-identity h1 { font-size:34px }
       .paper-title { max-width:32ch; font-size:13px }
-      .project-topline { align-items:flex-start }
-      .dartmouth-link img { width:64px; height:52px }
+      .dartmouth-link img { width:84px; height:40px }
       .method-summary { padding:12px; gap:10px }
       .method-step + .method-step { margin-left:0; padding-left:10px }
       .method-step strong { font-size:12px }
@@ -145,19 +144,17 @@
   <main>
     <section class="project-summary" aria-label="Unsafe2Safe paper and method">
       <div class="project-identity">
-        <div class="project-topline">
-          <p class="project-venue">CVPR 2026</p>
-          <a class="dartmouth-link" data-qr-id="dartmouth" data-qr-title="Dartmouth College" href="{{ links_by_id.dartmouth.url }}" target="_blank" rel="noopener noreferrer" aria-label="Dartmouth College">
-            <img src="{{ url_for('static', filename='dartmouth-d-pine-wordmark.png') }}" alt="Dartmouth College D-Pine wordmark">
-            <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
-          </a>
-        </div>
+        <p class="project-venue">CVPR 2026</p>
         <h1>Unsafe2Safe</h1>
         <p class="paper-title">Controllable Image Anonymization for Downstream Utility</p>
         <div class="authors">
           <a data-qr-id="minh" data-qr-title="Minh Dinh Trong’s page" href="{{ links_by_id.minh.url }}" target="_blank" rel="noopener noreferrer">Minh Dinh Trong<span class="qr-popover"><img src="{{ url_for('static', filename='qr/minh.svg') }}" alt=""><span>Click to expand QR</span></span></a>
           <span aria-hidden="true">/</span>
           <a data-qr-id="souyoung" data-qr-title="SouYoung Jin’s page" href="{{ links_by_id.souyoung.url }}" target="_blank" rel="noopener noreferrer">SouYoung Jin<span class="qr-popover"><img src="{{ url_for('static', filename='qr/souyoung.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+          <a class="dartmouth-link" data-qr-id="dartmouth" data-qr-title="Dartmouth College" href="{{ links_by_id.dartmouth.url }}" target="_blank" rel="noopener noreferrer" aria-label="Dartmouth College">
+            <img src="{{ url_for('static', filename='dartmouth-d-pine-wordmark.png') }}" alt="Dartmouth College D-Pine wordmark">
+            <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
+          </a>
         </div>
       </div>
       <div class="method-summary" aria-label="Two-stage method">
