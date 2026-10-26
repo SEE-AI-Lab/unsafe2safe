@@ -148,10 +148,10 @@
         <h1>Unsafe2Safe</h1>
         <p class="paper-title">Controllable Image Anonymization for Downstream Utility</p>
         <div class="authors">
-          <a data-qr-id="minh" data-qr-title="Minh Dinh Trong’s page" href="{{ links_by_id.minh.url }}" target="_blank" rel="noopener noreferrer">Minh Dinh Trong<span class="qr-popover"><img src="{{ url_for('static', filename='qr/minh.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+          <a data-qr-id="minh" data-qr-title="Minh Dinh Trong’s page" href="{{ links_by_id.minh.url }}">Minh Dinh Trong<span class="qr-popover"><img src="{{ url_for('static', filename='qr/minh.svg') }}" alt=""><span>Click to expand QR</span></span></a>
           <span aria-hidden="true">/</span>
-          <a data-qr-id="souyoung" data-qr-title="SouYoung Jin’s page" href="{{ links_by_id.souyoung.url }}" target="_blank" rel="noopener noreferrer">SouYoung Jin<span class="qr-popover"><img src="{{ url_for('static', filename='qr/souyoung.svg') }}" alt=""><span>Click to expand QR</span></span></a>
-          <a class="dartmouth-link" data-qr-id="dartmouth" data-qr-title="Dartmouth College" href="{{ links_by_id.dartmouth.url }}" target="_blank" rel="noopener noreferrer" aria-label="Dartmouth College">
+          <a data-qr-id="souyoung" data-qr-title="SouYoung Jin’s page" href="{{ links_by_id.souyoung.url }}">SouYoung Jin<span class="qr-popover"><img src="{{ url_for('static', filename='qr/souyoung.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+          <a class="dartmouth-link" data-qr-id="dartmouth" data-qr-title="Dartmouth College" href="{{ links_by_id.dartmouth.url }}" aria-label="Dartmouth College">
             <img src="{{ url_for('static', filename='dartmouth-d-pine-wordmark.png') }}" alt="Dartmouth College D-Pine wordmark">
             <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
           </a>
@@ -164,7 +164,7 @@
     </section>
     <nav class="project-links" aria-label="Project resources">
       {% for link in project_links if link.id in ['paper', 'project', 'github', 'dataset'] %}
-      <a class="resource-link" data-qr-id="{{ link.id }}" data-qr-title="{{ link.title }}" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}<span class="qr-popover"><img src="{{ url_for('static', filename='qr/' ~ link.id ~ '.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+      <a class="resource-link" data-qr-id="{{ link.id }}" data-qr-title="{{ link.title }}" href="{{ link.url }}">{{ link.label }}<span class="qr-popover"><img src="{{ url_for('static', filename='qr/' ~ link.id ~ '.svg') }}" alt=""><span>Click to expand QR</span></span></a>
       {% endfor %}
     </nav>
     <h2 class="demo-heading">Try the pipeline</h2>
@@ -249,7 +249,7 @@
     const qrDialogLink = document.getElementById('qrDialogLink');
 
     document.querySelectorAll('[data-qr-id]').forEach((link) => link.addEventListener('click', (event) => {
-      if (event.target.closest('.qr-popover')) event.preventDefault();
+      event.preventDefault();
       qrDialogTitle.textContent = link.dataset.qrTitle;
       qrDialogImage.src = `/static/qr/${link.dataset.qrId}.svg`;
       qrDialogImage.alt = `QR code for ${link.dataset.qrTitle}`;
