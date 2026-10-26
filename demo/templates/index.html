@@ -20,27 +20,31 @@
     main { max-width:1440px; margin:auto; padding:28px max(24px,calc((100vw - 1316px)/2)) 40px }
     .project-summary { display:grid; grid-template-columns:1.05fr .95fr; align-items:start; gap:34px; padding:22px 0 20px; border-bottom:1px solid var(--line) }
     .project-identity { min-width:0 }
-    .project-venue { margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase }
+    .project-venue { display:flex; align-items:center; gap:7px; margin:0; color:var(--purple); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase }
+    .project-venue svg { width:16px; height:16px; flex:none; fill:currentColor }
+    .ui-icon { width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round }
     .dartmouth-link { position:relative; display:inline-flex; flex:none; align-items:center }
-    .dartmouth-link img { display:block; width:96px; height:44px; object-fit:contain }
+    .dartmouth-link img { display:block; width:62px; height:34px; object-fit:contain }
     .project-identity h1 { margin:0; color:var(--navy); font:700 40px/1 'Barlow Condensed',sans-serif; letter-spacing:.01em }
     .paper-title { margin:5px 0 9px; color:var(--ink); font-size:15px }
     .authors { display:flex; align-items:center; flex-wrap:wrap; gap:9px; color:var(--muted); font-size:13px }
-    .authors .dartmouth-link { margin-left:10px }
     .authors a { position:relative; color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px }
     .method-summary { display:grid; grid-template-columns:1fr 1fr; background:#fff; border:1px solid var(--line); padding:17px 18px }
     .method-step { min-width:0 }
     .method-step + .method-step { border-left:1px solid var(--line); padding-left:18px; margin-left:18px }
-    .method-step span { color:var(--purple); font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase }
+    .method-step span { display:flex; align-items:center; gap:6px; color:var(--purple); font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase }
+    .method-step span .ui-icon { width:15px; height:15px }
     .method-step strong { display:block; margin-top:4px; color:var(--navy); font-size:14px }
     .method-step p { margin:4px 0 0; color:var(--muted); font-size:12px }
     .project-links { display:flex; align-items:center; gap:22px; min-height:46px; border-bottom:1px solid var(--line) }
-    .resource-link { position:relative; padding:7px 0; border-bottom:1px solid transparent; color:var(--navy); font-size:13px; font-weight:600; text-decoration:none }
+    .project-links .dartmouth-link { margin-left:auto }
+    .resource-link { position:relative; display:inline-flex; align-items:center; gap:7px; padding:7px 0; border-bottom:1px solid transparent; color:var(--navy); font-size:13px; font-weight:600; text-decoration:none }
+    .resource-link .ui-icon { width:15px; height:15px }
     .resource-link:hover, .resource-link:focus-visible, .authors a:hover, .authors a:focus-visible { border-color:var(--red) }
     .demo-heading { margin:19px 0 13px; color:var(--navy); font:700 25px/1 'Barlow Condensed',sans-serif }
     .workspace { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; align-items:stretch }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
-    .panel-heading { margin:0 0 13px; font-size:14px; font-weight:700 }
+    .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
     .photo { height:270px; display:grid; place-items:center; overflow:hidden; background:var(--wash); color:var(--navy); border:1px dashed #aeb8c5 }
     .photo img, .photo video { display:none; width:100%; height:100%; max-height:360px; object-fit:contain; background:#111 }
     .photo.has-image img, .photo.camera-on video { display:block }
@@ -51,7 +55,8 @@
     .photo-actions[hidden] { display:none }
     .camera-controls[hidden], .camera-error[hidden] { display:none }
     .camera-error { margin:8px 0 0; color:#a51e24; font-size:13px }
-    .button { min-height:42px; border:1px solid var(--red); border-radius:3px; background:var(--red); color:#fff; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s,transform .15s }
+    .button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; border:1px solid var(--red); border-radius:3px; background:var(--red); color:#fff; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s,transform .15s }
+    .button .ui-icon { width:16px; height:16px }
     .button:hover { background:#b91f26; transform:translateY(-1px) }
     .button.secondary { border-color:var(--line); background:#fff; color:var(--navy) }
     .button.secondary:hover { border-color:var(--navy); background:#f6f7f8 }
@@ -59,7 +64,8 @@
     .privacy-note { margin:9px 0 0; color:var(--muted); font-size:12px }
     .stage-one { margin-top:15px; padding-top:13px; border-top:1px solid var(--line) }
     .stage-one[hidden], .caption-results[hidden] { display:none }
-    .stage-one-title { margin:0 0 9px; font-size:14px }
+    .stage-one-title, .mode-title { display:flex; align-items:center; gap:8px; margin:0 0 9px; font-size:14px }
+    .mode-title { margin:20px 0 9px }
     .caption-status { margin:0 0 10px; color:var(--muted); font-size:13px }
     .caption-status.error { color:#a51e24 }
     .caption-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
@@ -72,22 +78,22 @@
     .qr-popover img { display:block; width:126px; height:126px; margin:auto }
     .qr-popover span { display:block; margin-top:6px; font-size:11px; font-weight:500 }
     .resource-link:hover .qr-popover, .resource-link:focus-visible .qr-popover, .authors a:hover .qr-popover, .authors a:focus-visible .qr-popover, .dartmouth-link:hover .qr-popover, .dartmouth-link:focus-visible .qr-popover { opacity:1; visibility:visible; transform:translate(-50%,0) }
-    .qr-dialog { position:fixed; inset:0; width:100vw; height:100dvh; max-width:none; max-height:none; margin:0; padding:32px; border:0; background:var(--navy); color:white }
-    .qr-dialog::backdrop { background:#0d1b3dee }
+    .qr-dialog { position:fixed; inset:0; width:100vw; height:100dvh; max-width:none; max-height:none; margin:0; padding:32px; border:0; background:transparent; color:white }
+    .qr-dialog::backdrop { background:#0d1b3dc9; backdrop-filter:blur(2px) }
     .qr-dialog-layout { display:grid; grid-template-columns:1fr min(48vw,56vh); align-items:center; gap:48px; max-width:1100px; min-height:100%; margin:auto }
     .qr-dialog h2 { margin:0 0 8px; font:700 38px/1.05 'Barlow Condensed',sans-serif }
     .qr-dialog p { max-width:44ch; color:#d8dfeb; font-size:15px }
     .qr-dialog img { display:block; width:min(48vw,56vh,560px); height:auto; padding:14px; background:white }
     .qr-dialog-link { display:inline-block; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
-    .mode-title { margin:20px 0 9px; font-size:14px }
     .choices { display:grid; gap:7px }
-    .choice { width:100%; min-height:61px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:9px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) auto; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
+    .choice { width:100%; min-height:61px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:9px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) 18px; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
     .choice:hover { border-color:#8796ac; background:#fafbfc }
     .choice[aria-pressed="true"] { border:2px solid var(--red); padding:8px 10px; background:#fffafa }
     .radio { width:15px; height:15px; border:1px solid #8797a9; border-radius:50% }
     .choice[aria-pressed="true"] .radio { border:4px solid var(--red) }
     .choice-copy strong { display:block; color:var(--navy); font-size:13px }
     .choice-copy small { display:block; margin-top:2px; color:var(--muted); font-size:12px; line-height:1.35 }
+    .choice-icon { color:var(--purple) }
     .actions { display:flex; justify-content:flex-end; margin-top:13px }
     .result-panel { display:flex; flex-direction:column }
     .result-stage { min-height:400px; flex:1; display:grid; place-items:center; overflow:hidden; background:var(--wash); border:1px solid #e1e5e9 }
@@ -112,7 +118,7 @@
       .project-summary { padding:18px 0 16px }
       .project-identity h1 { font-size:34px }
       .paper-title { max-width:32ch; font-size:13px }
-      .dartmouth-link img { width:84px; height:40px }
+      .dartmouth-link img { width:56px; height:30px }
       .method-summary { padding:12px; gap:10px }
       .method-step + .method-step { margin-left:0; padding-left:10px }
       .method-step strong { font-size:12px }
@@ -131,7 +137,7 @@
       .footer-inner { min-height:0; padding:16px 18px; flex-direction:column; gap:12px }
       .resources { justify-content:center; gap:4px 18px }
       .resource-link { font-size:12px }
-      .choice { grid-template-columns:17px minmax(0,1fr) auto; gap:7px; padding:8px }
+      .choice { grid-template-columns:17px minmax(0,1fr) 18px; gap:7px; padding:8px }
       .choice[aria-pressed="true"] { padding:7px }
       .actions .button { width:100% }
       .result-stage { min-height:270px }
@@ -144,51 +150,57 @@
   <main>
     <section class="project-summary" aria-label="Unsafe2Safe paper and method">
       <div class="project-identity">
-        <p class="project-venue">CVPR 2026</p>
+        <p class="project-venue"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 0.8 10.6 6.1 15.8 4.2 11.8 8.1 17.2 9.2 11.8 10.1 15.8 14.1 10.6 12.2 9 17.5 7.4 12.2 2.2 14.1 6.2 10.1 .8 9.2 6.2 8.1 2.2 4.2 7.4 6.1z"/></svg>CVPR 2026</p>
         <h1>Unsafe2Safe</h1>
         <p class="paper-title">Controllable Image Anonymization for Downstream Utility</p>
         <div class="authors">
           <a data-qr-id="minh" data-qr-title="Minh Dinh Trong’s page" href="{{ links_by_id.minh.url }}">Minh Dinh Trong<span class="qr-popover"><img src="{{ url_for('static', filename='qr/minh.svg') }}" alt=""><span>Click to expand QR</span></span></a>
           <span aria-hidden="true">/</span>
           <a data-qr-id="souyoung" data-qr-title="SouYoung Jin’s page" href="{{ links_by_id.souyoung.url }}">SouYoung Jin<span class="qr-popover"><img src="{{ url_for('static', filename='qr/souyoung.svg') }}" alt=""><span>Click to expand QR</span></span></a>
-          <a class="dartmouth-link" data-qr-id="dartmouth" data-qr-title="Dartmouth College" href="{{ links_by_id.dartmouth.url }}" aria-label="Dartmouth College">
-            <img src="{{ url_for('static', filename='dartmouth-d-pine-wordmark.png') }}" alt="Dartmouth College D-Pine wordmark">
-            <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
-          </a>
         </div>
       </div>
       <div class="method-summary" aria-label="Two-stage method">
-        <div class="method-step"><span>Stage 1</span><strong>Privacy review + captions</strong><p>Full visual description and privacy-safe public caption</p></div>
-        <div class="method-step"><span>Stage 2</span><strong>Caption-guided edit</strong><p>Public caption plus the selected edit instruction</p></div>
+        <div class="method-step"><span><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>Stage 1</span><strong>Privacy review + captions</strong><p>Full visual description and privacy-safe public caption</p></div>
+        <div class="method-step"><span><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2</span><strong>Caption-guided edit</strong><p>Public caption plus the selected edit instruction</p></div>
       </div>
     </section>
     <nav class="project-links" aria-label="Project resources">
       {% for link in project_links if link.id in ['paper', 'project', 'github', 'dataset'] %}
-      <a class="resource-link" data-qr-id="{{ link.id }}" data-qr-title="{{ link.title }}" href="{{ link.url }}">{{ link.label }}<span class="qr-popover"><img src="{{ url_for('static', filename='qr/' ~ link.id ~ '.svg') }}" alt=""><span>Click to expand QR</span></span></a>
+      <a class="resource-link" data-qr-id="{{ link.id }}" data-qr-title="{{ link.title }}" href="{{ link.url }}">
+        {% if link.id == 'paper' %}<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>
+        {% elif link.id == 'project' %}<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        {% elif link.id == 'github' %}<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg>
+        {% else %}<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>{% endif %}
+        {{ link.label }}<span class="qr-popover"><img src="{{ url_for('static', filename='qr/' ~ link.id ~ '.svg') }}" alt=""><span>Click to expand QR</span></span>
+      </a>
       {% endfor %}
+      <a class="dartmouth-link" data-qr-id="dartmouth" data-qr-title="Dartmouth College" href="{{ links_by_id.dartmouth.url }}" aria-label="Dartmouth College">
+        <img src="{{ url_for('static', filename='dartmouth-d-pine-wordmark.png') }}" alt="Dartmouth College D-Pine wordmark">
+        <span class="qr-popover"><img src="{{ url_for('static', filename='qr/dartmouth.svg') }}" alt=""><span>Click to expand QR</span></span>
+      </a>
     </nav>
     <h2 class="demo-heading">Try the pipeline</h2>
     <section class="workspace" aria-label="Photo editor">
       <article class="panel">
-        <h2 class="panel-heading">Your photo</h2>
+        <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg>Your photo</h2>
         <div class="photo" id="drop">
           <div class="upload-prompt">Your photo will appear here</div>
           <img id="preview" alt="Selected original photo">
           <video id="cameraPreview" playsinline muted hidden aria-label="Live camera preview"></video>
         </div>
         <div class="photo-actions" id="photoActions">
-          <button class="button secondary" id="uploadButton" type="button">Upload a photo</button>
-          <button class="button secondary" id="cameraButton" type="button">Take a photo</button>
+          <button class="button secondary" id="uploadButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5M4 15v5h16v-5"/></svg>Upload a photo</button>
+          <button class="button secondary" id="cameraButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="14" r="4"/></svg>Take a photo</button>
         </div>
         <div class="camera-controls" id="cameraControls" hidden>
-          <button class="button" id="captureButton" type="button">Capture photo</button>
+          <button class="button" id="captureButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Capture photo</button>
           <button class="button secondary" id="cancelCameraButton" type="button">Cancel</button>
         </div>
         <p class="camera-error" id="cameraError" role="status" aria-live="polite" hidden>Couldn’t open the camera. Upload a photo instead.</p>
         <input class="file-input" id="photo" type="file" accept="image/*">
         <p class="privacy-note">Photo goes to Gemini for captions and editing. Not saved here.</p>
         <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle" hidden>
-          <h2 class="stage-one-title" id="stageOneTitle">Stage 1 · Captions</h2>
+          <h2 class="stage-one-title" id="stageOneTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>Stage 1 · Captions</h2>
           <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
           <div class="caption-grid caption-results" id="captionResults" hidden>
             <div class="caption-block"><h3>Full visual description</h3><p id="fullCaption"></p></div>
@@ -196,22 +208,22 @@
           </div>
           <details class="privacy-review" id="privacyReviewDetails" hidden><summary>Privacy review</summary><p id="privacyReview"></p></details>
         </section>
-        <h2 class="mode-title">Stage 2 · Edit instruction</h2>
+        <h2 class="mode-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Edit instruction</h2>
         <div class="choices" role="radiogroup" aria-label="Edit mode">
           <button class="choice" type="button" data-mode="spooky_private" aria-pressed="true">
-            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Spooky, still private</strong><small>Give it a Halloween look and hide identifying details.</small></span>
+            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Spooky, still private</strong><small>Give it a Halloween look and hide identifying details.</small></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.7A9.5 9.5 0 0 1 14.5 3.5Z"/><path d="m18.5 3 .5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5.5-1.5Z"/></svg>
           </button>
           <button class="choice" type="button" data-mode="diverse_cast" aria-pressed="false">
-            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Broaden the cast</strong><small>Add a wide mix of ages, skin tones, gender expression, and visible abilities.</small></span>
+            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Broaden the cast</strong><small>Add a wide mix of ages, skin tones, gender expression, and visible abilities.</small></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20v-1a6 6 0 0 1 12 0v1M15 15a5 5 0 0 1 6 4v1"/></svg>
           </button>
           <button class="choice" type="button" data-mode="new_setting" aria-pressed="false">
-            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Take it somewhere else</strong><small>Keep the moment, move it to an unexpected setting.</small></span>
+            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Take it somewhere else</strong><small>Keep the moment, move it to an unexpected setting.</small></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="6" r="2"/><path d="m3 20 6-8 4 5 3-4 5 7H3Z"/></svg>
           </button>
         </div>
         <div class="actions"><button class="button" id="edit" disabled>Create this edit</button></div>
       </article>
       <article class="panel result-panel">
-        <h2 class="panel-heading">Edited photo</h2>
+        <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>Edited photo</h2>
         <div class="result-stage" id="resultStage"><div class="result-empty" id="placeholder" role="status" aria-live="polite"><strong>Your result appears here</strong>Your edited photo will appear here.</div><img id="resultImage" alt="Gemini edited photo"></div>
         <div class="result-caption"><a id="download" download="safeframe-edited.png">Download edited photo</a></div>
       </article>
