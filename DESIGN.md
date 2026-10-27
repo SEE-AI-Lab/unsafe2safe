@@ -164,7 +164,7 @@ Panels use a small 4px corner; buttons and edit choices use a tighter 3px corner
 ### Edit Choices
 - **Character:** Three compact, clearly named treatments, without category tags or extra status labels.
 - **Shape:** Tight 3px corners, a circular radio mark, and a fine neutral border.
-- **Selected:** Standard choices use a red outline, pale red-white wash, and red radio center. The last choice, **Halloween spooky**, uses a stronger pumpkin-orange outline and warm cream wash with its pumpkin icon; selection remains exposed through `aria-pressed`.
+- **Selected:** All three choices keep equal dimensions. The last choice, **Halloween spooky**, uses a stronger pumpkin-orange outline, warm cream wash, a two-line 27px orange Nosifer title, and a small bat-and-pumpkin illustration. The bats sit above the pumpkin; faint bats briefly follow a fine pointer inside the cell. Standard labels use 18px type; selection remains exposed through `aria-pressed`.
 - **Hover:** Neutral border darkens slightly without changing the selected state.
 
 ### Photo and Result Stages
