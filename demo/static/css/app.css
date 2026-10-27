@@ -128,9 +128,17 @@
     .halloween-art img { display:block; flex:none; object-fit:cover }
     .halloween-bats { width:49px; height:27px; object-position:center 50%; transform:translateY(-7px) }
     .halloween-pumpkin { width:31px; height:27px }
-    .halloween-hover-bats { position:absolute; z-index:0; left:var(--bat-x,50%); top:var(--bat-y,50%); width:48px; height:36px; opacity:0; transform:translate(-50%,-50%) scale(.72); mix-blend-mode:multiply; pointer-events:none; transition:opacity .15s,transform .12s ease-out }
-    .halloween-hover-bats img { display:block; width:100%; height:100%; object-fit:contain }
-    .choice[data-mode="spooky_private"].is-bat-flying .halloween-hover-bats { opacity:.28; transform:translate(-50%,-50%) scale(1) }
+    .halloween-hover-bats { position:absolute; z-index:0; left:0; top:0; width:0; height:0; opacity:0; pointer-events:none; transform:translate(var(--bat-x,0px),var(--bat-y,0px)); transition:opacity .15s }
+    .halloween-hover-bats img { position:absolute; display:block; width:32px; height:32px; object-fit:contain; opacity:.72; mix-blend-mode:multiply; animation:bat-flit 1.35s ease-in-out infinite alternate; animation-play-state:paused }
+    .halloween-hover-bats img:nth-child(1) { left:-39px; top:-27px; width:27px; height:27px; animation-delay:-.3s }
+    .halloween-hover-bats img:nth-child(2) { left:4px; top:-42px; width:34px; height:34px; animation-delay:-.8s }
+    .halloween-hover-bats img:nth-child(3) { left:24px; top:-5px; width:25px; height:25px; animation-delay:-.5s }
+    .halloween-hover-bats img:nth-child(4) { left:1px; top:14px; width:31px; height:31px; animation-delay:-1s }
+    .halloween-hover-bats img:nth-child(5) { left:-38px; top:8px; width:25px; height:25px; animation-delay:-.65s }
+    .halloween-hover-bats img:nth-child(6) { left:-17px; top:-51px; width:22px; height:22px; animation-delay:-.15s }
+    .choice[data-mode="spooky_private"].is-bat-flying .halloween-hover-bats { opacity:.95 }
+    .choice[data-mode="spooky_private"].is-bat-flying .halloween-hover-bats img { animation-play-state:running }
+    @keyframes bat-flit { to { transform:translate(4px,-5px) rotate(9deg) } }
     .generated-instruction { margin-top:10px; padding:10px 12px; border:1px solid var(--line); background:#f8f9fb }
     .generated-instruction h3 { margin:0 0 4px; color:var(--purple); font-size:15px; font-weight:700 }
     .generated-instruction p { margin:0; color:var(--ink); font-size:15px; line-height:1.45 }

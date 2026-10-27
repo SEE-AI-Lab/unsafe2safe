@@ -178,21 +178,16 @@
 
     const halloweenChoice = document.querySelector('.choice[data-mode="spooky_private"]');
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let batIdleTimer;
-    if (finePointer && !reducedMotion) {
+    if (finePointer) {
       halloweenChoice.addEventListener('pointermove', (event) => {
         const bounds = halloweenChoice.getBoundingClientRect();
-        const x = Math.max(24, Math.min(bounds.width - 24, event.clientX - bounds.left));
-        const y = Math.max(18, Math.min(bounds.height - 18, event.clientY - bounds.top));
+        const x = Math.max(50, Math.min(bounds.width - 50, event.clientX - bounds.left));
+        const y = Math.max(52, Math.min(bounds.height - 52, event.clientY - bounds.top));
         halloweenChoice.style.setProperty('--bat-x', `${x}px`);
         halloweenChoice.style.setProperty('--bat-y', `${y}px`);
         halloweenChoice.classList.add('is-bat-flying');
-        clearTimeout(batIdleTimer);
-        batIdleTimer = setTimeout(() => halloweenChoice.classList.remove('is-bat-flying'), 350);
       });
       halloweenChoice.addEventListener('pointerleave', () => {
-        clearTimeout(batIdleTimer);
         halloweenChoice.classList.remove('is-bat-flying');
       });
     }
