@@ -73,11 +73,11 @@ components:
 
 SafeFrame turns one photo edit into a short, legible trip: choose a source, select one treatment, and collect the finished image. The ticket-wallet reference contributes its navy and red identity, condensed display type, crisp dividers, and a compact journey. Travel language is an organizing cue, not a layer of invented travel facts.
 
-The two-panel workspace keeps the source and its edit controls together on the left while the result remains visible on the right from the first desktop view. On mobile, the hierarchy collapses into one column, with the source and edit choices before the result. Upload and camera capture are separate, equally clear ways to provide a photo; camera preview and capture controls appear inline only after the visitor starts the camera.
+The workspace pairs the source and result photos across the page, then places the caption comparison and edit controls in balanced columns directly below. This keeps both images aligned and gives each paper stage room to read without squeezing Stage 2 into a narrow sidebar. On mobile, the hierarchy collapses into one column. Upload and camera capture are separate, equally clear ways to provide a photo; camera preview and capture controls appear inline only after the visitor starts the camera.
 
 **Key Characteristics:**
 
-- A short, ordered choose → edit → collect flow without progress navigation.
+- A short, ordered choose → edit → collect flow with a compact, live progress tracker.
 - A restrained carrier palette with red reserved for the primary action and selected edit.
 - Standard, legible photo controls inside a crisp, low-depth layout.
 
@@ -124,7 +124,7 @@ The palette pairs deep carrier navy and warm stock white with a precise jet-red 
 
 ## Layout
 
-The page is capped at 1440px. The workspace uses two panels in a 1.15:0.85 grid with an 18px gap; the left panel combines photo selection, the three edit modes, and the primary action, while the right panel holds the result state. Keep the result panel visible beside the source in the initial desktop view.
+The page is capped at 1920px. The workspace pairs source and result panels in an even two-column grid, then uses a full-width workflow panel with balanced Stage 1 and Stage 2 columns. Stage 1 compares private and public captions side by side; Stage 2 shows three compact, equal-width edit choices above the generated instruction and primary action. Keep source and result visible together in the initial desktop view.
 
 At 850px and below, stack the panels in document order and reduce the top inset. At 560px and below, tighten the page gutters, panel padding, and image stages; make the upload and camera buttons share the row and the primary action full width. Preserve the order of source, edit choice, action, then result.
 
@@ -167,8 +167,7 @@ Panels use a small 4px corner; buttons and edit choices use a tighter 3px corner
 
 ### Photo and Result Stages
 - **Character:** Neutral image frames make the original and generated image the visual focus.
-- **Photo Stage:** Fixed 270px desktop height with a dashed border; on narrow phones it is 230px. Images use `object-fit: contain`.
-- **Result Stage:** Fills the result panel, with a 400px minimum height on desktop and 270px on narrow phones. Images use `object-fit: contain` so the complete image remains visible.
+- **Photo and Result Stages:** Use the same aspect ratio and align side by side on desktop. Images use `object-fit: contain` so the complete image remains visible.
 - **States:** The result placeholder communicates the next state; processing is emphasized in purple. A successful result exposes a text download link.
 
 ## Do's and Don'ts

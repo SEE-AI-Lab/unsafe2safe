@@ -41,7 +41,7 @@
     .progress-copy { padding-top:1px }
     .progress-copy strong { display:block; color:var(--muted); font-size:13px; line-height:1.25 }
     .progress-copy small { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.35 }
-    .progress-state { display:block; margin-top:4px; color:var(--muted); font-size:11px; font-weight:700; line-height:1.25 }
+    .progress-state { display:block; margin-top:4px; color:var(--muted); font-size:12px; font-weight:700; line-height:1.25 }
     .progress-step.is-current .progress-marker { border-color:var(--red); background:var(--red); color:#fff }
     .progress-step.is-current .progress-copy strong { color:var(--navy) }
     .progress-step.is-complete .progress-marker { border-color:var(--navy); background:var(--navy); color:#fff }
@@ -59,7 +59,7 @@
     @keyframes progress-spin { to { transform:rotate(360deg) } }
     @keyframes progress-check { to { stroke-dashoffset:0 } }
     .workspace { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; align-items:start }
-    .workflow-panel { grid-column:1/-1; display:grid; grid-template-columns:minmax(0,2fr) minmax(320px,1fr); gap:32px; align-items:start }
+    .workflow-panel { grid-column:1/-1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; align-items:start }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:19px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:14px; font-weight:700 }
     .photo { position:relative; aspect-ratio:var(--image-ratio, 16 / 9); display:grid; place-items:center; background:var(--wash); color:var(--navy); border:1px dashed #aeb8c5 }
@@ -103,7 +103,7 @@
     .privacy-pin::after { content:""; width:6px; height:6px; border-radius:50%; background:#fff }
     .privacy-tooltip { position:absolute; z-index:3; left:50%; bottom:calc(100% + 9px); display:none; width:min(250px,65vw); padding:10px 12px; transform:translateX(-50%); border:1px solid var(--line); background:#fff; box-shadow:0 8px 22px #0d1b3d30; color:var(--ink); text-align:left; pointer-events:none }
     .privacy-tooltip strong { display:block; margin-bottom:3px; font-size:12px }
-    .privacy-tooltip span { display:block; color:var(--muted); font-size:11px; line-height:1.4 }
+    .privacy-tooltip span { display:block; color:var(--muted); font-size:12px; line-height:1.4 }
     .privacy-pin:hover, .privacy-pin:focus-visible, .privacy-pin.is-open { opacity:1; transform:translate(-50%,-50%) scale(1.12) }
     .privacy-pin:hover .privacy-tooltip, .privacy-pin:focus-visible .privacy-tooltip, .privacy-pin.is-open .privacy-tooltip { display:block }
     .qr-popover { position:absolute; z-index:20; left:50%; top:calc(100% + 8px); width:156px; padding:10px; background:#fff; border:1px solid var(--line); box-shadow:0 6px 20px #0d1b3d22; color:var(--ink); text-align:center; opacity:0; visibility:hidden; transform:translate(-50%,-4px); transition:opacity .15s,transform .15s,visibility .15s }
@@ -117,23 +117,21 @@
     .qr-dialog p { max-width:44ch; color:#d8dfeb; font-size:15px }
     .qr-dialog img { display:block; width:min(48vw,56vh,560px); height:auto; padding:14px; background:white }
     .qr-dialog-link { display:inline-flex; align-items:center; gap:8px; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
-    .choices { display:grid; grid-template-columns:1fr; gap:8px }
-    .choice { width:100%; min-height:48px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:8px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) 18px; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
+    .choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px }
+    .choice { width:100%; min-height:58px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:9px 10px; display:grid; grid-template-columns:14px minmax(0,1fr) 16px; align-items:center; gap:8px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
     .choice:hover { border-color:#8796ac; background:#fafbfc }
-    .choice[aria-pressed="true"] { border:2px solid var(--red); padding:7px 10px; background:#fffafa }
-    .choice[data-mode="spooky_private"] { border-color:#e4c3a2; background:#fffaf4 }
-    .choice[data-mode="spooky_private"]:hover { border-color:#b85b22; background:#fff5e9 }
-    .choice[data-mode="spooky_private"][aria-pressed="true"] { border-color:#b85b22; background:#fff1dc }
-    .radio { width:15px; height:15px; border:1px solid #8797a9; border-radius:50% }
+    .choice[aria-pressed="true"] { border:2px solid var(--red); padding:8px 9px; background:#fffafa }
+    .choice[data-mode="spooky_private"] { background:#fffaf4 }
+    .choice[data-mode="spooky_private"]:hover { border-color:#c88155; background:#fff5e9 }
+    .choice[data-mode="spooky_private"][aria-pressed="true"] { border-color:var(--red); background:#fff4e8 }
+    .radio { width:14px; height:14px; border:1px solid #8797a9; border-radius:50% }
     .choice[aria-pressed="true"] .radio { border:4px solid var(--red) }
-    .choice[data-mode="spooky_private"][aria-pressed="true"] .radio { border-color:#b85b22 }
-    .choice-copy strong { display:block; color:var(--navy); font-size:13px }
-    .choice[data-mode="spooky_private"] .choice-copy strong { color:#6d3328; font:700 16px/1.1 'Barlow Condensed',sans-serif; letter-spacing:.02em }
+    .choice-copy strong { display:block; color:var(--navy); font-size:12px; line-height:1.25 }
     .choice-copy small { display:block; margin-top:2px; color:var(--muted); font-size:12px; line-height:1.35 }
     .choice-icon { color:var(--purple) }
     .choice[data-mode="spooky_private"] .choice-icon { color:#a64e20 }
     .generated-instruction { margin-top:10px; padding:10px 12px; border:1px solid var(--line); background:#f8f9fb }
-    .generated-instruction h3 { margin:0 0 4px; color:var(--purple); font-size:11px; font-weight:700 }
+    .generated-instruction h3 { margin:0 0 4px; color:var(--purple); font-size:12px; font-weight:700 }
     .generated-instruction p { margin:0; color:var(--ink); font-size:12px; line-height:1.45 }
     .generated-instruction [hidden] { display:none }
     .instruction-loading { display:flex; align-items:center; gap:9px; color:var(--muted); font-size:12px }
@@ -151,7 +149,7 @@
     .result-stage.processing .result-empty strong { color:var(--purple) }
     .result-stage.processing { background:linear-gradient(100deg,#e8edf2 25%,#f7f8fa 45%,#e8edf2 65%); background-size:220% 100%; animation:skeleton-shimmer 1.3s ease-in-out infinite }
     .result-stage.processing .result-empty::before { content:""; display:block; width:30px; height:30px; margin:0 auto 12px; border:3px solid #c9c3dc; border-top-color:var(--purple); border-radius:50%; animation:progress-spin .8s linear infinite }
-    .result-caption { display:flex; justify-content:space-between; gap:12px; margin-top:11px; color:var(--muted); font-size:12px }
+    .result-caption { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:70px; margin-top:11px; color:var(--muted); font-size:12px }
     #download { display:none; align-items:center; gap:6px; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
     @media (max-width:850px) {
       main { padding-top:25px }
@@ -161,9 +159,6 @@
       .qr-dialog img { width:min(56vw,45vh,420px) }
       .qr-dialog p { margin-left:auto; margin-right:auto }
       .workspace, .workflow-panel { grid-template-columns:1fr } .workflow-panel { grid-column:1 } }
-    @media (max-width:1000px) {
-      .workflow-panel { grid-template-columns:1fr }
-    }
     @media (max-width:560px) {
       main { padding:22px 14px 30px }
       .project-summary { grid-template-columns:1fr; gap:6px; padding:12px 0 9px }
@@ -177,8 +172,8 @@
       .progress-marker { width:20px; height:20px; font-size:10px }
       .progress-step[data-state="running"] .progress-marker::after { width:14px; height:14px }
       .progress-copy strong { font-size:12px }
-      .progress-copy small { font-size:11px }
-      .progress-state { font-size:10px }
+      .progress-copy small { font-size:12px }
+      .progress-state { font-size:12px }
       .qr-dialog { padding:20px }
       .qr-dialog-layout { gap:18px }
       .qr-dialog h2 { font-size:32px }
@@ -189,7 +184,8 @@
       .footer-inner { min-height:0; padding:16px 18px; flex-direction:column; gap:12px }
       .resources { justify-content:center; gap:4px 18px }
       .resource-link { font-size:12px }
-      .choice { grid-template-columns:17px minmax(0,1fr) 18px; gap:7px; padding:8px }
+      .choices { grid-template-columns:1fr }
+      .choice { grid-template-columns:17px minmax(0,1fr) 18px; gap:7px; min-height:46px; padding:8px }
       .choice[aria-pressed="true"] { padding:7px }
       .actions .button { width:100% }
     }
@@ -272,8 +268,8 @@
           </div>
         </section>
         <section class="stage-two" aria-labelledby="stageTwoTitle">
-          <h2 class="mode-title" id="stageTwoTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Edit instruction</h2>
-        <div class="choices" role="radiogroup" aria-label="Edit mode">
+          <h2 class="mode-title" id="stageTwoTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Choose an edit</h2>
+        <div class="choices" role="group" aria-label="Choose an edit">
           <button class="choice" type="button" data-mode="spooky_private" aria-pressed="true">
             <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Haunted portrait</strong></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.2-2.7-3.8-2.4-3.8-.4M12 6c1.2-2.7 3.8-2.4 3.8-.4"/><path d="M12 7c-3.5-2.6-8-.1-8 5.2 0 4.4 3.1 7.2 8 7.2s8-2.8 8-7.2C20 6.9 15.5 4.4 12 7Z"/><path d="M12 7.3c-1.5 2.5-1.5 9.4 0 12.1M8 11l1 1m6-1-1 1m-5 3c1.5 1.3 3.5 1.3 5 0"/></svg>
           </button>
