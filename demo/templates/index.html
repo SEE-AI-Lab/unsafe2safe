@@ -116,7 +116,7 @@
     .qr-dialog h2 { margin:0 0 8px; font:700 38px/1.05 'Barlow Condensed',sans-serif }
     .qr-dialog p { max-width:44ch; color:#d8dfeb; font-size:15px }
     .qr-dialog img { display:block; width:min(48vw,56vh,560px); height:auto; padding:14px; background:white }
-    .qr-dialog-link { display:inline-block; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
+    .qr-dialog-link { display:inline-flex; align-items:center; gap:8px; margin-top:12px; padding:11px 16px; background:var(--red); color:white; font-weight:700; text-decoration:none }
     .choices { display:grid; grid-template-columns:1fr; gap:8px }
     .choice { width:100%; min-height:48px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:8px 11px; display:grid; grid-template-columns:18px minmax(0,1fr) 18px; align-items:center; gap:10px; text-align:left; cursor:pointer; transition:border-color .15s,background .15s }
     .choice:hover { border-color:#8796ac; background:#fafbfc }
@@ -244,7 +244,7 @@
         </div>
         <div class="camera-controls" id="cameraControls" hidden>
           <button class="button" id="captureButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Capture photo</button>
-          <button class="button secondary" id="cancelCameraButton" type="button">Cancel</button>
+          <button class="button secondary" id="cancelCameraButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>Cancel</button>
         </div>
         <p class="camera-error" id="cameraError" role="status" aria-live="polite" hidden>Couldn’t open the camera. Upload a photo instead.</p>
         <input class="file-input" id="photo" type="file" accept="image/*">
@@ -259,7 +259,7 @@
         <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle">
           <h2 class="stage-one-title" id="stageOneTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>Stage 1 · Captions</h2>
           <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
-          <button class="button secondary" id="retryCaptions" type="button" hidden>Retry captions</button>
+          <button class="button secondary" id="retryCaptions" type="button" hidden><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M19 12a7 7 0 1 1-2-5l3 5"/></svg>Retry captions</button>
           <div class="caption-grid">
             <div class="caption-block"><h3>Private caption</h3><div class="caption-skeleton" id="privateCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="fullCaption">Upload or take a photo to generate its full visual description.</p></div>
             <div class="caption-block"><h3>Privacy-safe public caption</h3><div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="publicCaption">A privacy-safe caption will appear here.</p></div>
@@ -283,14 +283,14 @@
           <div class="instruction-loading" id="instructionLoading" data-state="waiting">Waiting for captions</div>
           <p id="editInstruction" hidden></p>
         </section>
-        <div class="actions"><button class="button" id="edit" disabled>Create this edit</button></div>
+        <div class="actions"><button class="button" id="edit" disabled><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg><span id="editLabel">Create this edit</span></button></div>
         </section>
       </article>
     </section>
   </main>
   <dialog class="qr-dialog" id="qrDialog" aria-labelledby="qrDialogTitle">
     <div class="qr-dialog-layout">
-      <div><h2 id="qrDialogTitle"></h2><p>Scan this code to open the page, or use the button to open it in a new tab.</p><a class="qr-dialog-link" id="qrDialogLink" href="#" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+      <div><h2 id="qrDialogTitle"></h2><p>Scan this code to open the page, or use the button to open it in a new tab.</p><a class="qr-dialog-link" id="qrDialogLink" href="#" target="_blank" rel="noopener noreferrer"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v6H5V6h6"/></svg>Open in a new tab</a></div>
       <img id="qrDialogImage" alt="QR code">
     </div>
   </dialog>
@@ -614,7 +614,7 @@
     edit.addEventListener('click', async () => {
       if (!selectedFile) return;
       edit.disabled = true;
-      edit.textContent = 'Creating your edit…';
+      document.getElementById('editLabel').textContent = 'Creating your edit…';
       setPipelineState([
         ['complete', 'Photo ready'],
         ['complete', 'Captions ready'],
@@ -661,7 +661,7 @@
         ]);
       } finally {
         edit.disabled = false;
-        edit.textContent = 'Create this edit';
+        document.getElementById('editLabel').textContent = 'Create this edit';
       }
     });
 
