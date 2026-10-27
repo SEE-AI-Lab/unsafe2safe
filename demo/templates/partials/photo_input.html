@@ -1,0 +1,20 @@
+      <article class="panel">
+        <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg>Your photo</h2>
+        <div class="photo" id="drop">
+          <div class="upload-prompt">Your photo will appear here</div>
+          <img id="preview" alt="Selected original photo">
+          <video id="cameraPreview" playsinline muted hidden aria-label="Live camera preview"></video>
+          <div class="privacy-markers" id="privacyMarkers" aria-label="Privacy review markers"></div>
+        </div>
+        <div class="photo-actions" id="photoActions">
+          <button class="button secondary" id="uploadButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5M4 15v5h16v-5"/></svg>Upload a photo</button>
+          <button class="button secondary" id="cameraButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="14" r="4"/></svg>Take a photo</button>
+        </div>
+        <div class="camera-controls" id="cameraControls" hidden>
+          <button class="button" id="captureButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Capture photo</button>
+          <button class="button secondary" id="cancelCameraButton" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>Cancel</button>
+        </div>
+        <p class="camera-error" id="cameraError" role="status" aria-live="polite" hidden>Couldn’t open the camera. Upload a photo instead.</p>
+        <input class="file-input" id="photo" type="file" accept="image/*">
+        <p class="privacy-note">Photo goes to Gemini for captions and editing. Not saved here.</p>
+      </article>
