@@ -128,7 +128,7 @@ The page is capped at 1920px. The workspace pairs source and result panels in an
 
 At 850px and below, stack the panels in document order and reduce the top inset. At 560px and below, tighten the page gutters, panel padding, and image stages; make the upload and camera buttons share the row and the primary action full width. Preserve the order of source, edit choice, action, then result.
 
-On desktop viewports shorter than 1050px, compact the paper header and progress row and cap the paired photo stages at 44vh (300–460px). Keep both images fully visible with `object-fit: contain`; the workflow may continue below the fold and remains available by scrolling.
+On viewports shorter than 1050px, compact the desktop paper header and progress row and cap the paired photo stages at 44vh (280–460px). Keep both images fully inside their frames with `object-fit: contain`; the workflow may continue below the fold and remains available by scrolling.
 
 ## Elevation & Depth
 
