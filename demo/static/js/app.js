@@ -7,6 +7,7 @@
     const instructionLoading = document.getElementById('instructionLoading');
     const preview = document.getElementById('preview');
     const cameraPreview = document.getElementById('cameraPreview');
+    const photoDrop = document.getElementById('drop');
     const photoActions = document.getElementById('photoActions');
     const cameraControls = document.getElementById('cameraControls');
     const cameraError = document.getElementById('cameraError');
@@ -197,7 +198,7 @@
       cameraStream = null;
       cameraPreview.srcObject = null;
       cameraPreview.hidden = true;
-      document.getElementById('drop').classList.remove('camera-on');
+      photoDrop.classList.remove('camera-on');
       photoActions.hidden = false;
       cameraControls.hidden = true;
     }
@@ -210,7 +211,7 @@
       privacyReviewItems = [];
       preview.src = URL.createObjectURL(file);
       preview.onload = () => setImageRatio(preview.naturalWidth, preview.naturalHeight);
-      document.getElementById('drop').classList.add('has-image');
+      photoDrop.classList.add('has-image');
       privacyMarkers.replaceChildren();
       editInstruction.textContent = '';
       instructionLoading.hidden = false;
@@ -222,11 +223,6 @@
       placeholder.innerHTML = '<strong>Your safe image appears here</strong>Your generated image will appear here.';
       resultStage.classList.remove('processing');
       document.getElementById('download').style.display = 'none';
-      document.getElementById('privateCaptionSkeleton').hidden = false;
-      document.getElementById('publicCaptionSkeleton').hidden = false;
-      document.getElementById('fullCaption').hidden = true;
-      document.getElementById('publicCaption').hidden = true;
-      document.getElementById('retryCaptions').hidden = true;
       await generateCaptions(file);
     }
 
@@ -302,7 +298,7 @@
         });
         cameraPreview.srcObject = cameraStream;
         cameraPreview.hidden = false;
-        document.getElementById('drop').classList.add('camera-on');
+        photoDrop.classList.add('camera-on');
         photoActions.hidden = true;
         cameraControls.hidden = false;
         await cameraPreview.play();
