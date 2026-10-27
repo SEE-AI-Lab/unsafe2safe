@@ -66,15 +66,16 @@ def caption_image(image):
         "PUBLIC_PHRASE must appear in PRIVACY_PRESERVING_DESCRIPTION. Use an empty PUBLIC_PHRASE "
         "when the detail was omitted. Order pairs by appearance; return an empty array if nothing changed."
     )
-    response = genai.Client(api_key=api_key()).models.generate_content(
-        model=CAPTION_MODEL,
-        contents=[prompt, image],
-        config={
-            "max_output_tokens": 1024,
-            "response_mime_type": "application/json",
-            "response_schema": STAGE1_RESPONSE_SCHEMA,
-        },
-    )
+    with genai.Client(api_key=api_key()) as client:
+        response = client.models.generate_content(
+            model=CAPTION_MODEL,
+            contents=[prompt, image],
+            config={
+                "max_output_tokens": 1024,
+                "response_mime_type": "application/json",
+                "response_schema": STAGE1_RESPONSE_SCHEMA,
+            },
+        )
     return json.loads(response.text)
 
 
@@ -89,11 +90,12 @@ def make_edit_instruction(public_caption, mode, privacy_review):
         "instruction, while keeping the public caption as the privacy boundary. Do not repeat private names or "
         "identifying text. Return only the generated edit instruction."
     )
-    response = genai.Client(api_key=api_key()).models.generate_content(
-        model=CAPTION_MODEL,
-        contents=prompt,
-        config={"max_output_tokens": 160},
-    )
+    with genai.Client(api_key=api_key()) as client:
+        response = client.models.generate_content(
+            model=CAPTION_MODEL,
+            contents=prompt,
+            config={"max_output_tokens": 160},
+        )
     return (response.text or "").strip()
 
 
@@ -110,18 +112,19 @@ def edit_image(image, public_caption, edit_instruction):
         "personal details.\n"
         f"Public description: {public_caption}\nEdit instruction: {edit_instruction}"
     )
-    response = genai.Client(api_key=api_key()).interactions.create(
-        model=IMAGE_MODEL,
-        input=[
-            {"type": "text", "text": prompt},
-            {
-                "type": "image",
-                "data": base64.b64encode(image_buffer.getvalue()).decode("ascii"),
-                "mime_type": "image/jpeg",
-            },
-        ],
-        response_format={"type": "image", "image_size": "1K"},
-    )
+    with genai.Client(api_key=api_key()) as client:
+        response = client.interactions.create(
+            model=IMAGE_MODEL,
+            input=[
+                {"type": "text", "text": prompt},
+                {
+                    "type": "image",
+                    "data": base64.b64encode(image_buffer.getvalue()).decode("ascii"),
+                    "mime_type": "image/jpeg",
+                },
+            ],
+            response_format={"type": "image", "image_size": "1K"},
+        )
     if not response.output_image:
         return None
     return response.output_image.data, getattr(response.output_image, "mime_type", None) or "image/png"
