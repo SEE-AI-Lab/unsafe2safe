@@ -281,7 +281,7 @@
             <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>A broader cast</strong></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20v-1a6 6 0 0 1 12 0v1M15 15a5 5 0 0 1 6 4v1"/></svg>
           </button>
           <button class="choice" type="button" data-mode="new_setting" aria-pressed="false">
-            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>A new setting</strong></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="6" r="2"/><path d="m3 20 6-8 4 5 3-4 5 7H3Z"/></svg>
+            <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Same scene, new region</strong></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="6" r="2"/><path d="m3 20 6-8 4 5 3-4 5 7H3Z"/></svg>
           </button>
         </div>
         <section class="generated-instruction" aria-live="polite" aria-label="Generated edit instruction">
@@ -320,6 +320,7 @@
     let selectedFile;
     let cameraStream;
     let selectedMode = 'spooky_private';
+    let privacyReviewItems = [];
     const qrDialog = document.getElementById('qrDialog');
     const qrDialogTitle = document.getElementById('qrDialogTitle');
     const qrDialogImage = document.getElementById('qrDialogImage');
@@ -427,6 +428,7 @@
       const form = new FormData();
       form.append('public_caption', publicCaption);
       form.append('mode', selectedMode);
+      form.append('privacy_review', JSON.stringify(privacyReviewItems));
       try {
         const response = await fetch('/edit-instruction', { method: 'POST', body: form });
         const data = await response.json();
@@ -492,6 +494,7 @@
       stopCamera();
       if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
       selectedFile = file;
+      privacyReviewItems = [];
       preview.src = URL.createObjectURL(file);
       preview.onload = () => setImageRatio(preview.naturalWidth, preview.naturalHeight);
       document.getElementById('drop').classList.add('has-image');
@@ -540,7 +543,8 @@
         renderCaption(document.getElementById('fullCaption'), data.full_caption, data.privacy_changes, 'PRIVATE_PHRASE', 'is-private');
         renderCaption(document.getElementById('publicCaption'), data.public_caption, data.privacy_changes, 'PUBLIC_PHRASE', 'is-public');
         if (!data.public_caption) throw new Error('Stage 1 did not return a privacy-safe caption. Try another photo.');
-        renderPrivacyMarkers(data.privacy_review);
+        privacyReviewItems = data.privacy_review || [];
+        renderPrivacyMarkers(privacyReviewItems);
         document.getElementById('privateCaptionSkeleton').hidden = true;
         document.getElementById('publicCaptionSkeleton').hidden = true;
         document.getElementById('fullCaption').hidden = false;
