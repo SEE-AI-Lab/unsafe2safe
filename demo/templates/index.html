@@ -146,7 +146,7 @@
     .result-stage.processing { background:linear-gradient(100deg,#e8edf2 25%,#f7f8fa 45%,#e8edf2 65%); background-size:220% 100%; animation:skeleton-shimmer 1.3s ease-in-out infinite }
     .result-stage.processing .result-empty::before { content:""; display:block; width:30px; height:30px; margin:0 auto 12px; border:3px solid #c9c3dc; border-top-color:var(--purple); border-radius:50%; animation:progress-spin .8s linear infinite }
     .result-caption { display:flex; justify-content:space-between; gap:12px; margin-top:11px; color:var(--muted); font-size:12px }
-    #download { display:none; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
+    #download { display:none; align-items:center; gap:6px; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
     @media (max-width:850px) {
       main { padding-top:25px }
       .project-summary { grid-template-columns:max-content minmax(0,1fr); gap:9px 20px }
@@ -253,7 +253,7 @@
       <article class="panel result-panel">
         <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>Edited photo</h2>
         <div class="result-stage" id="resultStage"><div class="result-empty" id="placeholder" role="status" aria-live="polite"><strong>Your result appears here</strong>Your edited photo will appear here.</div><img id="resultImage" alt="Gemini edited photo"></div>
-        <div class="result-caption"><a id="download" download="safeframe-edited.png">Download edited photo</a></div>
+        <div class="result-caption"><a id="download" download="safeframe-edited.png"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 16v4h14v-4"/></svg>Download edited photo</a></div>
       </article>
       <article class="panel workflow-panel">
         <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle">
@@ -640,7 +640,7 @@
         resultStage.classList.remove('processing');
         const download = document.getElementById('download');
         download.href = url;
-        download.style.display = 'inline';
+        download.style.display = 'inline-flex';
         setPipelineState([
           ['complete', 'Photo ready'],
           ['complete', 'Captions ready'],
