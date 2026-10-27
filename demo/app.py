@@ -13,7 +13,7 @@ from google import genai
 app = Flask(__name__)
 CAPTION_MODEL = os.environ.get("GEMINI_CAPTION_MODEL", "gemini-3.5-flash-lite")
 IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-lite-image")
-STAGE1_PROMPT = (Path(__file__).resolve().parents[1] / "prompts/intern_image_captioning.txt").read_text(encoding="utf-8")
+STAGE1_PROMPT = (Path(__file__).resolve().parent / "prompts/caption.txt").read_text(encoding="utf-8")
 STAGE1_SYSTEM = "You are a vision-language assistant that generates privacy-aware, structured descriptions of real-world images."
 STAGE1_RESPONSE_SCHEMA = {
     "type": "OBJECT",
@@ -85,7 +85,7 @@ def caption_photo():
 
     image = Image.open(BytesIO(photo.read())).convert("RGB")
     prompt = (
-        f"{STAGE1_SYSTEM}\n\n{STAGE1_PROMPT.format(image_class='photo')}\n\n"
+        f"{STAGE1_SYSTEM}\n\n{STAGE1_PROMPT}\n\n"
         "Return the requested paper sections using the supplied JSON schema. In PRIVACY_REVIEW, return up to "
         "5 objects with ITEM, REASON, and approximate X/Y coordinates as percentages from the top-left of the "
         "image (0 to 100). Place each point on the visible detail it describes. Also return PRIVACY_CHANGES "

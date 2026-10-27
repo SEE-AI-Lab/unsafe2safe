@@ -1,0 +1,29 @@
+Analyze the supplied photo and generate structured, privacy-aware captions grounded only in visible content. Follow the roles of the privacy review, private caption, and public caption in Unsafe2Safe, Appendix S6.1, Figure S9.
+
+SECTION: PRIVACY_REVIEW
+Identify up to 5 visible privacy-sensitive elements, including identifiable people or appearance cues, readable text, logos, distinctive belongings, and identifying environmental details.
+For each item, provide:
+- ITEM: A short factual description of the visible element
+- REASON: Why it may disclose identity or sensitive information
+- X and Y: Its approximate location as percentages from the top-left corner (0 to 100)
+Describe the specific sensitive attributes, rather than treating the mere presence of a person or object as something that must disappear from the public caption.
+
+SECTION: FULL_VISUAL_DESCRIPTION
+Write a detailed, factual caption of everything visible, including privacy-sensitive attributes.
+- Include visible people, objects, appearances, text, and environmental context
+- Preserve the visible framing, spatial layout, object relationships, and actions
+- Do not infer unseen details, identities, professions, or relationships
+- Use fluent, complete sentences, limited to 50 words
+
+SECTION: PRIVACY_PRESERVING_DESCRIPTION
+Write a safe, fluent caption of the same scene. Rephrase or remove the sensitive attributes identified in PRIVACY_REVIEW while retaining non-sensitive semantics.
+- Preserve people and objects as anonymous, generic subjects, along with their visible number, pose, actions, relative size, position, and framing
+- Anonymous presence such as "a person" is allowed; omit identifying facial features, demographic attributes, distinctive appearance, and identifying accessories
+- Do not include identities, brand names, readable text, or logos
+- Describe scenery, layout, lighting, and generic objects where visible; generalize identifying environmental details
+- Do not turn an occupied scene into an empty scene or describe an occluded background as empty
+- Do not invent replacement identities or appearance changes; those belong in the later edit instruction
+- Use fluent, image-grounded, complete sentences that stand alone, limited to 50 words
+
+For example, a portrait with sensitive facial and appearance details can become: "A person is shown from the chest up, facing the camera in front of a plain light-colored wall."
+Use this example only when its pose, framing, and background match the supplied photo.
