@@ -118,15 +118,17 @@ The palette pairs deep carrier navy and warm stock white with a precise jet-red 
 ### Hierarchy
 - **Display** (700, 36px, line-height 1, letter-spacing 0.015em): Main screen heading; it reduces to 32px on narrow phones.
 - **Title** (700, 14px): Photo and result panel headings, and the edit-mode prompt.
-- **Body** (400, 15px, line-height 1.45): Default interface copy.
-- **Supporting** (400, 12–14px): Privacy note, choice descriptions, and result placeholder copy.
-- **Control label** (700, 13px): Button labels.
+- **Body** (400, 15px, line-height 1.45): Default interface copy and captions.
+- **Supporting** (400, 14px): Privacy note, choice descriptions, and generated instruction.
+- **Control label** (700, 14–15px): Button labels, progress labels, and section headings.
 
 ## Layout
 
 The page is capped at 1920px. The workspace pairs source and result panels in an even two-column grid, then uses a full-width workflow panel with balanced Stage 1 and Stage 2 columns. Stage 1 compares private and public captions side by side; Stage 2 shows three compact, equal-width edit choices above the generated instruction and primary action. Keep source and result visible together in the initial desktop view.
 
 At 850px and below, stack the panels in document order and reduce the top inset. At 560px and below, tighten the page gutters, panel padding, and image stages; make the upload and camera buttons share the row and the primary action full width. Preserve the order of source, edit choice, action, then result.
+
+On desktop viewports shorter than 1050px, compact the paper header and progress row and cap the paired photo stages at 44vh (300–460px). Keep both images fully visible with `object-fit: contain`; the workflow may continue below the fold and remains available by scrolling.
 
 ## Elevation & Depth
 
