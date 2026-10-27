@@ -34,7 +34,7 @@ def main() -> None:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--prompt", default="prompts/intern_image_flagging-compare.txt")
     parser.add_argument("--model-id", default="OpenGVLab/InternVL3_5-8B")
-    parser.add_argument("--system-prompt", default="You are a vision-language evaluator for privacy-preserving image anonymization.")
+    parser.add_argument("--system-prompt", default=(Path(__file__).resolve().parents[2] / "prompts/intern_image_flagging-compare-system.txt").read_text(encoding="utf-8").strip())
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--image-size", type=int, default=448)
     parser.add_argument("--max-new-tokens", type=int, default=512)

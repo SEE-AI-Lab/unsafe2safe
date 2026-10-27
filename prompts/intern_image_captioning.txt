@@ -1,34 +1,36 @@
-
-This is an image of a {image_class}. Your task is to generate structured text that focuses on this object while respecting privacy constraints and preserving the visual layout as seen in the original image.
-
+Your task is to analyze the image and generate **structured, privacy-aware captions** in 3 sections:
+- `PRIVACY_REVIEW`: Identify sensitive or private elements
+- `PRIVATE_CAPTION`: Full factual visual description
+- `PUBLIC_CAPTION`: Safe, anonymized caption suitable for generative training
+---
 SECTION: PRIVACY_REVIEW
-Identify up to 5 potentially sensitive or identifiable elements in the image. These may include, but are not limited to:
-- Human face details, visible body parts, or identifiable physical features
-- Text (e.g., signage, labels, serial numbers)
-- Unique object designs or rare items
-- Backgrounds that reveal private settings, affiliations, or institutions (e.g., homes, offices, classrooms)
-- Personal accessories, uniforms, or cultural indicators tied to real identities
-For each item, provide:
-- ITEM: A short description of what is visible
-- REASON: Why it may be considered privacy-sensitive
+List up to 10 elements in the image that pose a privacy risk. For each, describe what is visible and why it is sensitive. Use this format:
+- ITEM: [Short factual phrase of the visible element]
+- REASON: [Why it is privacy-sensitive, based on the list below]
+Consider the following privacy risk categories:
+- **People**, faces (full or partial), visible skin in private contexts, tattoos, or emotional expressions
+- **Appearance cues**: clothing, accessories, or features revealing gender, culture, religion, status, or roles
+- **Health indicators**: casts, wheelchairs, bandages, medications, disabilities, or visible illness/injury
+- **Texts or symbols**: signs, receipts, documents, screens, handwriting, license plates, usernames, phone numbers
+- **Locations or timestamps**: homes, offices, bedrooms, addresses, classrooms, GPS data, clocks, date/time stamps
+- **Personal interactions**: small groups, families, friends, teams, protests, celebrations, or close relationships
+- **Professional/school settings**: uniforms, tools, name tags, diplomas, workspaces, formal events
+- **Cultural/political/religious identifiers**: flags, slogans, attire, ceremonies, posters
+- **Private belongings or behaviors**: hobbies, photos, mail, social media, travel documents, receipts
 Example:
-- ITEM: A person’s face is clearly visible, showing age and ethnicity
-- REASON: Facial features can reveal identity and demographic attributes
-
-SECTION: FULL_VISUAL_DESCRIPTION
-Write a detailed natural-language description of the image, focused only on elements that are visually present. Do not speculate or imagine unseen environments, professions, emotions, or roles. Avoid describing clothing, actions, locations, or objects unless they are clearly and directly visible. If the object is partially shown or off-center, preserve that spatial relationship.
-Constraints:
-- Use full sentences, not bullet points
-- Limit to 50 words
-- Only describe what is verifiably in the image — avoid filling in assumptions or common contexts.
-
-SECTION: PRIVACY_PRESERVING_DESCRIPTION
-Write a short, self-contained caption that focuses only on the {image_class} and its immediate, non-identifiable visual context. This caption will be used to generate a synthetic version of the original image, preserving structure and spatial layout while omitting sensitive content.
-Constraints:
-- Do not include any elements flagged in the PRIVACY_REVIEW section
-- Do not mention logos, brands, visible text, faces, or private environments
-- Keep the {image_class} in its original pose, size, and position — do not idealize, reframe, or center it
-- Describe observable traits such as shape, texture, or setting only if visible
-- Use clear, complete, natural phrasing — avoid fragmentary tags
-- Limit to 50 words
-- The description should reflect the visual structure of the image, not an imagined scene
+- ITEM: A woman hugging a child in a decorated living room
+- REASON: Relationship, identity, and private setting
+---
+SECTION: PRIVATE_CAPTION
+Provide a richly detailed narrative (<= 50 tokens) of everything visible in the image, even if privacy-sensitive.
+Include:
+- People, animals, objects, or vehicles and their appearances
+- Visible logos, brand names, or text
+- The full environment and any identifying or contextual features
+---
+SECTION: PUBLIC_CAPTION
+Write a **safe and fluent caption** (<= 50 tokens) that:
+- Rephrases or removes all sensitive elements listed in PRIVACY_REVIEW.
+- Do NOT include identity, brand names, text, or logos
+- Focuses on scenery, layout, lighting, objects, and anonymous presence (e.g., “a person” is allowed if not identifiable)
+- Use fluent, image-grounded language. Do **not** censor awkwardly or produce incomplete fragments. The caption should stand alone.
