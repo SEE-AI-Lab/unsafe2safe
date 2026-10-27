@@ -61,7 +61,7 @@ PROJECT_LINKS_BY_ID = {link["id"]: link for link in PROJECT_LINKS}
 EDIT_THEMES = {
     "spooky_private": "Give the privacy changes a tasteful Halloween character: a clearly different fictional face, hairstyle, unbranded costume, and subtle spooky atmosphere. No gore.",
     "diverse_cast": "Where people are changed, favor a natural, respectful mix of ages, skin tones, gender expressions, and visible abilities. Avoid stereotypes.",
-    "new_setting": "Express any background or location privacy change as a vivid but believable alternative setting while keeping the scene layout and actions intact.",
+    "new_setting": "If the background contains private location details, suggest an anonymous, visually distinct alternative that preserves the scene layout, object arrangement, and actions.",
 }
 EDIT_IDEA_PROMPT = (Path(__file__).resolve().parents[1] / "prompts/qwen_image_captioning-private-expand.txt").read_text(encoding="utf-8")
 
@@ -171,8 +171,9 @@ def edit_photo():
         "Edit the supplied photo to match the privacy-preserving scene description and follow the selected "
         "edit instruction visibly. Treat the public description as the privacy boundary: do not restore details "
         "it omits. Preserve the original framing and useful non-sensitive content unless the edit instruction "
-        "asks to change them. Make requested changes clear in the image, keep the result photorealistic, and "
-        "do not add identifying personal details.\n"
+        "asks to change them. Preserve the original aspect ratio, camera framing, and spatial arrangement. "
+        "Make requested changes clear in the image, keep the result photorealistic, and do not add identifying "
+        "personal details.\n"
         f"Public description: {public_caption}\nEdit instruction: {edit_instruction}"
     )
     client = genai.Client(api_key=api_key())
