@@ -243,9 +243,9 @@
     </header>
     <ol class="pipeline-progress" id="pipelineProgress" aria-label="Pipeline progress">
       <li class="progress-step is-current" id="progressUpload" data-state="idle" aria-current="step"><span class="progress-marker"><span>0</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Upload unsafe image</strong><small>Choose a photo to make safer to share</small><span class="progress-state" aria-live="polite">Waiting for photo</span></span></li>
-      <li class="progress-step" id="progressPhoto" data-state="idle"><span class="progress-marker"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Review &amp; captions</strong><small>Describe the image and protect private details</small><span class="progress-state" aria-live="polite">Waiting for upload</span></span></li>
-      <li class="progress-step" id="progressChoose" data-state="idle"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Choose an edit</strong><small>Gemini writes a paper-guided instruction</small><span class="progress-state" aria-live="polite">Waiting for captions</span></span></li>
-      <li class="progress-step" id="progressEdit" data-state="idle"><span class="progress-marker"><span>3</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Generate safe image</strong><small>Create and preview your edited photo</small><span class="progress-state" aria-live="polite">Waiting for edit</span></span></li>
+      <li class="progress-step" id="progressPhoto" data-state="idle"><span class="progress-marker"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Stage 1 · Inspection &amp; captions</strong><small>Review privacy risks and generate paired captions</small><span class="progress-state" aria-live="polite">Waiting for upload</span></span></li>
+      <li class="progress-step" id="progressChoose" data-state="idle"><span class="progress-marker"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Stage 1 · Edit instruction</strong><small>Choose a theme for the generated instruction</small><span class="progress-state" aria-live="polite">Waiting for public caption</span></span></li>
+      <li class="progress-step" id="progressEdit" data-state="idle"><span class="progress-marker"><span>3</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><span class="progress-copy"><strong>Stage 2 · Safe image generation</strong><small>Apply the public caption and edit instruction</small><span class="progress-state" aria-live="polite">Waiting for edit instruction</span></span></li>
     </ol>
     <section class="workspace" aria-label="Photo editor">
       <article class="panel">
@@ -269,22 +269,22 @@
         <p class="privacy-note">Photo goes to Gemini for captions and editing. Not saved here.</p>
       </article>
       <article class="panel result-panel">
-        <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>Edited photo</h2>
-        <div class="result-stage" id="resultStage"><div class="result-empty" id="placeholder" role="status" aria-live="polite"><strong>Your result appears here</strong>Your edited photo will appear here.</div><img id="resultImage" alt="Gemini edited photo"></div>
-        <div class="result-caption"><a id="download" download="safeframe-edited.png"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 16v4h14v-4"/></svg>Download edited photo</a></div>
+        <h2 class="panel-heading"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>Safe image</h2>
+        <div class="result-stage" id="resultStage"><div class="result-empty" id="placeholder" role="status" aria-live="polite"><strong>Your safe image appears here</strong>Your generated image will appear here.</div><img id="resultImage" alt="Gemini-generated safe image"></div>
+        <div class="result-caption"><a id="download" download="safeframe-edited.png"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 16v4h14v-4"/></svg>Download safe image</a></div>
       </article>
       <article class="panel workflow-panel">
         <section class="stage-one" id="stageOne" aria-labelledby="stageOneTitle">
-          <h2 class="stage-one-title" id="stageOneTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>Stage 1 · Captions</h2>
+          <h2 class="stage-one-title" id="stageOneTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>Stage 1 · Inspection &amp; captions</h2>
           <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
           <button class="button secondary" id="retryCaptions" type="button" hidden><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M19 12a7 7 0 1 1-2-5l3 5"/></svg>Retry captions</button>
           <div class="caption-grid">
-            <div class="caption-block"><h3>Private caption</h3><div class="caption-skeleton" id="privateCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="fullCaption">Upload or take a photo to generate its full visual description.</p></div>
-            <div class="caption-block"><h3>Privacy-safe public caption</h3><div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="publicCaption">A privacy-safe caption will appear here.</p></div>
+            <div class="caption-block"><h3>Private caption</h3><div class="caption-skeleton" id="privateCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="fullCaption">The private caption will appear here.</p></div>
+            <div class="caption-block"><h3>Public caption</h3><div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div><p id="publicCaption">The public caption will appear here.</p></div>
           </div>
         </section>
         <section class="stage-two" aria-labelledby="stageTwoTitle">
-          <h2 class="mode-title" id="stageTwoTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 2 · Choose an edit</h2>
+          <h2 class="mode-title" id="stageTwoTitle"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m5 4 .6 2.1L8 7l-2.4.7L5 10l-.7-2.3L2 7l2.3-.9L5 4Z"/></svg>Stage 1 · Edit instruction</h2>
         <div class="choices" role="group" aria-label="Choose an edit">
           <button class="choice" type="button" data-mode="spooky_private" aria-pressed="true">
             <span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Haunted portrait</strong></span><svg class="ui-icon choice-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-1.2-2.7-3.8-2.4-3.8-.4M12 6c1.2-2.7 3.8-2.4 3.8-.4"/><path d="M12 7c-3.5-2.6-8-.1-8 5.2 0 4.4 3.1 7.2 8 7.2s8-2.8 8-7.2C20 6.9 15.5 4.4 12 7Z"/><path d="M12 7.3c-1.5 2.5-1.5 9.4 0 12.1M8 11l1 1m6-1-1 1m-5 3c1.5 1.3 3.5 1.3 5 0"/></svg>
@@ -298,7 +298,7 @@
         </div>
         <section class="generated-instruction" aria-live="polite" aria-label="Generated edit instruction">
           <h3>Gemini-generated edit instruction</h3>
-          <div class="instruction-loading" id="instructionLoading" data-state="waiting">Waiting for captions</div>
+          <div class="instruction-loading" id="instructionLoading" data-state="waiting">Waiting for public caption</div>
           <p id="editInstruction" hidden></p>
         </section>
         <div class="actions"><button class="button" id="edit" disabled><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg><span id="editLabel">Create this edit</span></button></div>
@@ -362,8 +362,8 @@
       setPipelineState([
         ['idle', 'Waiting for photo'],
         ['idle', 'Waiting for upload'],
-        ['idle', 'Waiting for captions'],
-        ['idle', 'Waiting for edit']
+        ['idle', 'Waiting for public caption'],
+        ['idle', 'Waiting for edit instruction']
       ]);
     }
 
@@ -433,9 +433,9 @@
       document.querySelectorAll('.choice').forEach((choice) => { choice.disabled = true; });
       setPipelineState([
         ['complete', 'Photo ready'],
-        ['complete', 'Captions ready'],
+        ['complete', 'Inspection & captions ready'],
         ['running', 'Generating edit instruction'],
-        ['idle', 'Waiting for edit']
+        ['idle', 'Waiting for edit instruction']
       ]);
       const form = new FormData();
       form.append('public_caption', publicCaption);
@@ -452,18 +452,18 @@
         edit.disabled = false;
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Captions ready'],
+          ['complete', 'Inspection & captions ready'],
           ['complete', 'Edit instruction ready'],
-          ['idle', 'Waiting for edit']
+          ['idle', 'Ready to generate safe image']
         ]);
       } catch (error) {
         instructionLoading.dataset.state = 'error';
         instructionLoading.textContent = `${error.message} Choose a mode again to retry.`;
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Captions ready'],
+          ['complete', 'Inspection & captions ready'],
           ['error', 'Instruction generation failed'],
-          ['idle', 'Waiting for edit']
+          ['idle', 'Waiting for edit instruction']
         ]);
       } finally {
         document.querySelectorAll('.choice').forEach((choice) => { choice.disabled = false; });
@@ -514,11 +514,11 @@
       editInstruction.textContent = '';
       instructionLoading.hidden = false;
       instructionLoading.dataset.state = 'waiting';
-      instructionLoading.textContent = 'Waiting for captions';
+      instructionLoading.textContent = 'Waiting for public caption';
       edit.disabled = true;
       resultImage.style.display = 'none';
       placeholder.style.display = 'block';
-      placeholder.innerHTML = '<strong>Your result appears here</strong>Your edited photo will appear here.';
+      placeholder.innerHTML = '<strong>Your safe image appears here</strong>Your generated image will appear here.';
       resultStage.classList.remove('processing');
       document.getElementById('download').style.display = 'none';
       document.getElementById('privateCaptionSkeleton').hidden = false;
@@ -540,9 +540,9 @@
       document.getElementById('retryCaptions').hidden = true;
       setPipelineState([
         ['complete', 'Photo ready'],
-        ['running', 'Generating description & privacy-safe caption'],
-        ['idle', 'Waiting for captions'],
-        ['idle', 'Waiting for edit']
+        ['running', 'Reviewing privacy & generating captions'],
+        ['idle', 'Waiting for public caption'],
+        ['idle', 'Waiting for edit instruction']
       ]);
       uploadButton.disabled = true;
       cameraButton.disabled = true;
@@ -554,7 +554,7 @@
         if (!response.ok) throw new Error(data.error || 'The captions could not be generated.');
         renderCaption(document.getElementById('fullCaption'), data.full_caption, data.privacy_changes, 'PRIVATE_PHRASE', 'is-private');
         renderCaption(document.getElementById('publicCaption'), data.public_caption, data.privacy_changes, 'PUBLIC_PHRASE', 'is-public');
-        if (!data.public_caption) throw new Error('Stage 1 did not return a privacy-safe caption. Try another photo.');
+        if (!data.public_caption) throw new Error('Stage 1 did not return a public caption. Try another photo.');
         privacyReviewItems = data.privacy_review || [];
         renderPrivacyMarkers(privacyReviewItems);
         document.getElementById('privateCaptionSkeleton').hidden = true;
@@ -564,9 +564,9 @@
         captionStatus.hidden = true;
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Captions ready'],
-          ['idle', 'Choose an edit'],
-          ['idle', 'Waiting for edit']
+          ['complete', 'Inspection & captions ready'],
+          ['idle', 'Generating edit instruction'],
+          ['idle', 'Waiting for edit instruction']
         ]);
         generateEditInstruction();
       } catch (error) {
@@ -577,13 +577,13 @@
         document.getElementById('fullCaption').hidden = false;
         document.getElementById('publicCaption').hidden = false;
         document.getElementById('fullCaption').textContent = 'Captions could not be generated. Retry to try again.';
-        document.getElementById('publicCaption').textContent = 'Your privacy-safe caption will appear after a successful retry.';
+        document.getElementById('publicCaption').textContent = 'The public caption will appear after a successful retry.';
         document.getElementById('retryCaptions').hidden = false;
         setPipelineState([
           ['complete', 'Photo ready'],
           ['error', 'Captioning failed'],
-          ['idle', 'Waiting for captions'],
-          ['idle', 'Waiting for edit']
+          ['idle', 'Waiting for public caption'],
+          ['idle', 'Waiting for edit instruction']
         ]);
       } finally {
         uploadButton.disabled = false;
@@ -636,14 +636,14 @@
     edit.addEventListener('click', async () => {
       if (!selectedFile) return;
       edit.disabled = true;
-      document.getElementById('editLabel').textContent = 'Creating your edit…';
+      document.getElementById('editLabel').textContent = 'Generating safe image…';
       setPipelineState([
         ['complete', 'Photo ready'],
-        ['complete', 'Captions ready'],
-        ['complete', 'Edit selected'],
-        ['running', 'Generating edited image']
+        ['complete', 'Inspection & captions ready'],
+        ['complete', 'Edit instruction ready'],
+        ['running', 'Generating safe image']
       ]);
-      placeholder.innerHTML = '<strong>Working on your edit</strong>Your photo is being edited.';
+      placeholder.innerHTML = '<strong>Generating safe image</strong>The public caption and edit instruction are guiding the edit.';
       placeholder.style.display = 'block';
       resultImage.style.display = 'none';
       resultStage.classList.add('processing');
@@ -665,9 +665,9 @@
         download.style.display = 'inline-flex';
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Captions ready'],
-          ['complete', 'Edit selected'],
-          ['complete', 'Image ready']
+          ['complete', 'Inspection & captions ready'],
+          ['complete', 'Edit instruction ready'],
+          ['complete', 'Safe image ready']
         ]);
       } catch (error) {
         placeholder.replaceChildren();
@@ -677,9 +677,9 @@
         resultStage.classList.remove('processing');
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Captions ready'],
-          ['complete', 'Edit selected'],
-          ['error', 'Image generation failed']
+          ['complete', 'Inspection & captions ready'],
+          ['complete', 'Edit instruction ready'],
+          ['error', 'Safe image generation failed']
         ]);
       } finally {
         edit.disabled = false;

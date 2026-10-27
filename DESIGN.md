@@ -73,7 +73,7 @@ components:
 
 SafeFrame turns one photo edit into a short, legible trip: choose a source, select one treatment, and collect the finished image. The ticket-wallet reference contributes its navy and red identity, condensed display type, crisp dividers, and a compact journey. Travel language is an organizing cue, not a layer of invented travel facts.
 
-The workspace pairs the source and result photos across the page, then places the caption comparison and edit controls in balanced columns directly below. This keeps both images aligned and gives each paper stage room to read without squeezing Stage 2 into a narrow sidebar. On mobile, the hierarchy collapses into one column. Upload and camera capture are separate, equally clear ways to provide a photo; camera preview and capture controls appear inline only after the visitor starts the camera.
+The workspace pairs the source and safe images across the page, then places Stage 1 inspection/captions beside Stage 1 edit-instruction controls below. This keeps both images aligned and gives each part of Stage 1 room to read. On mobile, the hierarchy collapses into one column. Upload and camera capture are separate, equally clear ways to provide a photo; camera preview and capture controls appear inline only after the visitor starts the camera.
 
 **Key Characteristics:**
 
@@ -124,7 +124,7 @@ The palette pairs deep carrier navy and warm stock white with a precise jet-red 
 
 ## Layout
 
-The page is capped at 1920px. The workspace pairs source and result panels in an even two-column grid, then uses a full-width workflow panel with balanced Stage 1 and Stage 2 columns. Stage 1 compares private and public captions side by side; Stage 2 shows three compact, equal-width edit choices above the generated instruction and primary action. Keep source and result visible together in the initial desktop view.
+The page is capped at 1920px. The workspace pairs source and safe-image panels in an even two-column grid, then uses a full-width workflow panel with Stage 1 inspection/captions beside Stage 1 edit-instruction controls. Stage 1 compares private and public captions side by side; its edit-instruction area shows three compact, equal-width theme choices above the generated instruction and primary action. Stage 2 safe-image generation is represented by the output panel and progress step. Keep source and output visible together in the initial desktop view.
 
 At 850px and below, stack the panels in document order and reduce the top inset. At 560px and below, tighten the page gutters, panel padding, and image stages; make the upload and camera buttons share the row and the primary action full width. Preserve the order of source, edit choice, action, then result.
 
