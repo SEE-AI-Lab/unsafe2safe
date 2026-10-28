@@ -53,7 +53,7 @@
     .instruction-panel { grid-area:instruction; display:grid; grid-template-columns:1fr 1fr; gap:24px }
     .panel { min-width:0; background:var(--white); border:1px solid var(--line); padding:16px; border-radius:4px }
     .panel-heading { display:flex; align-items:center; gap:8px; margin:0 0 12px; font-size:18px; font-weight:700 }
-    .panel-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; min-height:44px; margin-bottom:12px }
+    .panel-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; min-height:70px; margin-bottom:12px }
     .panel-toolbar .panel-heading { margin:0 }
     .panel-toolbar .photo-actions, .panel-toolbar .camera-controls { margin:0 }
     .photo-content { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; align-items:start }
@@ -77,7 +77,8 @@
     .button.secondary { border-color:var(--line); background:#fff; color:var(--navy) }
     .button.secondary:hover { border-color:var(--navy); background:#f6f7f8 }
     .button:disabled { border-color:#aeb7c3; background:#aeb7c3; cursor:not-allowed; transform:none }
-    .privacy-note { margin:9px 0 0; color:var(--muted); font-size:14px }
+    .source-controls { display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:100% }
+    .privacy-note { margin:0; color:var(--muted); font-size:13px; text-align:right }
     .mode-title { display:flex; align-items:center; gap:8px; margin:0 0 12px; font-size:18px }
     .caption-status { margin:0 0 10px; color:var(--muted); font-size:14px }
     .caption-status.error { color:#a51e24 }
@@ -87,7 +88,6 @@
     .caption-block { min-width:0 }
     .caption-block h3 { margin:0 0 10px; color:var(--navy); font-size:18px }
     .caption-block p { margin:0; color:var(--ink); font-size:18px; line-height:1.5 }
-    .caption-block .privacy-note { margin-top:16px; color:var(--muted); font-size:14px }
     .caption-block p[hidden] { display:none }
     .caption-skeleton { display:grid; gap:7px; padding:4px 0 }
     .caption-skeleton[hidden] { display:none }
