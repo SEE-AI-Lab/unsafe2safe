@@ -1,0 +1,20 @@
+<form class="email-result" id="emailForm" hidden aria-labelledby="emailTitle" data-available="{{ 'true' if email_available else 'false' }}">
+  <div class="email-intro">
+    <h2 id="emailTitle">Keep a little memory</h2>
+    <p id="emailHelp">Get your photo by email, along with the paper and video links.</p>
+  </div>
+  <div class="email-entry">
+    <div class="email-fields">
+      <div class="email-field">
+        <label for="resultFirstName">First name</label>
+        <input id="resultFirstName" name="first_name" type="text" autocomplete="given-name" maxlength="80" required {% if not email_available %}disabled{% endif %}>
+      </div>
+      <div class="email-field">
+        <label for="resultEmail">Email address</label>
+        <input id="resultEmail" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-describedby="emailHelp emailStatus" maxlength="254" required {% if not email_available %}disabled{% endif %}>
+      </div>
+      <button class="button" id="sendEmail" type="submit" {% if not email_available %}disabled{% endif %}><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg><span id="sendEmailLabel">Email my photo</span></button>
+    </div>
+    <p class="email-status" id="emailStatus" role="status" aria-live="polite">{% if not email_available %}Email delivery is not configured yet. You can download the image.{% endif %}</p>
+  </div>
+</form>

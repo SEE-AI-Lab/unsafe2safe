@@ -171,6 +171,30 @@
     .result-stage.processing .result-empty::before { content:""; display:block; width:30px; height:30px; margin:0 auto 12px; border:3px solid #c9c3dc; border-top-color:var(--purple); border-radius:50%; animation:progress-spin .8s linear infinite }
     .result-caption { display:flex; align-items:center; gap:12px; color:var(--muted); font-size:16px }
     #download { display:none; align-items:center; gap:6px; color:var(--navy); font-weight:700; text-decoration:underline; text-underline-offset:3px }
+    .email-result { justify-self:center; width:min(1120px,100%); display:grid; grid-template-columns:260px minmax(0,1fr); align-items:center; gap:32px; margin:0; padding:20px 24px; border:1px solid var(--line); border-radius:4px; background:var(--white) }
+    .email-result[hidden] { display:none }
+    .email-intro h2 { margin:0 0 6px; color:var(--navy); font-size:20px; line-height:1.2 }
+    .email-intro p { max-width:30ch; margin:0; color:var(--muted); font-size:15px; line-height:1.45 }
+    .email-entry, .email-field { min-width:0 }
+    .email-fields { display:grid; grid-template-columns:minmax(120px,.7fr) minmax(200px,1.3fr) max-content; align-items:end; gap:12px }
+    .email-field label { display:block; margin:0 0 6px; color:var(--navy); font-size:15px; font-weight:600 }
+    .email-field input { display:block; width:100%; min-width:0; height:46px; padding:10px 12px; border:1px solid #8796ac; border-radius:3px; background:#fff; color:var(--ink); caret-color:var(--navy); font-size:17px }
+    .email-field input::placeholder { color:var(--muted) }
+    .email-field input:focus-visible { outline:3px solid #b676d1; outline-offset:3px }
+    .email-field input:disabled { border-color:var(--line); background:#f8f9fb }
+    .email-fields .button { min-height:46px; white-space:nowrap }
+    .email-result .email-status { margin:8px 0 0; color:var(--muted); font-size:14px; line-height:1.4; overflow-wrap:anywhere }
+    .email-result .email-status:empty { display:none }
+    .email-result .email-status.error { color:#a51e24 }
+    @media (max-width:1050px) {
+      .email-result { grid-template-columns:1fr; gap:20px }
+      .email-intro p { max-width:none }
+    }
+    @media (max-width:650px) {
+      .email-result { padding:20px }
+      .email-fields { grid-template-columns:1fr }
+      .email-fields .button { width:100%; margin-top:4px }
+    }
     @media (max-width:1399px) {
       .project-title-line { flex-direction:column; align-items:flex-start; gap:4px }
       .project-venue { font-size:12px }

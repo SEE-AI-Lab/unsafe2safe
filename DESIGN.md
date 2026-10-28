@@ -174,6 +174,12 @@ Panels use a small 4px corner; buttons and edit choices use a tighter 3px corner
 - **Photo and Result Stages:** Preserve natural image proportions and align the source and result on desktop. Use automatic image height so the complete frame remains visible.
 - **States:** The result placeholder communicates the next state; processing is emphasized in purple. A successful result exposes an icon and text download action in the header.
 
+### Email Result Form
+- Keep the form bounded to 1120px and centered below the editing workspace.
+- Group the title and short explanation beside one desktop row containing first name, email address, and the send action. Inputs and action share a 46px height.
+- Keep availability and delivery feedback directly below the fields. Unavailable sending remains disabled with an explanation.
+- Below 1050px, put the introduction above the fields. Below 650px, stack the fields and use a full-width action.
+
 ## Do's and Don'ts
 
 ### Do:
