@@ -10,6 +10,7 @@ from PIL import Image
 from gemini_service import EDIT_THEMES, api_key, caption_image, edit_image, make_edit_instruction
 
 app = Flask(__name__)
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 PROJECT_LINKS = [
     {"id": "paper", "label": "Paper", "title": "Unsafe2Safe paper", "url": "https://cvpr.thecvf.com/virtual/2026/poster/38097"},
     {"id": "project", "label": "Project page", "title": "Unsafe2Safe project page", "url": "https://see-ai-lab.github.io/unsafe2safe/"},
