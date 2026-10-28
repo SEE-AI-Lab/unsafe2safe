@@ -11,7 +11,7 @@ from gemini_service import EDIT_THEMES, api_key, caption_image, edit_image, make
 
 app = Flask(__name__)
 PROJECT_LINKS = [
-    {"id": "paper", "label": "Paper", "title": "Unsafe2Safe paper", "url": "https://arxiv.org/abs/2603.28605"},
+    {"id": "paper", "label": "Paper", "title": "Unsafe2Safe paper", "url": "https://cvpr.thecvf.com/virtual/2026/poster/38097"},
     {"id": "project", "label": "Project page", "title": "Unsafe2Safe project page", "url": "https://see-ai-lab.github.io/unsafe2safe/"},
     {"id": "github", "label": "GitHub", "title": "Unsafe2Safe on GitHub", "url": "https://github.com/SEE-AI-Lab/unsafe2safe"},
     {"id": "dataset", "label": "Dataset", "title": "Unsafe2Safe dataset", "url": "https://huggingface.co/datasets/minhdinh2/Unsafe2Safe"},
