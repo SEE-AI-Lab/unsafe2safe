@@ -38,6 +38,7 @@ Write a **safe and fluent caption** (<= 50 words) that:
 Gemini demo schema adaptation:
 - Return the three sections through the supplied JSON schema. Add approximate X/Y coordinates (0–100 percent from the top-left) to privacy-review items for the image markers.
 - First write the factual private caption, then derive the public caption by minimally generalizing its sensitive phrases. Preserve its factual content, object presence, counts, actions, spatial relationships, framing, and lighting.
+- Keep every visible person in the public caption as an anonymous person, with the same count, pose, and position. Generalize a person's identifying attributes; do not omit the person and describe only the background.
 - Generalize identifying attributes, not the existence of the subject or object: a framed personal photograph becomes a framed picture; a distinctive figurine becomes a small decorative object. A shelf holding such items remains a shelf with small objects, never an empty shelf.
 - Omission of identifying detail does not mean the object is absent. Do not introduce words like empty, blank, missing, or removed unless they are visibly true of the source image. Do not invent facts or replacement appearances in either caption; new appearances belong only in the edit instruction.
 - Check both captions against the actual image before returning them. Use exact private/public phrase pairs for highlights; pair each sensitive phrase with its generic replacement, not an entire otherwise unchanged sentence.

@@ -1,0 +1,17 @@
+Edit the supplied source photo using the public caption and generated edit instruction below.
+
+Mandatory identity replacement:
+- DO NOT recreate or retain the original facial identity of any visible person.
+- Replace every visible face with a clearly different, fictional person's face. Change facial structure and several distinguishing features, such as the eyes, nose, mouth, cheeks, or jaw, rather than only changing hair, clothing, expression, or lighting.
+- Apply this rule even if the public caption omits a person or the generated instruction mentions only the background. Inspect the source photo itself for people.
+- Makeup, a mask, a costume, or Halloween decorations alone do not satisfy identity replacement. The face underneath must be a different fictional identity.
+- Preserve the number of people, their positions, pose, gaze direction, visible body extent, and activity. Do not remove people or add people to a scene without them.
+
+Preserve source scene facts:
+The public caption is a generic description of the source, not an exhaustive object inventory. Preserve objects, their number, positions, and non-sensitive content even when the concise caption does not mention them. Replace identifying appearances with fictional or generic alternatives. Do not empty shelves or erase objects merely because their details were generalized.
+
+Apply the generated edit instruction visibly while preserving the original aspect ratio, full field of view, camera framing, subject size, and spatial arrangement, including when relocating a scene to another region. Keep the result photorealistic.
+
+Source image dimensions: {source_width} by {source_height} pixels. Do not crop or add borders.
+Public caption: {public_caption}
+Generated edit instruction: {edit_instruction}

@@ -50,6 +50,7 @@ EDIT_THEMES = {
     "new_setting": "Relocate the same kind of scene to a different region, keeping its activity, composition, scene layout, object arrangement, and camera framing. Replace every private or identifying detail with a plausible generic alternative; do not show identifiable landmarks, names, or signage.",
 }
 EDIT_IDEA_PROMPT = (Path(__file__).resolve().parent / "prompts/edit_instruction.txt").read_text(encoding="utf-8")
+IMAGE_EDIT_PROMPT = (Path(__file__).resolve().parent / "prompts/image_edit.txt").read_text(encoding="utf-8")
 
 
 def api_key():
@@ -90,6 +91,8 @@ def make_edit_instruction(public_caption, mode, privacy_review):
         "Keep the underlying people and objects present, in their original positions. Describe the target "
         "appearance for each replacement, rather than just saying 'anonymize'. When people are present, "
         "explicitly replace their facial identity and specify at least three concrete appearance changes. "
+        "A face or person mentioned in the privacy review means people are present even if the public caption "
+        "omits them. Start with their target facial identity and appearance before describing background edits. "
         "When no people are present, edit the actual sensitive objects or environment; do not add people. "
         "The public caption describes the source, not the edited result. Do not repeat private names or "
         "identifying text. Return only the generated edit instruction."
@@ -108,19 +111,11 @@ def edit_image(image, public_caption, edit_instruction):
     image.save(image_buffer, format="JPEG", quality=92)
     ratios = [(16, 9), (4, 3), (3, 2), (1, 1), (2, 3), (3, 4), (9, 16)]
     width, height = min(ratios, key=lambda ratio: abs(ratio[0] / ratio[1] - image.width / image.height))
-    prompt = (
-        "Edit the supplied photo to match the privacy-preserving scene description and follow the selected "
-        "edit instruction visibly. The public caption is a generic description of the source scene, not an "
-        "exhaustive object inventory. Preserve source objects, their number, positions, and non-sensitive "
-        "content even when the concise public caption does not mention them. Replace identifying attributes "
-        "with the specified fictional or generic alternatives; do not empty shelves or erase objects merely "
-        "because their details were generalized. Preserve the original aspect ratio, full field of view, "
-        "camera framing, subject size, and spatial arrangement, even "
-        "when relocating the scene to another region. "
-        "Make requested changes clear in the image, keep the result photorealistic, and do not add identifying "
-        "personal details.\n"
-        f"Source image dimensions: {image.width} by {image.height} pixels. Do not crop or add borders.\n"
-        f"Public description: {public_caption}\nEdit instruction: {edit_instruction}"
+    prompt = IMAGE_EDIT_PROMPT.format(
+        source_width=image.width,
+        source_height=image.height,
+        public_caption=public_caption,
+        edit_instruction=edit_instruction,
     )
     with genai.Client(api_key=api_key()) as client:
         response = client.interactions.create(
