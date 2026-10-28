@@ -73,7 +73,7 @@ components:
 
 SafeFrame turns one photo edit into a short, legible trip: choose a source, select one treatment, and collect the finished image. The ticket-wallet reference contributes its navy and red identity, condensed display type, crisp dividers, and a compact journey. Travel language is an organizing cue, not a layer of invented travel facts.
 
-The workspace pairs the source and safe images across the page, then places Stage 1 inspection/captions beside Stage 1 edit-instruction controls below. This keeps both images aligned and gives each part of Stage 1 room to read. On mobile, the hierarchy collapses into one column. Upload and camera capture are separate, equally clear ways to provide a photo; camera preview and capture controls appear inline only after the visitor starts the camera.
+The workspace groups the unsafe image and its paired private/public captions in a wide source section, beside a safe-image section. A horizontal edit area below keeps the three presets, generated instruction, and action together. On mobile, the hierarchy collapses into one column. Upload and camera capture are separate, equally clear ways to provide a photo; camera preview and capture controls appear inline only after the visitor starts the camera.
 
 **Key Characteristics:**
 
@@ -124,11 +124,13 @@ The palette pairs deep carrier navy and warm stock white with a precise jet-red 
 
 ## Layout
 
-The page is capped at 1920px. The workspace pairs source and safe-image panels in an even two-column grid, then uses a full-width workflow panel with Stage 1 inspection/captions beside Stage 1 edit-instruction controls. Stage 1 compares private and public captions side by side; its edit-instruction area shows three compact, equal-width theme choices above the generated instruction and primary action. Stage 2 safe-image generation is represented by the output panel and progress step. Keep source and output visible together in the initial desktop view.
+The primary demo viewport is 1915×1028. The page is capped at 1920px with 24px gutters. A three-column grid gives the unsafe image and paired captions two columns, and the safe image one column. Inside the source section, the image and caption pair share the width; private and public captions sit side by side. Photo controls and the result download action live in their section headers.
 
-At 850px and below, stack the panels in document order and reduce the top inset. At 560px and below, tighten the page gutters, panel padding, and image stages; make the upload and camera buttons share the row and the primary action full width. Preserve the order of source, edit choice, action, then result.
+A full-width edit panel below uses two columns: three equal 88px preset cells on the left, the generated instruction and its action on the right. Captions and generated instructions use 18px text. Standard preset labels stay 18px, and Halloween stays 27px on two lines with its radio vertically centered. Cursor bats blend as a group, remain faint, and stay inside the Halloween cell.
 
-On viewports shorter than 1050px, compact the desktop paper header and progress row and cap the paired photo stages at 44vh (280–460px). Keep both images fully inside their frames with `object-fit: contain`; the workflow may continue below the fold and remains available by scrolling.
+Images render at their natural aspect ratio with automatic height, without cropping or artificial black backgrounds. Camera capture requests a 1280×720 front-facing preview; actual camera dimensions determine the displayed frame. Safe-image generation requests the supported ratio closest to the source.
+
+Below 1400px, the edit instruction moves beneath the preset row to preserve readable choice widths. Below 1180px, captions move beneath the source image. Below 850px, source and result stack; below 560px, captions and choices also stack. Longer content can extend the page instead of clipping images or text.
 
 ## Elevation & Depth
 
@@ -169,8 +171,8 @@ Panels use a small 4px corner; buttons and edit choices use a tighter 3px corner
 
 ### Photo and Result Stages
 - **Character:** Neutral image frames make the original and generated image the visual focus.
-- **Photo and Result Stages:** Use the same aspect ratio and align side by side on desktop. Images use `object-fit: contain` so the complete image remains visible.
-- **States:** The result placeholder communicates the next state; processing is emphasized in purple. A successful result exposes a text download link.
+- **Photo and Result Stages:** Preserve natural image proportions and align the source and result on desktop. Use automatic image height so the complete frame remains visible.
+- **States:** The result placeholder communicates the next state; processing is emphasized in purple. A successful result exposes an icon and text download action in the header.
 
 ## Do's and Don'ts
 

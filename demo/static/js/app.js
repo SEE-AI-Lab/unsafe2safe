@@ -104,7 +104,7 @@
     function setImageRatio(width, height) {
       if (!width || !height) return;
       const ratio = `${width} / ${height}`;
-      document.getElementById('drop').style.setProperty('--image-ratio', ratio);
+      photoDrop.style.setProperty('--image-ratio', ratio);
       resultStage.style.setProperty('--image-ratio', ratio);
     }
 
@@ -119,8 +119,8 @@
       document.querySelectorAll('.choice').forEach((choice) => { choice.disabled = true; });
       setPipelineState([
         ['complete', 'Photo ready'],
-        ['complete', 'Inspection & captions ready'],
-        ['running', 'Generating edit instruction'],
+        ['complete', 'Ready'],
+        ['running', 'Generating…'],
         ['idle', 'Waiting for edit instruction']
       ]);
       const form = new FormData();
@@ -138,16 +138,16 @@
         edit.disabled = false;
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Inspection & captions ready'],
-          ['complete', 'Edit instruction ready'],
-          ['idle', 'Ready to generate safe image']
+          ['complete', 'Ready'],
+          ['complete', 'Ready'],
+          ['idle', 'Ready to generate']
         ]);
       } catch (error) {
         instructionLoading.dataset.state = 'error';
         instructionLoading.textContent = `${error.message} Choose a mode again to retry.`;
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Inspection & captions ready'],
+          ['complete', 'Ready'],
           ['error', 'Instruction generation failed'],
           ['idle', 'Waiting for edit instruction']
         ]);
@@ -221,7 +221,7 @@
       resultImage.style.display = 'none';
       placeholder.style.display = 'block';
       placeholder.innerHTML = '<strong>Your safe image appears here</strong>Your generated image will appear here.';
-      resultStage.classList.remove('processing');
+      resultStage.classList.remove('processing', 'has-image');
       document.getElementById('download').style.display = 'none';
       await generateCaptions(file);
     }
@@ -237,7 +237,7 @@
       document.getElementById('retryCaptions').hidden = true;
       setPipelineState([
         ['complete', 'Photo ready'],
-        ['running', 'Reviewing privacy & generating captions'],
+        ['running', 'Inspecting & captioning…'],
         ['idle', 'Waiting for public caption'],
         ['idle', 'Waiting for edit instruction']
       ]);
@@ -261,7 +261,7 @@
         captionStatus.hidden = true;
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Inspection & captions ready'],
+          ['complete', 'Ready'],
           ['idle', 'Generating edit instruction'],
           ['idle', 'Waiting for edit instruction']
         ]);
@@ -293,7 +293,7 @@
       cameraError.hidden = true;
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: 'environment' } },
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false
         });
         cameraPreview.srcObject = cameraStream;
@@ -336,13 +336,14 @@
       document.getElementById('editLabel').textContent = 'Generating safe image…';
       setPipelineState([
         ['complete', 'Photo ready'],
-        ['complete', 'Inspection & captions ready'],
-        ['complete', 'Edit instruction ready'],
-        ['running', 'Generating safe image']
+        ['complete', 'Ready'],
+        ['complete', 'Ready'],
+        ['running', 'Generating…']
       ]);
       placeholder.innerHTML = '<strong>Generating safe image</strong>The public caption and edit instruction are guiding the edit.';
       placeholder.style.display = 'block';
       resultImage.style.display = 'none';
+      resultStage.classList.remove('has-image');
       resultStage.classList.add('processing');
       const form = new FormData();
       form.append('photo', selectedFile);
@@ -357,14 +358,15 @@
         resultImage.style.display = 'block';
         placeholder.style.display = 'none';
         resultStage.classList.remove('processing');
+        resultStage.classList.add('has-image');
         const download = document.getElementById('download');
         download.href = url;
         download.style.display = 'inline-flex';
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Inspection & captions ready'],
-          ['complete', 'Edit instruction ready'],
-          ['complete', 'Safe image ready']
+          ['complete', 'Ready'],
+          ['complete', 'Ready'],
+          ['complete', 'Ready']
         ]);
       } catch (error) {
         placeholder.replaceChildren();
@@ -374,8 +376,8 @@
         resultStage.classList.remove('processing');
         setPipelineState([
           ['complete', 'Photo ready'],
-          ['complete', 'Inspection & captions ready'],
-          ['complete', 'Edit instruction ready'],
+          ['complete', 'Ready'],
+          ['complete', 'Ready'],
           ['error', 'Safe image generation failed']
         ]);
       } finally {

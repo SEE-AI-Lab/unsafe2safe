@@ -1,0 +1,13 @@
+<section class="caption-block" aria-label="{{ caption_kind }} caption">
+  <h3>{{ caption_kind }} caption</h3>
+  {% if caption_kind == 'Private' %}
+  <p class="caption-status" id="captionStatus" role="status" aria-live="polite" hidden></p>
+  <button class="button secondary" id="retryCaptions" type="button" hidden>Retry captions</button>
+  <div class="caption-skeleton" id="privateCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div>
+  <p id="fullCaption">The private caption will appear here.</p>
+  <p class="privacy-note">Sent to Gemini · Not saved here.</p>
+  {% else %}
+  <div class="caption-skeleton" id="publicCaptionSkeleton" aria-hidden="true" hidden><span></span><span></span><span></span></div>
+  <p id="publicCaption">The public caption will appear here.</p>
+  {% endif %}
+</section>
