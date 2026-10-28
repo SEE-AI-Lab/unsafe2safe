@@ -45,11 +45,11 @@ STAGE1_RESPONSE_SCHEMA = {
     "required": ["PRIVACY_REVIEW", "FULL_VISUAL_DESCRIPTION", "PRIVACY_PRESERVING_DESCRIPTION", "PRIVACY_CHANGES"],
 }
 EDIT_THEMES = {
-    "spooky_private": "Give the privacy changes a tasteful Halloween character: a clearly different fictional face, hairstyle, unbranded costume, and subtle spooky atmosphere. No gore.",
+    "spooky_private": "Give the privacy replacements a Halloween theme. For existing people, specify a clearly different fictional face, hairstyle, and unbranded costume. For other sensitive items, use spooky generic replacements. Keep the same subjects, objects, and activity; do not add people. No gore.",
     "diverse_cast": "Where people are changed, favor a natural, respectful mix of ages, skin tones, gender expressions, and visible abilities. Avoid stereotypes.",
     "new_setting": "Relocate the same kind of scene to a different region, keeping its activity, composition, scene layout, object arrangement, and camera framing. Replace every private or identifying detail with a plausible generic alternative; do not show identifiable landmarks, names, or signage.",
 }
-EDIT_IDEA_PROMPT = (Path(__file__).resolve().parents[1] / "prompts/qwen_image_captioning-private-expand.txt").read_text(encoding="utf-8")
+EDIT_IDEA_PROMPT = (Path(__file__).resolve().parent / "prompts/edit_instruction.txt").read_text(encoding="utf-8")
 
 
 def api_key():
@@ -86,15 +86,19 @@ def make_edit_instruction(public_caption, mode, privacy_review):
         f"Stage 1 privacy review: {json.dumps(privacy_review, ensure_ascii=False)}\n"
         "Apply the theme only to the proposed identity/privacy modifications. Follow all rules in the prompt, "
         "especially preserving scene layout and actions. Explicitly account for every Stage 1 privacy-review item: "
-        "remove or replace each flagged identity, attribute, text, logo, or location detail in the generated edit "
-        "instruction, while keeping the public caption as the privacy boundary. Do not repeat private names or "
+        "replace each flagged identity, attribute, text, logo, or location cue with a concrete generic alternative. "
+        "Keep the underlying people and objects present, in their original positions. Describe the target "
+        "appearance for each replacement, rather than just saying 'anonymize'. When people are present, "
+        "explicitly replace their facial identity and specify at least three concrete appearance changes. "
+        "When no people are present, edit the actual sensitive objects or environment; do not add people. "
+        "The public caption describes the source, not the edited result. Do not repeat private names or "
         "identifying text. Return only the generated edit instruction."
     )
     with genai.Client(api_key=api_key()) as client:
         response = client.models.generate_content(
             model=CAPTION_MODEL,
             contents=prompt,
-            config={"max_output_tokens": 160},
+            config={"max_output_tokens": 256},
         )
     return (response.text or "").strip()
 
@@ -102,14 +106,20 @@ def make_edit_instruction(public_caption, mode, privacy_review):
 def edit_image(image, public_caption, edit_instruction):
     image_buffer = BytesIO()
     image.save(image_buffer, format="JPEG", quality=92)
+    ratios = [(16, 9), (4, 3), (3, 2), (1, 1), (2, 3), (3, 4), (9, 16)]
+    width, height = min(ratios, key=lambda ratio: abs(ratio[0] / ratio[1] - image.width / image.height))
     prompt = (
         "Edit the supplied photo to match the privacy-preserving scene description and follow the selected "
-        "edit instruction visibly. Treat the public description as the privacy boundary: do not restore details "
-        "it omits. Preserve the original framing and useful non-sensitive content unless the edit instruction "
-        "asks to change them. Preserve the original aspect ratio, camera framing, and spatial arrangement, even "
+        "edit instruction visibly. The public caption is a generic description of the source scene, not an "
+        "exhaustive object inventory. Preserve source objects, their number, positions, and non-sensitive "
+        "content even when the concise public caption does not mention them. Replace identifying attributes "
+        "with the specified fictional or generic alternatives; do not empty shelves or erase objects merely "
+        "because their details were generalized. Preserve the original aspect ratio, full field of view, "
+        "camera framing, subject size, and spatial arrangement, even "
         "when relocating the scene to another region. "
         "Make requested changes clear in the image, keep the result photorealistic, and do not add identifying "
         "personal details.\n"
+        f"Source image dimensions: {image.width} by {image.height} pixels. Do not crop or add borders.\n"
         f"Public description: {public_caption}\nEdit instruction: {edit_instruction}"
     )
     with genai.Client(api_key=api_key()) as client:
@@ -123,7 +133,7 @@ def edit_image(image, public_caption, edit_instruction):
                     "mime_type": "image/jpeg",
                 },
             ],
-            response_format={"type": "image", "image_size": "1K"},
+            response_format={"type": "image", "image_size": "1K", "aspect_ratio": f"{width}:{height}"},
         )
     if not response.output_image:
         return None

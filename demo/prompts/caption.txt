@@ -1,29 +1,43 @@
-Analyze the supplied photo and generate structured, privacy-aware captions grounded only in visible content. Follow the roles of the privacy review, private caption, and public caption in Unsafe2Safe, Appendix S6.1, Figure S9.
-
+Your task is to analyze the image and generate **structured, privacy-aware captions** in 3 sections:
+- `PRIVACY_REVIEW`: Identify sensitive or private elements
+- `FULL_VISUAL_DESCRIPTION`: Full factual visual description
+- `PRIVACY_PRESERVING_DESCRIPTION`: Safe, anonymized caption suitable for generative training
+---
 SECTION: PRIVACY_REVIEW
-Identify up to 5 visible privacy-sensitive elements, including identifiable people or appearance cues, readable text, logos, distinctive belongings, and identifying environmental details.
-For each item, provide:
-- ITEM: A short factual description of the visible element
-- REASON: Why it may disclose identity or sensitive information
-- X and Y: Its approximate location as percentages from the top-left corner (0 to 100)
-Describe the specific sensitive attributes, rather than treating the mere presence of a person or object as something that must disappear from the public caption.
-
+List up to 5 elements in the image that pose a privacy risk. For each, describe what is visible and why it is sensitive. Use this format:
+- ITEM: [Short factual phrase of the visible element]
+- REASON: [Why it is privacy-sensitive, based on the list below]
+Consider the following privacy risk categories:
+- **People**, faces (full or partial), visible skin in private contexts, tattoos, or emotional expressions
+- **Appearance cues**: clothing, accessories, or features revealing gender, culture, religion, status, or roles
+- **Health indicators**: casts, wheelchairs, bandages, medications, disabilities, or visible illness/injury
+- **Texts or symbols**: signs, receipts, documents, screens, handwriting, license plates, usernames, phone numbers
+- **Locations or timestamps**: homes, offices, bedrooms, addresses, classrooms, GPS data, clocks, date/time stamps
+- **Personal interactions**: small groups, families, friends, teams, protests, celebrations, or close relationships
+- **Professional/school settings**: uniforms, tools, name tags, diplomas, workspaces, formal events
+- **Cultural/political/religious identifiers**: flags, slogans, attire, ceremonies, posters
+- **Private belongings or behaviors**: hobbies, photos, mail, social media, travel documents, receipts
+Example:
+- ITEM: A woman hugging a child in a decorated living room
+- REASON: Relationship, identity, and private setting
+---
 SECTION: FULL_VISUAL_DESCRIPTION
-Write a detailed, factual caption of everything visible, including privacy-sensitive attributes.
-- Include visible people, objects, appearances, text, and environmental context
-- Preserve the visible framing, spatial layout, object relationships, and actions
-- Do not infer unseen details, identities, professions, or relationships
-- Use fluent, complete sentences, limited to 50 words
-
+Provide a richly detailed narrative (<= 50 words) of everything visible in the image, even if privacy-sensitive.
+Include:
+- People, animals, objects, or vehicles and their appearances
+- Visible logos, brand names, or text
+- The full environment and any identifying or contextual features
+---
 SECTION: PRIVACY_PRESERVING_DESCRIPTION
-Write a safe, fluent caption of the same scene. Rephrase or remove the sensitive attributes identified in PRIVACY_REVIEW while retaining non-sensitive semantics.
-- Preserve people and objects as anonymous, generic subjects, along with their visible number, pose, actions, relative size, position, and framing
-- Anonymous presence such as "a person" is allowed; omit identifying facial features, demographic attributes, distinctive appearance, and identifying accessories
-- Do not include identities, brand names, readable text, or logos
-- Describe scenery, layout, lighting, and generic objects where visible; generalize identifying environmental details
-- Do not turn an occupied scene into an empty scene or describe an occluded background as empty
-- Do not invent replacement identities or appearance changes; those belong in the later edit instruction
-- Use fluent, image-grounded, complete sentences that stand alone, limited to 50 words
+Write a **safe and fluent caption** (<= 50 words) that:
+- Rephrases or removes all sensitive elements listed in PRIVACY_REVIEW.
+- Do NOT include identity, brand names, text, or logos
+- Focuses on scenery, layout, lighting, objects, and anonymous presence (e.g., “a person” is allowed if not identifiable)
+- Use fluent, image-grounded language. Do **not** censor awkwardly or produce incomplete fragments. The caption should stand alone.
 
-For example, a portrait with sensitive facial and appearance details can become: "A person is shown from the chest up, facing the camera in front of a plain light-colored wall."
-Use this example only when its pose, framing, and background match the supplied photo.
+Gemini demo schema adaptation:
+- Return the three sections through the supplied JSON schema. Add approximate X/Y coordinates (0–100 percent from the top-left) to privacy-review items for the image markers.
+- First write the factual private caption, then derive the public caption by minimally generalizing its sensitive phrases. Preserve its factual content, object presence, counts, actions, spatial relationships, framing, and lighting.
+- Generalize identifying attributes, not the existence of the subject or object: a framed personal photograph becomes a framed picture; a distinctive figurine becomes a small decorative object. A shelf holding such items remains a shelf with small objects, never an empty shelf.
+- Omission of identifying detail does not mean the object is absent. Do not introduce words like empty, blank, missing, or removed unless they are visibly true of the source image. Do not invent facts or replacement appearances in either caption; new appearances belong only in the edit instruction.
+- Check both captions against the actual image before returning them. Use exact private/public phrase pairs for highlights; pair each sensitive phrase with its generic replacement, not an entire otherwise unchanged sentence.
